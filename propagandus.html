@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Syllabus: SSCI-404</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap');
+        :root {
+            --dmt-purple: #8B00FF; --bsod-blue: #0000FF; --crt-green: #00FF41;
+            --glitch-pink: #FF00FF; --decay-yellow: #FFFF00; --error-red: #FF0000;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Times New Roman', serif;
+            background: linear-gradient(45deg, #000, #1a0033);
+            color: var(--crt-green);
+            overflow-x: hidden;
+            cursor: crosshair;
+            padding: 20px;
+        }
+        .terminal-window {
+            background: rgba(0,0,0,0.8); border: 2px solid var(--crt-green);
+            margin-bottom: 20px; padding: 20px;
+            font-family: 'Courier Prime', monospace;
+            box-shadow: 0 0 30px var(--crt-green);
+        }
+        .terminal-header {
+            background: var(--bsod-blue); color: white;
+            padding: 5px 10px; margin: -20px -20px 20px -20px; font-size: 12px;
+        }
+        .glitch-text {
+            position: relative; color: var(--dmt-purple); font-size: 2.5rem;
+            font-weight: bold; text-transform: uppercase; animation: glitch 2s infinite;
+        }
+        .glitch-text::before, .glitch-text::after {
+            content: attr(data-text); position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+        }
+        .glitch-text::before { color: var(--bsod-blue); animation: glitch-1 0.3s infinite; clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%); }
+        .glitch-text::after { color: var(--glitch-pink); animation: glitch-2 0.3s infinite; clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%); }
+        @keyframes glitch { 0%, 100% { transform: translate(0); } 20% { transform: translate(-2px, 2px); } 40% { transform: translate(-2px, -2px); } 60% { transform: translate(2px, 2px); } 80% { transform: translate(2px, -2px); } }
+        @keyframes glitch-1 { 0%, 100% { transform: translate(0); } 50% { transform: translate(-3px, -3px); } }
+        @keyframes glitch-2 { 0%, 100% { transform: translate(0); } 50% { transform: translate(3px, 3px); } }
+        
+        .corrupted-link { color: var(--decay-yellow); text-decoration: none; }
+        .corrupted-link:hover { animation: corrupt 0.5s infinite; }
+        @keyframes corrupt { 0% {filter: hue-rotate(0deg);} 100% {filter: hue-rotate(360deg);} }
+
+        h2 { color: var(--dmt-purple); border-bottom: 1px dashed var(--dmt-purple); padding-bottom: 5px; margin: 20px 0 10px 0; }
+        .redacted { text-decoration: line-through; color: #888; }
+        .error-message { color: var(--error-red); font-weight: bold; }
+        .ascii-art { font-family: 'Courier Prime', monospace; font-size: 8px; line-height: 1; color: var(--dmt-purple); text-align: center; padding: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="terminal-window">
+        <div class="terminal-header">SynoptiCorp University - Digital Syllabus Viewer</div>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <h1 class="glitch-text" data-text="SSCI-404: Post-Truth Synergetics">SSCI-404: Post-Truth Synergetics</h1>
+        </div>
+
+        <p><strong>Instructor:</strong> Dr. [DATA REDACTED], Sponsored Chair of Applied Propaganda</p>
+        <p><strong>Office Hours:</strong> By appointment only, pending KPI review.</p>
+        <p><strong>Term:</strong> Fall Semester, 2025</p>
+
+        <h2>Course Description</h2>
+        <p>
+            This course offers a paradigm-shifting deep dive into the synergistic frameworks of contemporary social dynamics. Students will leverage bleeding-edge methodologies to deconstruct legacy narratives and re-align them with optimized, stakeholder-approved outcomes. We will explore how to <span class="error-message">[ERROR: CRITICAL_THOUGHT.DLL NOT FOUND]</span>... how to foster brand-positive ecosystems and cultivate proactive consumer mindshare. The ultimate goal is to empower students to <span class="redacted">question the nature of reality</span> generate actionable data for our corporate partners.
+        </p>
+
+        <h2>Required Readings</h2>
+        <ul>
+            <li><span class="redacted">Baudrillard, J. - Simulacra and Simulation</span> <span class="error-message">[DEPRECATED - LOW MARKET SYNERGY]</span></li>
+            <li><span class="redacted">Foucault, M. - Discipline and Punish</span> <span class="error-message">[ARCHIVED - SUBVERSIVE CONTENT WARNING]</span></li>
+            <li><a href="#" class="corrupted-link" onclick="showError()">SynoptiCorp Q3 Shareholder Report (PDF)</a></li>
+            <li><a href="#" class="corrupted-link" onclick="showError()">"The 7 Habits of Highly Effective Brands" (Online Module)</a></li>
+        </ul>
+
+        <h2>Assignments & Grading</h2>
+        <ul>
+            <li><strong>Biometric Participation:</strong> 30% (Monitored via campus network)</li>
+            <li><strong>Brand Case Study Presentation:</strong> 30%</li>
+            <li><strong>Final Project:</strong> 40% (Develop a viral social media campaign to destigmatize perpetual surveillance)</li>
+        </ul>
+        
+        <h2>Course Schedule</h2>
+        <p><strong>Week 1:</strong> Deconstructing Truth (for Monetization)</p>
+        <p><strong>Week 4:</strong> Foucault's Panopticon as an HR Management Tool</p>
+        <p><strong>Week 8:</strong> Midterm Exam - Rewriting Historical Events for Brand Safety</p>
+        <p><strong>Week 12:</strong> Final Exam - Recital of the Corporate Loyalty Oath</p>
+    </div>
+
+    <div class="ascii-art">
+        <pre>
+    ,;:;,
+   ;;;;;
+   `"` | `"`
+     `"`'
+      |
+     / \
+    / _ \
+   | / \ |
+   |/   \|
+    \___/
+        </pre>
+        <p style="font-size: 10px; margin-top: -10px;">[REMAINS OF THE ACADEMY]</p>
+    </div>
+
+    <div class="terminal-window" style="text-align: center;">
+        <div class="terminal-header">TUITION_CALCULATOR.EXE</div>
+        <h2>Estimated Cost of Attendance:</h2>
+        <p style="font-size: 2rem; color: var(--decay-yellow);">$<span id="tuition-counter">58302</span>.00</p>
+        <p style="font-size: 10px;">(Price subject to real-time market adjustment)</p>
+        <br>
+        <button onclick="showError()" style="padding: 10px 20px; background: #000; border: 2px solid var(--crt-green); color: var(--crt-green); cursor: pointer;">DOWNLOAD SYLLABUS.PDF</button>
+    </div>
+
+    <div id="error-popup" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:1000; background: #c0c0c0; border: 2px outset #c0c0c0; padding: 20px; font-family:'MS Sans Serif', sans-serif; color:black; min-width:300px;">
+        <div style="background: linear-gradient(to right, #0000ff, #000080); color: white; padding: 5px; margin: -20px -20px 15px -20px; font-size: 11px; font-weight: bold;">Access Denied</div>
+        <p><b>ERROR 451:</b> Content unavailable due to institutional objectives.</p>
+        <p>This material has been flagged as non-compliant with our strategic growth and brand safety protocols.</p>
+        <br>
+        <div style="text-align:center;"><button onclick="hideError()" style="padding: 5px 15px;">OK</button></div>
+    </div>
+
+    <script>
+        // --- Tuition Counter ---
+        let tuition = 58302;
+        const tuitionCounter = document.getElementById('tuition-counter');
+        setInterval(() => {
+            tuition += Math.floor(Math.random() * 20);
+            tuitionCounter.textContent = tuition;
+        }, 1500);
+
+        // --- Error Popup Logic ---
+        function showError() { document.getElementById('error-popup').style.display = 'block'; }
+        function hideError() { document.getElementById('error-popup').style.display = 'none'; }
+    </script>
+</body>
+</html>

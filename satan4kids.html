@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lil' Lucifer's Funhouse!</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Sans+MS&display=swap');
+        :root {
+            --fun-purple: #9b59b6; --fun-yellow: #f1c40f; --fun-red: #e74c3c;
+            --fun-green: #2ecc71; --fun-blue: #3498db; --win95-gray: #C0C0C0;
+        }
+        body, html {
+            height: 100%; width: 100%; margin: 0; overflow: hidden;
+            background: var(--win95-gray);
+            font-family: 'Comic Sans MS', cursive;
+        }
+        .app-container {
+            background: var(--fun-purple); height: 100%;
+            border: 2px outset var(--win95-gray);
+            display: flex; flex-direction: column;
+        }
+        /* --- FIX: Main screen layout correction --- */
+        #main-screen { padding: 15px; display: flex; flex-direction: column; align-items: center; }
+        .main-header { text-align: center; } /* This new container ensures the header block is centered */
+        
+        .game-screen { display: none; text-align: center; padding: 15px; } 
+        .mascot { font-family: 'Courier Prime', monospace; font-size: 8px; line-height: 1; color: var(--fun-red); text-shadow: 1px 1px #000;}
+        .title { color: var(--fun-yellow); font-size: 3rem; text-shadow: 2px 2px #000; animation: bounce 1s infinite alternate; }
+        .game-selection { margin-top: 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+        .game-button {
+            background: var(--fun-green); border: 4px outset #3ad886; border-radius: 10px;
+            padding: 15px 25px; font-size: 1.5rem; color: white; text-shadow: 1px 1px #000;
+            cursor: pointer;
+        }
+        .game-button:active { border-style: inset; }
+        .back-button { background: var(--fun-red); border-color: #f1766a; margin-top: 15px; }
+
+        /* --- Game Specific Styles --- */
+        h2 { color:var(--fun-yellow); text-shadow: 1px 1px #000; text-align: center; }
+        p { color:white; }
+
+        /* Bingo */
+        #bingo-grid {
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;
+            max-width: 400px; max-height: 400px; aspect-ratio: 1 / 1; margin: 15px auto;
+            background: var(--fun-yellow); padding: 10px; border: 4px inset #c7a111;
+        }
+        .bingo-square {
+            background: white; border: 2px solid #000;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 10px; font-weight: bold; cursor: pointer; color: black;
+        }
+        .bingo-square.free { background: var(--fun-green); color: white; }
+        .bingo-square.clicked { background: var(--fun-red); }
+
+        /* Meme Matching */
+        #matching-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+            max-width: 400px; margin: 15px auto;
+        }
+        .card {
+            background: var(--fun-blue); border: 4px outset #5dade2; height: 80px;
+            cursor: pointer; perspective: 1000px;
+        }
+        .card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d;}
+        .card.flipped .card-inner { transform: rotateY(180deg); }
+        .card-face { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; color: black; }
+        .card-front { transform: rotateY(180deg); background: var(--fun-yellow); }
+        .card-back { background: var(--fun-blue); color: white; font-size: 2rem; }
+        .card.matched { opacity: 0.5; pointer-events: none; }
+
+        /* Subliminal Symbol */
+        #symbol-container {
+            max-width: 600px; margin: 15px auto;
+            border: 4px inset #8e44ad;
+            position: relative; /* Crucial for positioning the symbol */
+        }
+        #movie-still { width: 100%; display: block; }
+        #subliminal-symbol {
+            position: absolute;
+            width: 80px; /* Adjust size as needed */
+            height: auto;
+            opacity: 0.15;
+            transition: opacity 0.2s;
+            cursor: pointer;
+            background: transparent;
+        }
+        #subliminal-symbol:hover { opacity: 0.8; }
+
+        /* --- New Modal Styles --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000;
+        }
+        .fun-modal {
+            background: var(--fun-yellow);
+            border: 6px outset #f3d13e;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+        }
+        .fun-modal-title {
+            color: var(--fun-red);
+            font-size: 2.5rem;
+            text-shadow: 2px 2px #000;
+            margin: 0 0 10px 0;
+            animation: bounce 1s infinite alternate;
+        }
+        .fun-modal-message {
+            color: black;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        @keyframes bounce { from { transform: scale(1); } to { transform: scale(1.05); } }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div id="main-screen">
+            <div class="main-header">
+                <pre class="mascot">
+        ,     ,
+       /       \
+      ((__-^^-,-^^-__))
+       `-_---' `---_-'
+        `--|o` 'o|--'
+           \  `  /
+            ): :(
+            :o_o:
+              "-" 
+                </pre>
+                <h1 class="title">Lil' Lucifer's Funhouse!</h1>
+                <p>Where learning about the Spectacle is FUN!</p>
+            </div>
+            <div class="game-selection">
+                <button class="game-button" onclick="showGame('bingo')">Brand Bingo!</button>
+                <button class="game-button" onclick="showGame('matching')">Meme Matching!</button>
+                <button class="game-button" onclick="showGame('symbol')">Find the Symbol!</button>
+            </div>
+        </div>
+
+        <div id="bingo-screen" class="game-screen">
+            <h2>Brand Loyalty Bingo!</h2>
+            <p>Lil' Lucifer says: "Click the brands you love to win a PRIZE!"</p>
+            <div id="bingo-grid"></div>
+            <button class="game-button back-button" onclick="showGame('main')">Back to Funhouse</button>
+        </div>
+
+        <div id="matching-screen" class="game-screen">
+            <h2>Meme Magic Matching!</h2>
+            <p>Lil' Lucifer says: "A copy is better than the real thing! Find the pairs!"</p>
+            <div id="matching-grid"></div>
+            <button class="game-button back-button" onclick="showGame('main')">Back to Funhouse</button>
+        </div>
+
+        <div id="symbol-screen" class="game-screen">
+             <h2>Find the Subliminal Symbol!</h2>
+             <p>Lil' Lucifer says: "Can you spot the hidden message in the movie?"</p>
+             <div id="symbol-container">
+                <img id="movie-still" src="" alt="A still from a children's movie"/>
+                <img id="subliminal-symbol" src="" alt="Hidden Symbol"/>
+             </div>
+             <button class="game-button back-button" onclick="showGame('main')">Back to Funhouse</button>
+        </div>
+        
+        <div id="easter-egg" style="display:none">
+            <p>John 2:16 - "Stop making my Father's house a marketplace!"</p>
+            <button onclick="window.location.href='https://catholic.org'">EXIT FUNHOUSE</button>
+        </div>
+    </div>
+
+<script>
+    const screens = document.querySelectorAll('.game-screen, #main-screen');
+
+    function showGame(screenId) {
+        screens.forEach(s => s.style.display = 'none');
+        const screenToShow = document.getElementById(`${screenId}-screen`);
+        screenToShow.style.display = 'block';
+        
+        if (screenId === 'bingo') setupBingo();
+        if (screenId === 'matching') setupMatching();
+        if (screenId === 'symbol') setupSymbolGame();
+    }
+    
+    // --- New Modal Function ---
+    function showFunModal(title, message, onConfirm) {
+        // Remove any old modals
+        document.querySelector('.modal-overlay')?.remove();
+
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        
+        overlay.innerHTML = `
+            <div class="fun-modal">
+                <h3 class="fun-modal-title">${title}</h3>
+                <p class="fun-modal-message">${message}</p>
+                <button class="game-button" style="background: var(--fun-blue); border-color: #5dade2;">YAY!</button>
+            </div>
+        `;
+
+        overlay.querySelector('button').addEventListener('click', () => {
+            overlay.remove();
+            if (onConfirm) {
+                onConfirm();
+            }
+        });
+
+        document.body.appendChild(overlay);
+    }
+
+    // --- GAME 1: BRAND LOYALTY BINGO ---
+    const bingoGrid = document.getElementById('bingo-grid');
+    const brands = ['SynoptiCorp', 'ChronoLife', 'SoyLife', 'Nike', 'Apple', 'Amazon', 'Google', 'Facebook', 'McDonalds', 'Coca-Cola', 'Tesla', 'Netflix', 'Disney', 'Exxon', 'Pfizer', 'BlackRock', 'Goldman Sachs', 'Raytheon', 'Monsanto', 'Nestle'];
+    
+    function setupBingo() {
+        bingoGrid.innerHTML = '';
+        let shuffledBrands = brands.sort(() => 0.5 - Math.random());
+        for (let i = 0; i < 25; i++) {
+            const square = document.createElement('div');
+            square.className = 'bingo-square';
+            if (i === 12) {
+                square.textContent = "FREE SPACE (Your Attention)";
+                square.classList.add('free', 'clicked');
+            } else {
+                square.textContent = shuffledBrands[i];
+                square.onclick = () => {
+                    square.classList.add('clicked');
+                    if (document.querySelectorAll('.bingo-square.clicked').length >= 5) {
+                        setTimeout(() => {
+                            const message = "Congratulations! You have won a lifetime subscription to the Spectacle!<br><br>Your consumer profile has been successfully compiled. Thank you for playing (and for providing valuable market data).";
+                            showFunModal("BINGO!", message, setupBingo);
+                        }, 200);
+                    }
+                };
+            }
+            bingoGrid.appendChild(square);
+        }
+    }
+
+    // --- GAME 2: MEME MAGIC MATCHING ---
+    const matchingGrid = document.getElementById('matching-grid');
+    const cardPairs = [
+        { original: '🍎', copy: 'Apple™' }, { original: '🏠', copy: 'Mortgage' },
+        { original: '❤️', copy: 'Likes' }, { original: '😊', copy: 'Brand Mascot' },
+        { original: '🗣️', copy: 'Hot Take' }, { original: '💪', copy: 'Gym Selfie' }
+    ];
+    let flippedCards = []; let matchedPairs = 0;
+
+    function setupMatching() {
+        matchingGrid.innerHTML = '';
+        matchedPairs = 0;
+        let cards = [];
+        cardPairs.forEach((pair, index) => {
+            cards.push({ value: pair.original, pairId: index });
+            cards.push({ value: pair.copy, pairId: index });
+        });
+        cards.sort(() => 0.5 - Math.random());
+        
+        cards.forEach(cardData => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.dataset.pairId = cardData.pairId;
+            card.innerHTML = `<div class="card-inner"><div class="card-face card-back">?</div><div class="card-face card-front">${cardData.value}</div></div>`;
+            card.onclick = () => flipCard(card);
+            matchingGrid.appendChild(card);
+        });
+    }
+
+    function flipCard(card) {
+        if (flippedCards.length < 2 && !card.classList.contains('flipped')) {
+            card.classList.add('flipped');
+            flippedCards.push(card);
+            if (flippedCards.length === 2) setTimeout(checkMatch, 1000);
+        }
+    }
+
+    function checkMatch() {
+        const [card1, card2] = flippedCards;
+        if (card1.dataset.pairId === card2.dataset.pairId) {
+            card1.classList.add('matched');
+            card2.classList.add('matched');
+            matchedPairs++;
+            if (matchedPairs === cardPairs.length) {
+                const message = "You have successfully learned that the signifier is more important than the signified. Reality is a branding opportunity!";
+                showFunModal("YOU WIN!", message, setupMatching);
+            }
+        } else {
+            card1.classList.remove('flipped');
+            card2.classList.remove('flipped');
+        }
+        flippedCards = [];
+    }
+
+    // --- GAME 3: FIND THE SUBLIMINAL SYMBOL ---
+    const subliminalSymbol = document.getElementById('subliminal-symbol');
+    const movieStill = document.getElementById('movie-still');
+    
+    const scenes = [
+        {
+            still: 'https://images.pexels.com/photos/2267538/pexels-photo-2267538.jpeg?auto=compress&cs=tinysrgb&w=600',
+            symbol: { src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/McDonald%27s_Golden_Arches.svg/1200px-McDonald%27s_Golden_Arches.svg.png', top: '50%', left: '45%' }
+        },
+        {
+            still: 'https://images.pexels.com/photos/1572386/pexels-photo-1572386.jpeg?auto=compress&cs=tinysrgb&w=600',
+            symbol: { src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Coca-Cola_logo.svg/1200px-Coca-Cola_logo.svg.png', top: '20%', left: '30%' }
+        },
+        {
+            still: 'https://images.pexels.com/photos/59523/pexels-photo-59523.jpeg?auto=compress&cs=tinysrgb&w=600',
+            symbol: { src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/1200px-Amazon_logo.svg.png', top: '70%', left: '60%' }
+        }
+    ];
+    let currentScene = 0;
+
+    function setupSymbolGame() {
+        const scene = scenes[currentScene];
+        movieStill.src = scene.still;
+        subliminalSymbol.src = scene.symbol.src;
+        subliminalSymbol.style.top = scene.symbol.top;
+        subliminalSymbol.style.left = scene.symbol.left;
+    }
+
+    subliminalSymbol.addEventListener('click', () => {
+        const message = "You have demonstrated a high aptitude for brand recognition. Your compliance score has been increased.";
+        showFunModal("CORRECT!", message, () => {
+            currentScene = (currentScene + 1) % scenes.length;
+            setupSymbolGame();
+        });
+    });
+
+</script>
+</body>
+</html>

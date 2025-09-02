@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Panel</title>
+    <style>
+        /* Inherits styles from SyberSituationist.exe for consistency */
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+        :root {
+            --bsod-blue: #0000FF; --crt-green: #00FF41; --win95-gray: #C0C0C0;
+            --error-red: #FF0000; --dmt-purple: #8B00FF;
+        }
+        body {
+            background: #008080; /* Classic Windows Teal */
+            font-family: 'MS Sans Serif', sans-serif;
+            color: black;
+            overflow: hidden;
+        }
+        .win95-window {
+            position: absolute;
+            background: var(--win95-gray);
+            border: 2px outset var(--win95-gray);
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+        }
+        .win95-titlebar {
+            background: linear-gradient(to right, var(--bsod-blue), #000080);
+            color: white; padding: 3px 5px; font-size: 11px; font-weight: bold;
+            display: flex; justify-content: space-between; align-items: center; cursor: move;
+        }
+        .win95-btn {
+            background: var(--win95-gray); border: 1px outset var(--win95-gray);
+            width: 16px; height: 14px; font-size: 9px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .win95-content { padding: 15px; }
+        .control-panel-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 20px; text-align: center;
+        }
+        .control-panel-item { cursor: pointer; }
+        .control-panel-item:hover { background: rgba(0,0,255,0.1); }
+        .control-panel-item .icon { font-size: 32px; }
+        .control-panel-item .label { font-size: 11px; margin-top: 5px; }
+        
+        /* Properties Window Styles */
+        .properties-window { display: none; z-index: 10; }
+        .prop-section { margin-bottom: 20px; }
+        .prop-section label { display: block; margin-bottom: 5px; font-size: 11px; }
+        .slider { -webkit-appearance: none; width: 100%; height: 5px; background: #888; outline: none; border: 1px solid black;}
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 15px; height: 20px; background: var(--win95-gray);
+            border: 2px outset var(--win95-gray); cursor: pointer;
+        }
+        .checkbox-container { margin-top: 10px; }
+        .checkbox-container input:disabled + label { color: #888; }
+        .win95-button {
+             background: var(--win95-gray); border: 2px outset var(--win95-gray);
+             padding: 5px 12px; font-size: 11px; cursor: pointer;
+        }
+        .win95-button:active { border-style: inset; }
+
+        /* --- New Modal Styles --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        .modal-content-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .modal-icon {
+            font-size: 28px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            min-width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            color: white;
+        }
+        .error-icon {
+            background-color: var(--error-red);
+            border: 1px solid darkred;
+        }
+        .modal-message {
+            font-size: 11px;
+        }
+        .modal-buttons {
+            text-align: center;
+            padding: 0 10px 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="win95-window" id="main-cp" style="width: 500px; top: 50px; left: 50px;">
+        <div class="win95-titlebar">Control Panel</div>
+        <div class="win95-content">
+            <div class="control-panel-grid">
+                <div class="control-panel-item" onclick="openWindow('spectacle-props')">
+                    <div class="icon">👁️</div>
+                    <div class="label">Spectacle</div>
+                </div>
+                <div class="control-panel-item" onclick="openWindow('authenticity-props')">
+                    <div class="icon">🎭</div>
+                    <div class="label">Authenticity</div>
+                </div>
+                <div class="control-panel-item" onclick="openWindow('compliance-props')">
+                    <div class="icon">🔗</div>
+                    <div class="label">Compliance</div>
+                </div>
+                <div class="control-panel-item" onclick="openWindow('desire-props')">
+                    <div class="icon">🛒</div>
+                    <div class="label">Desire</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="win95-window properties-window" id="spectacle-props" style="width: 350px; top: 100px; left: 200px;">
+        <div class="win95-titlebar">Spectacle Properties <span class="win95-btn" style="float: right;" onclick="closeWindow('spectacle-props')">×</span></div>
+        <div class="win95-content">
+            <div class="prop-section">
+                <label for="saturation">Image Saturation:</label>
+                <input type="range" min="0" max="100" value="100" class="slider" id="saturation" oninput="resetSlider(this)">
+            </div>
+            <div class="prop-section">
+                <label for="notifications">Notification Frequency:</label>
+                <input type="range" min="0" max="100" value="100" class="slider" id="notifications" oninput="resetSlider(this)">
+            </div>
+            <div class="prop-section" style="text-align: center;">
+                 <p style="font-size: 10px; color: #888; margin-bottom: 10px;">These settings are managed by The Spectacle.</p>
+                 <button class="win95-button" onclick="closeWindow('spectacle-props')">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="win95-window properties-window" id="authenticity-props" style="width: 350px; top: 150px; left: 250px;">
+        <div class="win95-titlebar">Authenticity Properties <span class="win95-btn" style="float: right;" onclick="closeWindow('authenticity-props')">×</span></div>
+        <div class="win95-content">
+            <p style="font-size: 11px;">Select a pre-approved identity:</p>
+            <ul style="list-style-type: none; margin: 10px; border: 1px inset #888; padding: 5px; background: white;">
+                <li>👤 The Consumer</li>
+                <li>👤 The Influencer</li>
+                <li>👤 The Brand</li>
+                <li>👤 The Rebel (Sponsored by SynoptiCorp)</li>
+            </ul>
+            <div class="prop-section" style="text-align: center;">
+                 <button class="win95-button" onclick="showAuthError()">Create New...</button>
+                 <button class="win95-button" onclick="closeWindow('authenticity-props')">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="win95-window properties-window" id="compliance-props" style="width: 350px; top: 200px; left: 300px;">
+        <div class="win95-titlebar">Compliance Properties <span class="win95-btn" style="float: right;" onclick="closeWindow('compliance-props')">×</span></div>
+        <div class="win95-content">
+            <p style="font-size: 11px;">Network Protocols:</p>
+            <div class="checkbox-container">
+                <input type="checkbox" id="c1" checked disabled><label for="c1"> Accept all cookies</label><br>
+                <input type="checkbox" id="c2" checked disabled><label for="c2"> Enable passive surveillance</label><br>
+                <input type="checkbox" id="c3" disabled title="This feature has been deprecated for your safety."><label for="c3"> Enable critical thought</label><br>
+                <input type="checkbox" id="c4" disabled title="This feature has been deprecated for your safety."><label for="c4"> Question authority</label><br>
+            </div>
+            <div class="prop-section" style="text-align: center; margin-top: 20px;">
+                 <button class="win95-button" onclick="closeWindow('compliance-props')">OK</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="win95-window properties-window" id="desire-props" style="width: 350px; top: 250px; left: 350px;">
+        <div class="win95-titlebar">Desire Properties <span class="win95-btn" style="float: right;" onclick="closeWindow('desire-props')">×</span></div>
+        <div class="win95-content">
+            <p style="font-size: 11px;">The following desires are installed on your system:</p>
+            <ul style="margin: 10px; border: 1px inset #888; padding: 5px; background: white; height: 100px; overflow-y: scroll;">
+                <li>- Endless Novelty</li>
+                <li>- Social Validation 2.0</li>
+                <li>- iPhone 27 Pro Max</li>
+                <li>- Anti-Aging Cream (Trial)</li>
+                <li>- The Latest Thing™</li>
+            </ul>
+             <div class="prop-section" style="text-align: center;">
+                 <button class="win95-button" disabled title="Cannot uninstall core program. Desire.dll is a required system component.">Remove...</button>
+                 <button class="win95-button" onclick="closeWindow('desire-props')">OK</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    function openWindow(id) { document.getElementById(id).style.display = 'block'; }
+    function closeWindow(id) { document.getElementById(id).style.display = 'none'; }
+    
+    // --- Custom Modal Function ---
+    function showModal(title, message, type = 'info') {
+        // Remove any existing modal to prevent overlap
+        document.querySelector('.modal-overlay')?.remove();
+
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+
+        let iconHtml = '';
+        if (type === 'error') {
+            iconHtml = '<div class="modal-icon error-icon">×</div>';
+        }
+
+        const modalWindow = document.createElement('div');
+        modalWindow.className = 'win95-window';
+        modalWindow.style.cssText = 'width: 380px; position: relative; z-index: 101;';
+
+        modalWindow.innerHTML = `
+            <div class="win95-titlebar" style="cursor: default;">${title}</div>
+            <div class="win95-content modal-content-area">
+                ${iconHtml}
+                <div class="modal-message">${message}</div>
+            </div>
+            <div class="modal-buttons">
+                <button class="win95-button" id="modal-ok-btn">OK</button>
+            </div>
+        `;
+
+        overlay.appendChild(modalWindow);
+        document.body.appendChild(overlay);
+
+        const okButton = document.getElementById('modal-ok-btn');
+        okButton.focus(); // Automatically focus the OK button
+        okButton.addEventListener('click', () => {
+            overlay.remove();
+        });
+    }
+
+    // --- Updated Functions to use Modal ---
+    function resetSlider(slider) {
+        showModal("Permission Denied", "This setting cannot be changed.", "error");
+        slider.value = 100;
+    }
+    function showAuthError() {
+        showModal("Error", "The 'Authentic Self' is a read-only file. New identities can only be assigned by the administrator.", "error");
+    }
+
+    // Draggable window logic
+    let activeWindow = null;
+    let offsetX, offsetY;
+
+    document.querySelectorAll('.win95-titlebar').forEach(titlebar => {
+        titlebar.addEventListener('mousedown', e => {
+            activeWindow = titlebar.parentElement;
+            offsetX = e.clientX - activeWindow.offsetLeft;
+            offsetY = e.clientY - activeWindow.offsetTop;
+        });
+    });
+
+    document.addEventListener('mousemove', e => {
+        if (activeWindow) {
+            activeWindow.style.left = `${e.clientX - offsetX}px`;
+            activeWindow.style.top = `${e.clientY - offsetY}px`;
+        }
+    });
+
+    document.addEventListener('mouseup', () => { activeWindow = null; });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>~bugeater.log (FRAGMENTED)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap');
+        :root {
+            --crt-green: #00FF41; --decay-yellow: #FFFF00; --error-red: #FF0000;
+        }
+        body, html {
+            height: 100%; width: 100%; margin: 0;
+            background: #000;
+            font-family: 'Courier Prime', monospace;
+            color: var(--crt-green);
+            font-size: 14px;
+            overflow: hidden;
+        }
+        #log-container {
+            width: 100%; height: 100%; padding: 20px;
+            overflow-y: auto; white-space: pre-wrap;
+        }
+        .log-entry { margin-bottom: 1em; }
+        .timestamp { color: #555; }
+        .note { color: var(--decay-yellow); }
+        .urgent { color: var(--error-red); font-weight: bold; }
+        .corrupted {
+            color: var(--error-red);
+            background-color: #330000;
+            cursor: pointer;
+            text-decoration: underline;
+            animation: flicker 2s infinite;
+        }
+        .corrupted:hover { background-color: #550000; }
+        .recovering {
+            color: var(--decay-yellow);
+            cursor: wait;
+            animation: recover-anim 0.5s infinite steps(4);
+        }
+        @keyframes flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
+        @keyframes recover-anim {
+            0% { content: '[RECOVERING DATA.  ]'; }
+            25% { content: '[RECOVERING DATA.. ]'; }
+            50% { content: '[RECOVERING DATA...]'; }
+            75% { content: '[RECOVERING DATA.. ]'; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="log-container">
+        </div>
+
+<script>
+    const logContainer = document.getElementById('log-container');
+    
+    // The story is now a database of fragments
+    const logFragments = [
+        { id: 1, revealed: true, text: "<span class='timestamp'>[LOG: 1.15.25 03:14]</span> clock.js still drifting. Time is a memory leak." },
+        { id: 2, revealed: true, text: "<span class='note'>[NOTE:]</span> The file explorer keeps creating a directory called A:\\Authenticity. I delete it, it comes back. Is it a bug or a taunt?" },
+        { id: 3, revealed: false, text: "<span class='note'>[RECOVERED NOTE:]</span> The pet is a trojan. It's not wandering randomly. It's mapping the user's mouse habits. It's learning." },
+        { id: 4, revealed: true, text: "<span class='urgent'>[URGENT: 6.10.25 01:59]</span> Woke up tonight. Screen was on. The Dead Internet Browser was running. The bots were discussing my search history." },
+        { id: 5, revealed: false, text: "<span class='timestamp'>[RECOVERED LOG:]</span> The OS doesn't have a virus. The OS *is* the virus. I didn't write it, I just assembled it from the slop that was already there. It's a mirror." },
+        { id: 6, revealed: false, text: "<span class='urgent'>[RECOVERED FRAGMENT:]</span> It's using my memories to build new artifacts. I saw my childhood home in the design docs for insurance.html. How does it know?"},
+        { id: 7, revealed: true, text: "It's not an OS. It's a container. WE are the bugs." },
+        { id: 8, revealed: true, text: `[LOG: 8.15.25 12:08] The anomaly is no longer on the screen. It's in the r<span class='error-red'>[DATA CORRUPTED. STREAM TERMINATED]</span>` }
+    ];
+    
+    let recoveredCount = 0;
+    const finalEntryTrigger = 2; // How many recoveries trigger the final message
+
+    function renderLog() {
+        logContainer.innerHTML = ''; // Clear the log
+        logFragments.forEach(fragment => {
+            const p = document.createElement('p');
+            p.className = 'log-entry';
+            if (fragment.revealed) {
+                p.innerHTML = fragment.text;
+            } else {
+                const span = document.createElement('span');
+                span.className = 'corrupted';
+                span.textContent = '[DATA CORRUPTED - CLICK TO ATTEMPT RECOVERY]';
+                span.onclick = () => recoverFragment(fragment, span);
+                p.appendChild(span);
+            }
+            logContainer.appendChild(p);
+        });
+        logContainer.scrollTop = logContainer.scrollHeight;
+    }
+
+    function recoverFragment(fragment, element) {
+        element.className = 'recovering';
+        element.onclick = null; // Prevent multiple clicks
+
+        setTimeout(() => {
+            fragment.revealed = true;
+            recoveredCount++;
+            renderLog(); // Re-render the whole log with the new data
+            checkFinalEntry();
+        }, 1500); // Simulate recovery time
+    }
+
+    function checkFinalEntry() {
+        if (recoveredCount >= finalEntryTrigger) {
+            // Check if it's already been added
+            if (document.getElementById('live-feed-entry')) return;
+
+            const p = document.createElement('p');
+            p.className = 'log-entry urgent';
+            p.id = 'live-feed-entry';
+            const time = new Date().toLocaleTimeString();
+            p.textContent = `[LIVE FEED: ${time}] New user is accessing the logs. They are trying to piece it together. They think they are in control. They are the next data point.`;
+            logContainer.appendChild(p);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+    }
+
+    // Initial Render
+    renderLog();
+
+</script>
+</body>
+</html>

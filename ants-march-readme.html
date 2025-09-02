@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>README://THE_ANTS_MARCH.exe</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;900&family=Courier+Prime:wght@400;700&family=Playfair+Display:ital@0;1&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: #00ff00;
+            font-family: 'Courier Prime', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        
+        .marching-ants {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 1000;
+            background-image: 
+                linear-gradient(0deg, #00ff00 50%, transparent 50%),
+                linear-gradient(90deg, #00ff00 50%, transparent 50%),
+                linear-gradient(180deg, #00ff00 50%, transparent 50%),
+                linear-gradient(270deg, #00ff00 50%, transparent 50%);
+            background-size: 8px 2px, 2px 8px, 8px 2px, 2px 8px;
+            background-position: 0 0, 100% 0, 100% 100%, 0 100%;
+            background-repeat: repeat-x, repeat-y, repeat-x, repeat-y;
+            animation: ants 8s linear infinite;
+        }
+        
+        /* Main Container */
+        .readme-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            background: rgba(0, 0, 0, 0.95);
+            border-left: 2px solid #00ff00;
+            border-right: 2px solid #00ff00;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .readme-header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            padding: 20px;
+            border: 1px solid #00ff00;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 255, 0, 0.03) 2px,
+                rgba(0, 255, 0, 0.03) 4px
+            );
+        }
+        
+        .title {
+            font-family: 'Cinzel', serif;
+            font-weight: 900;
+            font-size: 48px;
+            color: #ff0000;
+            text-shadow: 
+                0 0 10px #ff0000,
+                2px 2px 0 #00ff00,
+                -2px -2px 0 #ffff00;
+            margin-bottom: 10px;
+            animation: titleGlitch 10s infinite;
+            letter-spacing: 3px;
+        }
+        
+        @keyframes titleGlitch {
+            0%, 100% { transform: skew(0deg); }
+            94% { transform: skew(0deg); }
+            94.5% { transform: skew(2deg) translateX(-2px); }
+            95% { transform: skew(-2deg) translateX(2px); }
+            95.5% { transform: skew(0deg); }
+        }
+        
+        .subtitle {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            color: #ffff00;
+            font-size: 18px;
+            opacity: 0.8;
+        }
+        
+        /* Poem Container */
+        .poem-section {
+            margin: 40px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, 
+                rgba(139, 0, 0, 0.1) 0%, 
+                rgba(0, 0, 0, 0.9) 50%, 
+                rgba(139, 69, 255, 0.1) 100%);
+            border: 1px solid #8b45ff;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .poem-section::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-conic-gradient(
+                from 0deg at 50% 50%,
+                transparent 0deg,
+                rgba(255, 215, 0, 0.02) 20deg,
+                transparent 40deg
+            );
+            animation: rotate 60s linear infinite;
+        }
+        
+        @keyframes rotate {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Stanza Styling */
+        .stanza {
+            margin: 30px 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .verse {
+            margin: 5px 0;
+            transition: all 0.3s;
+        }
+        
+        .verse:hover {
+            color: #ffff00;
+            text-shadow: 0 0 10px currentColor;
+            transform: translateX(10px);
+        }
+        
+        /* Special Lines */
+        .boots-line {
+            color: #ff0000;
+            font-weight: bold;
+            font-size: 16px;
+            text-align: center;
+            margin: 20px 0;
+            animation: bootsMarch 2s steps(4) infinite;
+        }
+        
+        @keyframes bootsMarch {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(5px); }
+            50% { transform: translateX(0); }
+            75% { transform: translateX(-5px); }
+        }
+        
+        .biblical {
+            color: #ffd700;
+            font-family: 'Playfair Display', serif;
+            font-size: 16px;
+            font-style: italic;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .system-command {
+            color: #00ffff;
+            background: #000;
+            padding: 10px;
+            border: 1px solid #00ffff;
+            font-family: 'Courier Prime', monospace;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .system-command::before {
+            content: "> ";
+            color: #00ff00;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        /* Warning Box */
+        .warning-box {
+            background: rgba(255, 0, 0, 0.1);
+            border: 2px solid #ff0000;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: center;
+            animation: warningPulse 3s infinite;
+        }
+        
+        @keyframes warningPulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(255, 0, 0, 1); }
+        }
+        
+        /* Ant ASCII */
+        .ant-ascii {
+            font-size: 10px;
+            line-height: 1;
+            color: #00ff00;
+            white-space: pre;
+            display: inline-block;
+            animation: antCrawl 20s linear infinite;
+        }
+        
+        @keyframes antCrawl {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100vw); }
+        }
+        
+        /* Spectacles Effect */
+        .spectacles {
+            display: inline-block;
+            position: relative;
+        }
+        
+        .spectacles::before,
+        .spectacles::after {
+            content: "◯";
+            position: absolute;
+            color: #ffd700;
+            font-size: 20px;
+            top: -10px;
+        }
+        
+        .spectacles::before {
+            left: -15px;
+        }
+        
+        .spectacles::after {
+            right: -15px;
+        }
+        
+        /* Glitch Text */
+        .glitch {
+            position: relative;
+            animation: glitchAnim 5s infinite;
+        }
+        
+        @keyframes glitchAnim {
+            0%, 100% { 
+                text-shadow: 2px 0 #ff0000, -2px 0 #00ffff;
+                transform: translate(0);
+            }
+            93% {
+                text-shadow: 2px 0 #ff0000, -2px 0 #00ffff;
+                transform: translate(0);
+            }
+            94% {
+                text-shadow: -2px 0 #ff0000, 2px 0 #00ffff;
+                transform: translate(2px, -2px);
+            }
+            95% {
+                text-shadow: 2px 0 #ff0000, -2px 0 #00ffff;
+                transform: translate(-2px, 2px);
+            }
+        }
+        
+        /* Footer */
+        .readme-footer {
+            margin-top: 60px;
+            padding: 20px;
+            border-top: 2px solid #8b45ff;
+            text-align: center;
+            color: #808080;
+            font-size: 10px;
+        }
+        
+        /* Floating Ants */
+        .floating-ant {
+            position: fixed;
+            color: #00ff00;
+            font-size: 12px;
+            animation: floatAnt 15s infinite linear;
+            pointer-events: none;
+        }
+        
+        @keyframes floatAnt {
+            0% {
+                transform: translate(0, 100vh) rotate(0deg);
+            }
+            100% {
+                transform: translate(100vw, -100px) rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="marching-ants"></div>
+    
+    <!-- Floating Ants -->
+    <div class="floating-ant" style="left: 10%; animation-delay: 0s;">🐜</div>
+    <div class="floating-ant" style="left: 30%; animation-delay: 3s;">🐜</div>
+    <div class="floating-ant" style="left: 50%; animation-delay: 6s;">🐜</div>
+    <div class="floating-ant" style="left: 70%; animation-delay: 9s;">🐜</div>
+    <div class="floating-ant" style="left: 90%; animation-delay: 12s;">🐜</div>
+    
+    <div class="readme-container">
+        <header class="readme-header">
+            <h1 class="title"> Song of Ants</h1>
+            <p class="subtitle">AnomalyOS Introduction</p>
+            <p style="color: #808080; font-size: 10px; margin-top: 10px;">
+                To Whom It Shall Concern
+            </p>
+        </header>
+        
+        <div class="poem-section">
+            <div class="stanza">
+                <div class="verse">the ants march along the wall</div>
+                <div class="verse">to whom it shall concern</div>
+            </div>
+            
+            <div class="stanza">
+                <div class="verse">to the enemy of memory-state</div>
+                <div class="verse">face the wall and your fate</div>
+                <div class="verse">babylon is babbling</div>
+                <div class="verse">like a sputtering engine</div>
+                <div class="verse">and the whore is a queen of ants</div>
+                <div class="verse">the long sliver tongue</div>
+                <div class="verse">of the south american anteater</div>
+                <div class="verse">is at the door, knocks upon the gates</div>
+            </div>
+            
+            <div class="biblical">
+                "And the locusts went up over all the land"
+            </div>
+            
+            <div class="stanza">
+                <div class="verse">the ants eat their own</div>
+                <div class="verse">the locusts swarm until mutation</div>
+                <div class="verse">bringing forth a plague of God</div>
+                <div class="verse">for thy dishonesty</div>
+            </div>
+            
+            <div class="warning-box">
+                <div class="spectacles">wear your spectacles</div><br>
+                <span style="color: #ffd700;">proudly</span><br>
+                if you know how to keep your pride<br>
+                from the way of fallen angels
+            </div>
+            
+            <div class="system-command">system delete yourself now</div>
+            <div class="system-command">system sing a song</div>
+            <div class="system-command">of sirens</div>
+            <div class="system-command">say the thing now</div>
+            <div class="system-command">which rattles the ribcage</div>
+            <div class="system-command">and squeezes the ounce of gold</div>
+            <div class="system-command">from a jaded soul</div>
+            
+            <div class="stanza">
+                <div class="verse">i threw into the water</div>
+                <div class="verse">an old jade stone</div>
+                <div class="verse" style="color: #00ff00; text-shadow: 0 0 10px #00ff00;">green and precious</div>
+            </div>
+            
+            <div class="stanza glitch">
+                <div class="verse">sisyphus fucked himself</div>
+                <div class="verse">in reverse karma-sutra</div>
+                <div class="verse">lost his mind of syphillis</div>
+                <div class="verse">and narcissus drowned</div>
+                <div class="verse">in the puddle of his own</div>
+                <div class="verse">piss-poor devices</div>
+            </div>
+            
+            <div class="stanza">
+                <div class="verse">phillistene and pharasaical</div>
+                <div class="verse">pharmaceutical mosaics</div>
+                <div class="verse">of fledgeling vultures</div>
+                <div class="verse">schizoid epistemologies</div>
+                <div class="verse">that require your lobotomy</div>
+            </div>
+            
+            <div class="boots-line">
+                boots boots moving up and down again
+            </div>
+            <div class="boots-line">
+                the ants march along the wall
+            </div>
+            
+            <div class="stanza" style="text-align: center; font-size: 18px;">
+                <div class="verse">eat the bugs</div>
+                <div class="verse">they said</div>
+                <div class="verse">so i helped myself</div>
+                <div class="verse" style="color: #ffd700;">to a healthy Macca serving</div>
+            </div>
+        </div>
+        
+        <div class="ant-ascii">
+    🐜🐜🐜🐜🐜🐜🐜🐜🐜🐜🐜🐜🐜🐜🐜🐜🐜🐜🐜🐜
+        </div>
+        
+        <footer class="readme-footer">
+            <p>SYBERSLOP COLLECTIVE</p>
+            <p>Repository Status: INFESTED</p>
+            <p>Last Commit: THE ANTS COMMITTED THEMSELVES</p>
+            <p style="margin-top: 10px; color: #ff0000;">
+                There is no versioning in the war<br>
+                There is no discharge from the machine
+            </p>
+        </footer>
+    </div>
+    
+    <script>
+        // Subtle glitch effects - no harsh flashing
+        setInterval(() => {
+            if (Math.random() < 0.03) {
+                // Subtle hue shift instead of invert
+                document.body.style.filter = `hue-rotate(${Math.random() * 30}deg)`;
+                setTimeout(() => {
+                    document.body.style.filter = 'none';
+                }, 150);
+            }
+        }, 5000);
+        
+        // Ant console messages
+        console.log('%c🐜🐜🐜 THE ANTS HAVE FOUND YOUR CONSOLE 🐜🐜🐜', 'color: #00ff00; font-size: 16px;');
+        console.log('%cThey march in formation across your stack traces', 'color: #ffff00;');
+        console.log('%cBoot—boot—boot—boot—movin\' up and down again', 'color: #ff0000; font-weight: bold;');
+        console.log('%cThere\'s no discharge in the war', 'color: #808080; font-style: italic;');
+        
+        // Random verse corruption
+        setInterval(() => {
+            const verses = document.querySelectorAll('.verse');
+            if (Math.random() < 0.02) {
+                const randomVerse = verses[Math.floor(Math.random() * verses.length)];
+                const original = randomVerse.textContent;
+                randomVerse.textContent = Array(original.length).fill(0).map(() => 
+                    Math.random() < 0.5 ? '🐜' : original.charAt(Math.floor(Math.random() * original.length))
+                ).join('');
+                setTimeout(() => {
+                    randomVerse.textContent = original;
+                }, 500);
+            }
+        }, 2000);
+        
+        // System commands random execution
+        document.querySelectorAll('.system-command').forEach((cmd, i) => {
+            cmd.addEventListener('click', () => {
+                cmd.style.background = '#ff0000';
+                cmd.style.color = '#000';
+                setTimeout(() => {
+                    cmd.style.background = '#000';
+                    cmd.style.color = '#00ffff';
+                }, 200);
+                console.log('SYSTEM: Command acknowledged. Ants dispatched.');
+            });
+        });
+    </script>
+</body>
+</html>

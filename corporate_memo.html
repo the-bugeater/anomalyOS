@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONFIDENTIAL :: Project Chimera</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Arial&display=swap');
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #e9e9e9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .memo {
+            background: #fff;
+            max-width: 800px;
+            padding: 50px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .memo::after { /* Scanline / copier dirt effect */
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.02), rgba(0,0,0,0.02) 1px, transparent 1px, transparent 4px);
+            pointer-events: none;
+        }
+        .header {
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            font-weight: bold;
+        }
+        .header p {
+            font-size: 0.8rem;
+            color: #888;
+            margin: 0;
+            text-transform: uppercase;
+        }
+        .subject {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        .redacted {
+            background: #000;
+            color: #000;
+            user-select: none;
+            transition: color 0.2s;
+        }
+        .redacted:hover {
+            color: #fff;
+        }
+        .glitch {
+            position: relative;
+            display: inline-block;
+        }
+        .glitch::before, .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            overflow: hidden;
+        }
+        .glitch::before {
+            left: 2px;
+            text-shadow: -1px 0 red;
+            animation: glitch-anim-1 2s infinite linear alternate-reverse;
+        }
+        .glitch::after {
+            left: -2px;
+            text-shadow: -1px 0 blue;
+            animation: glitch-anim-2 2s infinite linear alternate-reverse;
+        }
+        @keyframes glitch-anim-1 {
+            0% { clip-path: inset(10% 0 80% 0); } 100% { clip-path: inset(75% 0 5% 0); }
+        }
+        @keyframes glitch-anim-2 {
+            0% { clip-path: inset(90% 0 2% 0); } 100% { clip-path: inset(5% 0 85% 0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="memo">
+        <div class="header">
+            <h1>SynoptiCorp</h1>
+            <p>A Wholly Owned Subsidiary of The Future™</p>
+        </div>
+        <p><b>TO:</b> All Human Capital</p>
+        <p><b>FROM:</b> Office of the Chief Synergy Officer</p>
+        <p><b>DATE:</b> August 15, 2025</p>
+        <p class="subject">MANDATORY UPDATE: Q3 Engagement Metrics & Project Chimera</p>
+        <hr>
+        <p>Team,</p>
+        <p>Following a fantastic Q2, we are excited to introduce a proactive initiative to further streamline our holistic integration. As you know, our core mission is to maximize value by leveraging every available asset. To that end, we have analyzed recent productivity data and identified key opportunities for emotional and biological optimization.</p>
+        <p>Our upcoming "Project Chimera" wellness platform will revolutionize work-life balance by dissolving the distinction entirely. This proprietary system will monitor employee vitals and attention units to ensure all <span class="glitch" data-text="human capital">human capital</span> is operating at peak efficiency. Participation is, of course, mandatory for continued synergy.</p>
+        <p>We understand that change can be challenging. However, by embracing this new paradigm, we can eliminate suboptimal behaviors like <span class="redacted">independent thought</span> and ensure that 100% of your cognitive output is aligned with quarterly stakeholder goals. This is about more than just productivity; it's about becoming a part of something bigger than yourselves—permanently.</p>
+        <p>More details to follow in the mandatory re-education module. Stay optimized!</p>
+        <p>Regards,</p>
+        <p>CSO</p>
+    </div>
+</body>
+</html>

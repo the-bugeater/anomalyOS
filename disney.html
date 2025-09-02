@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP C.R.Y.O. Chamber v2.2</title>
+    <style>
+        :root {
+            --win95-gray: #C0C0C0; --dmt-purple: #8B00FF; --bsod-blue: #0000FF; --win-dark-gray: #808080;
+        }
+        body, html {
+            height: 100%; width: 100%; margin: 0; overflow: hidden;
+            background: var(--win95-gray);
+            font-family: 'MS Sans Serif', sans-serif; font-size: 11px;
+        }
+        .app-container { display: flex; height: 100%; }
+        #ip-list-panel {
+            width: 45%; padding: 5px;
+            border-right: 2px outset var(--win95-gray);
+            display: flex; flex-direction: column;
+        }
+        #ip-list {
+            flex-grow: 1; background: white;
+            border: 2px inset var(--win-dark-gray);
+            padding: 5px; overflow-y: scroll;
+        }
+        .ip-item { cursor: pointer; padding: 3px; }
+        .ip-item.selected { background: #000080; color: white; }
+        #details-panel {
+            flex-grow: 1; padding: 10px;
+        }
+        .details-group {
+            border: 2px groove var(--win95-gray); padding: 10px;
+            margin-bottom: 10px;
+        }
+        .details-group legend { padding: 0 5px; font-weight: bold; }
+        .detail-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .detail-label { color: #555; }
+        .detail-value { font-weight: bold; color: var(--dmt-purple); }
+        .copyright-bar {
+            width: 100%; height: 20px;
+            background: var(--win-dark-gray); border: 2px inset var(--win95-gray);
+            margin-top: 5px;
+        }
+        .copyright-progress {
+            width: 100%; height: 100%; background: var(--dmt-purple);
+            animation: pulse 2s infinite;
+        }
+        .action-button {
+             background: var(--win95-gray); border: 2px outset var(--win95-gray);
+             padding: 10px; font-size: 11px; cursor: pointer; width: 100%;
+             margin-top: 10px;
+        }
+        .action-button:active { border-style: inset; }
+        
+        /* Progress Popup */
+        #progress-popup {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 400px; padding: 20px; text-align: center;
+            background: var(--win95-gray); border: 2px outset var(--win95-gray);
+            z-index: 1000; display: none;
+        }
+        #progress-bar { width: 100%; height: 25px; border: 2px inset var(--win-dark-gray); margin-top: 10px; }
+        #progress-fill { width: 0%; height: 100%; background: var(--bsod-blue); }
+
+        /* --- NEW MODAL STYLES --- */
+        #modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.3); z-index: 1001;
+            display: none;
+        }
+        .custom-popup {
+            position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 350px;
+            background: var(--win95-gray);
+            border: 2px outset var(--win95-gray);
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            z-index: 1002;
+            display: none;
+        }
+        .popup-titlebar {
+            background: linear-gradient(to right, #000080, var(--bsod-blue));
+            color: white; padding: 3px 5px; font-weight: bold;
+        }
+        .popup-content { padding: 20px; text-align: center; }
+        .popup-content p { margin-bottom: 15px; }
+        .popup-content input {
+            width: 80%; margin: 5px 0 15px 0;
+            border: 2px inset var(--win-dark-gray); padding: 3px;
+        }
+        .popup-buttons { display: flex; justify-content: center; gap: 10px; }
+        .win95-button {
+             background: var(--win95-gray); border: 2px outset var(--win95-gray);
+             padding: 5px 12px; font-size: 11px; cursor: pointer;
+        }
+        .win95-button:active { border-style: inset; }
+
+        @keyframes pulse { 50% { filter: brightness(1.5); } }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div id="ip-list-panel">
+            <label style="margin-bottom: 5px;">Cultural Assets (Frozen):</label>
+            <div id="ip-list"></div>
+        </div>
+        <div id="details-panel">
+            <fieldset class="details-group">
+                <legend>Asset Status</legend>
+                <div class="detail-row">
+                    <span class="detail-label">ID:</span>
+                    <span class="detail-value" id="detail-id">--</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Public Domain Status:</span>
+                    <span class="detail-value" id="detail-status" style="color:#FF0000;">--</span>
+                </div>
+                 <div class="detail-row">
+                    <span class="detail-label">Nostalgia Yield:</span>
+                    <span class="detail-value" id="detail-yield">--</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Merchandise Potential:</span>
+                    <span class="detail-value" id="detail-merch">--</span>
+                </div>
+            </fieldset>
+            <fieldset class="details-group">
+                <legend>Copyright Term</legend>
+                <div class="detail-row">
+                    <span class="detail-label">Current Term:</span>
+                    <span class="detail-value" id="detail-term">--</span>
+                </div>
+                <div class="copyright-bar"><div class="copyright-progress"></div></div>
+            </fieldset>
+            <button class="action-button" id="acquire-button">ACQUIRE NEW CULTURAL ASSET</button>
+        </div>
+    </div>
+    
+    <div id="progress-popup">
+        <p id="progress-text">Acquiring new IP...</p>
+        <div id="progress-bar"><div id="progress-fill"></div></div>
+    </div>
+
+    <div id="modal-overlay"></div>
+    <div id="custom-popup" class="custom-popup">
+        <div class="popup-titlebar" id="popup-title"></div>
+        <div class="popup-content">
+            <p id="popup-message"></p>
+            <div id="popup-input-area"></div>
+            <div class="popup-buttons" id="popup-buttons"></div>
+        </div>
+    </div>
+
+    <script>
+        const ipDatabase = [
+            { id: 'FLK-001', name: 'Cinderella (Folktale)', status: 'NEUTRALIZED', yield: '98.7%', merch: 'HIGH', term: 'Perpetuity + 70 Years' },
+            { id: 'AND-1837', name: 'The Little Mermaid (Andersen)', status: 'NEUTRALIZED', yield: '95.2%', merch: 'HIGH', term: 'Perpetuity + 70 Years' },
+            { id: 'PUB-1926', name: 'Winnie the Pooh (A.A. Milne)', status: 'NEUTRALIZED', yield: '99.8%', merch: 'CRITICAL', term: 'Perpetuity + 70 Years' },
+            { id: 'MYTH-000', name: 'Norse Mythology (Public Domain)', status: 'ABSORBED', yield: '88.1%', merch: 'HIGH', term: 'Perpetuity + 70 Years' },
+            { id: 'EPIC-8BC', name: 'The Iliad (Homer)', status: 'ABSORBED', yield: '45.0%', merch: 'MODERATE', term: 'Perpetuity + 70 Years' },
+        ];
+
+        const ipList = document.getElementById('ip-list');
+        const acquireButton = document.getElementById('acquire-button');
+
+        function renderIPList() {
+            ipList.innerHTML = '';
+            ipDatabase.forEach((ip, index) => {
+                const item = document.createElement('div');
+                item.className = 'ip-item';
+                item.textContent = ip.name;
+                item.dataset.index = index;
+                item.onclick = () => {
+                    document.querySelectorAll('.ip-item.selected').forEach(el => el.classList.remove('selected'));
+                    item.classList.add('selected');
+                    displayIPDetails(ip);
+                };
+                ipList.appendChild(item);
+            });
+        }
+        
+        function displayIPDetails(ip) {
+            document.getElementById('detail-id').textContent = ip.id;
+            document.getElementById('detail-status').textContent = ip.status;
+            document.getElementById('detail-yield').textContent = ip.yield;
+            document.getElementById('detail-merch').textContent = ip.merch;
+            document.getElementById('detail-term').textContent = ip.term;
+        }
+
+        // --- NEW CUSTOM MODAL SYSTEM ---
+        const overlay = document.getElementById('modal-overlay');
+        const popup = document.getElementById('custom-popup');
+        const popupTitle = document.getElementById('popup-title');
+        const popupMessage = document.getElementById('popup-message');
+        const popupInputArea = document.getElementById('popup-input-area');
+        const popupButtons = document.getElementById('popup-buttons');
+
+        function showModal({ title, message, type = 'alert', onOk, onCancel }) {
+            popupTitle.textContent = title;
+            popupMessage.innerHTML = message.replace(/\n/g, '<br>');
+            
+            popupInputArea.innerHTML = '';
+            popupButtons.innerHTML = '';
+
+            if (type === 'prompt') {
+                popupInputArea.innerHTML = `<input type="text" id="modal-input">`;
+            }
+
+            const okButton = document.createElement('button');
+            okButton.className = 'win95-button';
+            okButton.textContent = 'OK';
+            okButton.onclick = () => {
+                let value = true;
+                if (type === 'prompt') {
+                    value = document.getElementById('modal-input').value;
+                }
+                closeModal();
+                if (onOk) onOk(value);
+            };
+            popupButtons.appendChild(okButton);
+
+            if (type === 'prompt') {
+                const cancelButton = document.createElement('button');
+                cancelButton.className = 'win95-button';
+                cancelButton.textContent = 'Cancel';
+                cancelButton.onclick = () => {
+                    closeModal();
+                    if (onCancel) onCancel();
+                };
+                popupButtons.appendChild(cancelButton);
+            }
+
+            overlay.style.display = 'block';
+            popup.style.display = 'block';
+            if (type === 'prompt') document.getElementById('modal-input').focus();
+        }
+
+        function closeModal() {
+            overlay.style.display = 'none';
+            popup.style.display = 'none';
+        }
+
+        // --- REFACTORED ACQUIRE BUTTON LOGIC ---
+        acquireButton.addEventListener('click', () => {
+            showModal({
+                title: 'Acquire New Asset',
+                message: "Enter new cultural asset to acquire (e.g., 'The Epic of Gilgamesh', 'Your Childhood Memories'):",
+                type: 'prompt',
+                onOk: (assetName) => {
+                    if (!assetName || assetName.trim() === '') return;
+                    
+                    const progressPopup = document.getElementById('progress-popup');
+                    const progressText = document.getElementById('progress-text');
+                    const progressFill = document.getElementById('progress-fill');
+                    
+                    progressPopup.style.display = 'block';
+                    progressFill.style.width = '0%';
+                    
+                    const steps = [
+                        { text: "Absorbing cultural resonance...", width: '25%' },
+                        { text: "Sanitizing problematic elements...", width: '50%' },
+                        { text: "Generating merchandise mockups...", width: '75%' },
+                        { text: "Filing for copyright extension...", width: '100%' }
+                    ];
+                    
+                    let currentStep = 0;
+                    const interval = setInterval(() => {
+                        if (currentStep >= steps.length) {
+                            clearInterval(interval);
+                            
+                            const newId = `USR-${Math.floor(Math.random()*900)+100}`;
+                            ipDatabase.push({
+                                id: newId, name: assetName, status: 'ACQUIRED', yield: 'TBD', merch: 'TBD', term: 'Perpetuity + 70 Years'
+                            });
+                            renderIPList();
+                            progressPopup.style.display = 'none';
+
+                            showModal({
+                                title: 'Success',
+                                message: `Asset "${assetName}" has been acquired and cryo-frozen.\nThe public domain has been notified of its redundancy.\n\nThank you for your contribution to the Spectacle.`
+                            });
+                            return;
+                        }
+                        progressText.textContent = steps[currentStep].text;
+                        progressFill.style.width = steps[currentStep].width;
+                        currentStep++;
+                    }, 800);
+                }
+            });
+        });
+
+        // Initial Load
+        renderIPList();
+        if (ipDatabase.length > 0) {
+            displayIPDetails(ipDatabase[0]);
+            ipList.children[0].classList.add('selected');
+        }
+    </script>
+</body>
+</html>

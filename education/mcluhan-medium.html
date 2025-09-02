@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEDIUM.EXE - [THE MESSAGE IS THE MEDIUM]</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+        
+        :root {
+            --tv-blue: #0066FF;
+            --static-gray: #C0C0C0;
+            --electric-green: #00FF41;
+            --hot-red: #FF0000;
+            --cool-cyan: #00FFFF;
+            --retro-amber: #FFBF00;
+            --void-black: #000000;
+            --tube-white: #FFFFFF;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Times New Roman', serif;
+            background: linear-gradient(45deg, var(--void-black), #001a33, #330066);
+            color: var(--electric-green);
+            overflow-x: hidden;
+            cursor: crosshair;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        .transmission-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 32px;
+            background: repeating-linear-gradient(
+                45deg,
+                var(--tv-blue),
+                var(--tv-blue) 25px,
+                var(--static-gray) 25px,
+                var(--static-gray) 50px
+            );
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: var(--void-black);
+            animation: transmissionPulse 1.8s infinite;
+        }
+        
+        @keyframes transmissionPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.85; }
+        }
+        
+        .main-content {
+            margin-top: 32px;
+            padding: 20px;
+        }
+        
+        .tv-window {
+            background: var(--static-gray);
+            border: 2px outset var(--static-gray);
+            margin: 20px 0;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        
+        .tv-window::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0,0,0,0.03) 2px,
+                    rgba(0,0,0,0.03) 4px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .window-titlebar {
+            background: linear-gradient(to right, var(--tv-blue), #003399);
+            color: white;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .window-buttons {
+            display: flex;
+            gap: 2px;
+        }
+        
+        .window-btn {
+            background: var(--static-gray);
+            border: 1px outset var(--static-gray);
+            width: 16px;
+            height: 14px;
+            font-size: 9px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .window-content {
+            padding: 20px;
+            color: black;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .mcluhan-title {
+            font-size: 3.8rem;
+            font-weight: bold;
+            color: var(--tv-blue);
+            text-transform: uppercase;
+            text-align: center;
+            position: relative;
+            animation: mediaGlitch 2.2s infinite;
+            text-shadow: 3px 3px 0 var(--void-black), -3px -3px 0 var(--hot-red);
+            margin: 30px 0;
+            filter: contrast(1.2);
+        }
+        
+        .mcluhan-title::before,
+        .mcluhan-title::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .mcluhan-title::before {
+            color: var(--hot-red);
+            animation: hotMedium 0.7s infinite;
+            clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+        }
+        
+        .mcluhan-title::after {
+            color: var(--cool-cyan);
+            animation: coolMedium 1.1s infinite;
+            clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+        }
+        
+        @keyframes mediaGlitch {
+            0%, 100% { transform: translate(0); }
+            12% { transform: translate(-2px, 1px); }
+            24% { transform: translate(2px, -1px); }
+            36% { transform: translate(-1px, -2px); }
+            48% { transform: translate(1px, 2px); }
+            60% { transform: translate(-3px, 0); }
+            72% { transform: translate(3px, 0); }
+            84% { transform: translate(0, -3px); }
+            96% { transform: translate(0, 3px); }
+        }
+        
+        @keyframes hotMedium {
+            0%, 100% { transform: translate(0); filter: hue-rotate(0deg); }
+            50% { transform: translate(-3px, -2px); filter: hue-rotate(15deg); }
+        }
+        
+        @keyframes coolMedium {
+            0%, 100% { transform: translate(0); }
+            33% { transform: translate(2px, 2px); }
+            66% { transform: translate(-2px, 2px); }
+        }
+        
+        .media-terminal {
+            background: var(--void-black);
+            border: 2px inset var(--static-gray);
+            margin: 20px 0;
+            font-family: 'Courier Prime', monospace;
+            box-shadow: inset 1px 1px 3px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        
+        .terminal-header {
+            background: var(--static-gray);
+            color: black;
+            padding: 5px 10px;
+            font-size: 12px;
+            border-bottom: 1px solid #808080;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .terminal-content {
+            padding: 15px;
+            color: var(--electric-green);
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        
+        .dos-prompt {
+            color: var(--electric-green);
+        }
+        
+        .media-text {
+            color: var(--tv-blue);
+            animation: mediumFlicker 2.5s infinite;
+        }
+        
+        @keyframes mediumFlicker {
+            0%, 70%, 100% { opacity: 1; }
+            35% { opacity: 0.8; }
+        }
+        
+        .extensions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .extension-folder {
+            background: var(--static-gray);
+            border: 2px outset var(--static-gray);
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            color: black;
+        }
+        
+        .extension-folder::before {
+            content: "📺";
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        
+        .extension-folder::after {
+            content: "EXTEND";
+            position: absolute;
+            top: -8px;
+            right: -15px;
+            background: var(--tv-blue);
+            color: white;
+            padding: 2px 12px;
+            transform: rotate(8deg);
+            font-size: 8px;
+            font-weight: bold;
+        }
+        
+        .extension-folder:hover {
+            background: #b0b0b0;
+            border: 2px inset var(--static-gray);
+            transform: rotate(-0.8deg);
+        }
+        
+        .tv-screen {
+            position: fixed;
+            top: 60px;
+            right: 30px;
+            width: 100px;
+            height: 80px;
+            background: radial-gradient(ellipse, var(--retro-amber), var(--void-black));
+            border: 4px solid var(--static-gray);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            animation: tvFlicker 3s infinite;
+            z-index: 500;
+            box-shadow: 0 0 25px var(--retro-amber);
+        }
+        
+        @keyframes tvFlicker {
+            0%, 98%, 100% { opacity: 1; }
+            1%, 3%, 99% { opacity: 0.8; }
+            2% { opacity: 0.2; }
+        }
+        
+        .transmission-counter {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--tv-blue);
+            color: white;
+            padding: 12px;
+            border: 2px solid var(--tube-white);
+            text-align: center;
+            font-family: 'Courier Prime', monospace;
+            font-size: 10px;
+            animation: transmissionPulse 2s infinite;
+        }
+        
+        .tetrad-window {
+            background: var(--tube-white);
+            border: 2px inset var(--static-gray);
+            margin: 30px 0;
+            color: black;
+            position: relative;
+        }
+        
+        .tetrad-header {
+            background: var(--static-gray);
+            border-bottom: 1px solid #808080;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .tetrad-content {
+            padding: 20px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        
+        .global-village {
+            background: rgba(0, 102, 255, 0.1);
+            border: 2px dashed var(--tv-blue);
+            padding: 25px;
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .village-label {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: var(--void-black);
+            color: var(--tv-blue);
+            padding: 0 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .media-log {
+            height: 220px;
+            overflow-y: scroll;
+            background: var(--void-black);
+            border: 2px inset var(--static-gray);
+            padding: 15px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 11px;
+            color: var(--electric-green);
+            margin: 20px 0;
+        }
+        
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(0, 255, 65, 0.3);
+        }
+        
+        .timestamp {
+            color: var(--tv-blue);
+            font-size: 10px;
+        }
+        
+        .medium-button {
+            background: var(--tv-blue);
+            color: white;
+            border: 2px outset var(--tv-blue);
+            padding: 10px 20px;
+            font-family: 'Courier Prime', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            margin: 10px;
+            transition: all 0.2s ease;
+        }
+        
+        .medium-button:hover {
+            background: #0052cc;
+            transform: scale(1.02);
+        }
+        
+        .medium-button:active {
+            border: 2px inset var(--tv-blue);
+        }
+        
+        .ascii-tv {
+            font-family: 'Courier Prime', monospace;
+            font-size: 8px;
+            line-height: 1;
+            color: var(--tv-blue);
+            text-align: center;
+            padding: 20px;
+            background: var(--void-black);
+            border: 2px solid var(--electric-green);
+            margin: 20px 0;
+        }
+        
+        .media-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--static-gray);
+            border: 2px outset var(--static-gray);
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+            z-index: 9999;
+            display: none;
+            min-width: 450px;
+        }
+        
+        .popup-header {
+            background: linear-gradient(to right, var(--tv-blue), #003399);
+            color: white;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .popup-content {
+            padding: 25px;
+            text-align: center;
+            color: black;
+        }
+        
+        .statusbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--static-gray);
+            border-top: 1px solid #808080;
+            padding: 5px 10px;
+            font-size: 11px;
+            color: black;
+            display: flex;
+            justify-content: space-between;
+            z-index: 1000;
+        }
+        
+        .start-button {
+            background: var(--static-gray);
+            border: 2px outset var(--static-gray);
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .start-button::before {
+            content: "📺 ";
+        }
+        
+        .win95-button {
+            background: var(--static-gray);
+            border: 2px outset var(--static-gray);
+            padding: 8px 16px;
+            font-size: 11px;
+            cursor: pointer;
+            margin: 5px;
+            color: black;
+        }
+        
+        .win95-button:active {
+            border: 2px inset var(--static-gray);
+        }
+        
+        .static-noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: 
+                radial-gradient(circle, transparent 1px, rgba(255,255,255,0.05) 1px),
+                radial-gradient(circle, transparent 1px, rgba(0,0,0,0.05) 1px);
+            background-size: 3px 3px, 7px 7px;
+            animation: staticShift 0.1s infinite;
+            pointer-events: none;
+            z-index: 10;
+            opacity: 0.1;
+        }
+        
+        @keyframes staticShift {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(-1px, 1px); }
+            50% { transform: translate(1px, -1px); }
+            75% { transform: translate(-1px, -1px); }
+            100% { transform: translate(1px, 1px); }
+        }
+        
+        .tetrad-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+            height: 300px;
+        }
+        
+        .tetrad-quadrant {
+            background: rgba(0, 102, 255, 0.05);
+            border: 1px solid var(--tv-blue);
+            padding: 15px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tetrad-quadrant:hover {
+            background: rgba(0, 102, 255, 0.15);
+            transform: scale(1.02);
+        }
+        
+        .quadrant-title {
+            font-weight: bold;
+            color: var(--tv-blue);
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .quadrant-content {
+            font-size: 11px;
+            color: #333;
+        }
+        
+        .retro-scan-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0,102,255,0.02) 2px,
+                rgba(0,102,255,0.02) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .tribal-drumbeat {
+            position: fixed;
+            top: 50%;
+            left: 50px;
+            font-size: 48px;
+            animation: drumbeat 2s infinite;
+            cursor: pointer;
+            z-index: 600;
+        }
+        
+        @keyframes drumbeat {
+            0%, 80%, 100% { transform: scale(1); opacity: 0.8; }
+            10% { transform: scale(1.2); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="transmission-bar">
+        📡 TRANSMISSION ACTIVE - THE MEDIUM IS THE MESSAGE - GLOBAL VILLAGE ONLINE 📡
+    </div>
+    
+    <div class="static-noise"></div>
+    
+    <div class="tv-screen" onclick="activateMedia()">📺</div>
+    
+    <div class="tribal-drumbeat" onclick="retribalizeSystem()">🥁</div>
+    
+    <div class="transmission-counter">
+        <div>MEDIA</div>
+        <div>EXTENSIONS:</div>
+        <div id="extensionCounter" style="font-size: 14px; color: var(--retro-amber);">0</div>
+    </div>
+
+    <div class="main-content">
+        <div class="media-terminal">
+            <div class="terminal-header">
+                MEDIUM.EXE - [MCLUHAN MEDIA PROTOCOLS ACTIVE]
+                <span>EXTEND.BAT</span>
+            </div>
+            <div class="terminal-content">
+                <div class="mcluhan-title" data-text="MEDIA LAB">MEDIA LAB</div>
+                <div style="text-align: center; margin: 20px 0; font-style: italic;">
+                    "THE MEDIUM IS THE MESSAGE"
+                </div>
+                
+                <div class="dos-prompt">C:\VILLAGE\GLOBAL&gt;</div>
+                <div class="media-text">Loading media ecology protocols...</div>
+                <div class="dos-prompt">C:\VILLAGE\GLOBAL&gt; run mcluhan.exe</div>
+                <div>Initializing extensions of man...</div>
+                <div>Marshall McLuhan would be <span style="color: var(--hot-red);">RETRIEVING</span></div>
+                <div class="dos-prompt">C:\VILLAGE\GLOBAL&gt; _</div>
+            </div>
+        </div>
+
+        <div class="global-village">
+            <div class="village-label">GLOBAL VILLAGE INTERFACE</div>
+            <h3 style="color: var(--tv-blue); margin-bottom: 20px; text-align: center;">
+                "WE LIVE MYTHICALLY BUT THINK FRAGMENTARILY"
+            </h3>
+            <p style="color: var(--electric-green); text-align: center; font-family: 'Courier Prime', monospace;">
+                The electronic age retribalizes humanity.<br>
+                All media are extensions of the human nervous system.<br>
+                <span style="color: var(--hot-red); font-weight: bold;">The global village is both utopia and dystopia.</span>
+            </p>
+        </div>
+
+        <div class="extensions-grid">
+            <div class="extension-folder" onclick="activateExtension(this)">
+                <strong>WHEEL_EXTENSION.EXE</strong><br>
+                <small>Extends foot - accelerates transportation</small>
+            </div>
+            
+            <div class="extension-folder" onclick="activateExtension(this)">
+                <strong>ALPHABET_LITERACY.BAT</strong><br>
+                <small>Extends eye - fragments tribal consciousness</small>
+            </div>
+            
+            <div class="extension-folder" onclick="activateExtension(this)">
+                <strong>PRINT_GUTENBERG.SYS</strong><br>
+                <small>Extends eye - creates nationalism</small>
+            </div>
+            
+            <div class="extension-folder" onclick="activateExtension(this)">
+                <strong>TELEGRAPH_INSTANT.COM</strong><br>
+                <small>Extends nervous system - global village begins</small>
+            </div>
+            
+            <div class="extension-folder" onclick="activateExtension(this)">
+                <strong>TELEVISION_COOL.DLL</strong><br>
+                <small>Extends touch - retribalization starts</small>
+            </div>
+            
+            <div class="extension-folder" onclick="activateExtension(this)">
+                <strong>COMPUTER_NEURAL.NET</strong><br>
+                <small>Extends consciousness - humanity obsolete?</small>
+            </div>
+        </div>
+
+        <div class="tetrad-window">
+            <div class="tetrad-header">
+                🔄 TETRAD_ANALYSIS.TXT - Media Lab Interface
+            </div>
+            <div class="tetrad-content">
+                <div style="font-weight: bold; margin-bottom: 15px; color: var(--tv-blue);">
+                    MCLUHAN'S TETRAD: THE LAWS OF MEDIA
+                </div>
+                
+                <div class="tetrad-grid">
+                    <div class="tetrad-quadrant" onclick="exploreQuadrant('enhance')">
+                        <div class="quadrant-title">ENHANCE</div>
+                        <div class="quadrant-content">
+                            What does the medium<br>
+                            enhance or intensify?<br><br>
+                            <em>Digital media enhances<br>
+                            global connectivity</em>
+                        </div>
+                    </div>
+                    
+                    <div class="tetrad-quadrant" onclick="exploreQuadrant('obsolesce')">
+                        <div class="quadrant-title">OBSOLESCE</div>
+                        <div class="quadrant-content">
+                            What does the medium<br>
+                            make obsolete?<br><br>
+                            <em>Digital media obsolesces<br>
+                            physical distance</em>
+                        </div>
+                    </div>
+                    
+                    <div class="tetrad-quadrant" onclick="exploreQuadrant('retrieve')">
+                        <div class="quadrant-title">RETRIEVE</div>
+                        <div class="quadrant-content">
+                            What does the medium<br>
+                            retrieve from the past?<br><br>
+                            <em>Digital media retrieves<br>
+                            tribal patterns</em>
+                        </div>
+                    </div>
+                    
+                    <div class="tetrad-quadrant" onclick="exploreQuadrant('reverse')">
+                        <div class="quadrant-title">REVERSE</div>
+                        <div class="quadrant-content">
+                            What does the medium<br>
+                            reverse into when pushed?<br><br>
+                            <em>Digital media reverses<br>
+                            into total surveillance</em>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; font-size: 11px; color: #666;">
+                    "Every extension is also an amputation"<br>
+                    Click each quadrant to explore media effects in depth.
+                </div>
+            </div>
+        </div>
+
+        <div class="ascii-tv">
+            <pre>
+    ███╗░░░███╗███████╗██████╗░██╗██╗░░░██╗███╗░░░███╗
+    ████╗░████║██╔════╝██╔══██╗██║██║░░░██║████╗░████║
+    ██╔████╔██║█████╗░░██║░░██║██║██║░░░██║██╔████╔██║
+    ██║╚██╔╝██║██╔══╝░░██║░░██║██║██║░░░██║██║╚██╔╝██║
+    ██║░╚═╝░██║███████╗██████╔╝██║╚██████╔╝██║░╚═╝░██║
+    ╚═╝░░░░░╚═╝╚══════╝╚═════╝░╚═╝░╚═════╝░╚═╝░░░░░╚═╝
+            </pre>
+            <div style="margin-top: 15px; font-size: 10px; color: var(--electric-green);">
+                [LOADING GLOBAL VILLAGE... RETRIBALIZING HUMANITY...]
+            </div>
+        </div>
+
+        <div class="media-log">
+            <div class="log-entry">
+                <div class="timestamp">[16:47:23]</div>
+                Hot medium detected - linear consciousness fragmenting
+            </div>
+            <div class="log-entry">
+                <div class="timestamp">[16:45:11]</div>
+                Cool medium activated - tribal patterns emerging
+            </div>
+            <div class="log-entry">
+                <div class="timestamp">[16:43:44]</div>
+                Global village expansion - 94% connectivity achieved
+            </div>
+            <div class="log-entry">
+                <div class="timestamp">[16:41:22]</div>
+                Extension of nervous system - human obsolescence 23%
+            </div>
+            <div class="log-entry">
+                <div class="timestamp">[16:39:18]</div>
+                Gutenberg galaxy collapsed - post-literate age begins
+            </div>
+            <div class="log-entry">
+                <div class="timestamp">[16:37:33]</div>
+                Acoustic space retrieved - visual space fragmenting
+            </div>
+            <div class="log-entry">
+                <div class="timestamp">[16:35:55]</div>
+                Medium/message ratio achieving critical resonance
+            </div>
+        </div>
+
+        <div style="background: rgba(255, 191, 0, 0.1); border: 2px solid var(--retro-amber); padding: 20px; margin: 20px 0;">
+            <h3 style="color: var(--retro-amber); text-align: center; margin-bottom: 15px;">
+                THE MECHANICAL BRIDE MEETS THE ELECTRONIC AGE
+            </h3>
+            <p style="font-family: 'Courier Prime', monospace; font-size: 12px; line-height: 1.6; text-align: center;">
+                "We shape our tools, and thereafter they shape us."<br><br>
+                
+                The computer extends consciousness itself.<br>
+                The internet retrieves the tribal encyclopedia.<br>
+                Social media obsolesces privacy.<br>
+                When pushed to extremes, connection reverses into isolation.<br><br>
+                
+                <span style="color: var(--hot-red); font-weight: bold;">
+                We are the first generation to live simultaneously<br>
+                in both the mechanical and electronic ages.
+                </span>
+            </p>
+        </div>
+
+        <div style="text-align: center; margin: 40px 0;">
+            <button class="medium-button" onclick="activateGlobalVillage()">ACTIVATE GLOBAL VILLAGE</button>
+            <button class="medium-button" onclick="retribalizeSystem()">RETRIBALIZE SYSTEM</button>
+            <button class="medium-button" onclick="showMedia()">EXTEND CONSCIOUSNESS</button>
+            <br><br>
+            <div style="font-size: 64px; cursor: pointer; animation: tvFlicker 2s infinite;" onclick="totalRetrieval()">📡</div>
+            <br>
+            <p style="font-size: 10px; color: var(--retro-amber); font-family: 'Courier Prime', monospace;">
+                The tribal drum in the global village - click to retrieve
+            </p>
+        </div>
+    </div>
+
+    <div class="media-popup" id="mediaPopup">
+        <div class="popup-header">
+            Media Lab Alert - Extension Detected
+            <div style="cursor: pointer;" onclick="hideMedia()">×</div>
+        </div>
+        <div class="popup-content">
+            <div style="font-size: 32px; margin-bottom: 15px;">📺🧠📺</div>
+            <div style="margin-bottom: 15px;">
+                <strong>MEDIA EXTENSION ACTIVATED</strong>
+            </div>
+            <div style="margin-bottom: 20px;">
+                The McLuhan Media Lab has successfully extended<br>
+                human consciousness through module NERVOUS_SYSTEM.DLL<br><br>
+                
+                The global village is now fully operational.<br>
+                All media are functioning as extensions of man.<br>
+                The medium has become the message.
+            </div>
+            <div>
+                <button class="win95-button" onclick="hideMedia()">Accept Extension</button>
+                <button class="win95-button" onclick="hideMedia()">Embrace Medium</button>
+                <button class="win95-button" onclick="hideMedia()">Join Village</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="statusbar">
+        <div>
+            <span class="start-button" onclick="showMedia()">Transmit</span>
+            <span style="margin-left: 20px;">Ready - Global village active</span>
+        </div>
+        <div>
+            <span>Medium: MESSAGE</span>
+            <span style="margin-left: 20px;">Village: GLOBAL</span>
+            <span style="margin-left: 20px;" id="mediaClock">ERROR</span>
+        </div>
+    </div>
+
+    <script>
+        let extensionCount = 0;
+        
+        function updateClock() {
+            const now = new Date();
+            const time = now.toLocaleTimeString();
+            document.getElementById('mediaClock').textContent = 
+                Math.random() < 0.1 ? 'TRIBAL' : time;
+        }
+        
+        function showMedia() {
+            document.getElementById('mediaPopup').style.display = 'block';
+        }
+        
+        function hideMedia() {
+            document.getElementById('mediaPopup').style.display = 'none';
+        }
+        
+        function activateExtension(folder) {
+            folder.style.background = '#b0b0b0';
+            folder.style.border = '2px inset var(--static-gray)';
+            folder.style.transform = 'rotate(-1.2deg)';
+            
+            extensionCount++;
+            document.getElementById('extensionCounter').textContent = extensionCount;
+            
+            // TV static effect
+            document.body.style.filter = 'contrast(1.5) brightness(1.2)';
+            setTimeout(() => {
+                document.body.style.filter = '';
+                folder.style.background = 'var(--static-gray)';
+                folder.style.border = '2px outset var(--static-gray)';
+                folder.style.transform = '';
+            }, 250);
+            
+            // McLuhan quotes
+            const quotes = [
+                "The medium is the message.",
+                "We shape our tools, and thereafter they shape us.",
+                "The global village is both utopia and dystopia.",
+                "Every extension is also an amputation.",
+                "We live mythically but think fragmentarily."
+            ];
+            
+            console.log(`%c${quotes[Math.floor(Math.random() * quotes.length)]}`, 
+                       'color: #0066FF; font-family: Courier; font-size: 12px; font-style: italic;');
+        }
+        
+        function activateMedia() {
+            // TV transmission effect
+            const flash = document.createElement('div');
+            flash.style.position = 'fixed';
+            flash.style.top = '0';
+            flash.style.left = '0';
+            flash.style.width = '100vw';
+            flash.style.height = '100vh';
+            flash.style.background = 'var(--tv-blue)';
+            flash.style.opacity = '0.6';
+            flash.style.zIndex = '9998';
+            flash.style.pointerEvents = 'none';
+            document.body.appendChild(flash);
+            
+            setTimeout(() => {
+                document.body.removeChild(flash);
+                extensionCount += 2;
+                document.getElementById('extensionCounter').textContent = extensionCount;
+            }, 150);
+            
+            console.log('%c📺 MEDIA TRANSMISSION ACTIVATED 📺', 'color: #0066FF; font-size: 16px; font-family: Courier; font-weight: bold;');
+        }
+        
+        function activateGlobalVillage() {
+            // Global village wave effect
+            document.body.style.animation = 'mediaGlitch 0.3s infinite';
+            document.body.style.filter = 'hue-rotate(180deg)';
+            
+            setTimeout(() => {
+                document.body.style.animation = '';
+                document.body.style.filter = '';
+                showMedia();
+            }, 1200);
+            
+            console.log('%cGLOBAL VILLAGE ACTIVATED - HUMANITY RETRIBALIZING', 'color: #00FFFF; font-size: 14px; font-family: Courier; font-weight: bold;');
+        }
+        
+        function retribalizeSystem() {
+            // Tribal drumbeat effect
+            document.body.style.background = 'var(--retro-amber)';
+            document.body.style.animation = 'drumbeat 0.5s infinite';
+            
+            setTimeout(() => {
+                document.body.style.background = 'linear-gradient(45deg, var(--void-black), #001a33, #330066)';
+                document.body.style.animation = '';
+                extensionCount += 4;
+                document.getElementById('extensionCounter').textContent = extensionCount;
+            }, 800);
+            
+            console.log('%c🥁 RETRIBALIZATION COMPLETE - ACOUSTIC SPACE RESTORED 🥁', 'color: #FFBF00; font-size: 16px; font-family: Courier; font-weight: bold;');
+        }
+        
+        function totalRetrieval() {
+            // Total media extension effect
+            document.body.style.filter = 'invert(1) saturate(2) hue-rotate(90deg)';
+            document.body.style.animation = 'mediaGlitch 0.05s infinite';
+            
+            setTimeout(() => {
+                document.body.style.filter = '';
+                document.body.style.animation = '';
+                extensionCount += 8;
+                document.getElementById('extensionCounter').textContent = extensionCount;
+                showMedia();
+            }, 1000);
+            
+            console.log('%c📡 TOTAL RETRIEVAL ACHIEVED - CONSCIOUSNESS EXTENDED 📡', 'color: #FF0000; font-size: 18px; font-family: Courier; font-weight: bold;');
+        }
+        
+        function exploreQuadrant(type) {
+            const messages = {
+                enhance: "Digital media ENHANCES global connectivity and instant communication",
+                obsolesce: "Digital media OBSOLESCES physical distance and linear time",
+                retrieve: "Digital media RETRIEVES tribal patterns and acoustic space",
+                reverse: "Digital media REVERSES into total surveillance and isolation"
+            };
+            
+            console.log(`%c${messages[type]}`, 'color: #0066FF; font-family: Courier; font-size: 12px;');
+            
+            // Visual feedback
+            event.target.style.background = 'rgba(0, 102, 255, 0.3)';
+            setTimeout(() => {
+                event.target.style.background = 'rgba(0, 102, 255, 0.05)';
+            }, 500);
+        }
+        
+        // Update clock
+        setInterval(updateClock, 1000);
+        updateClock();
+        
+        // Random media extensions
+        setInterval(() => {
+            if (Math.random() < 0.03) {
+                extensionCount++;
+                document.getElementById('extensionCounter').textContent = extensionCount;
+            }
+        }, 4000);
+        
+        // Console welcome
+        console.log('%cMcLuhan Media Lab loaded successfully', 'color: #0066FF; font-family: Courier; font-size: 14px; font-weight: bold;');
+        console.log('%c"The medium is the message" - Marshall McLuhan', 'color: #00FF41; font-family: Courier; font-size: 12px;');
+        console.log('%cWelcome to the Global Village', 'color: #FFBF00; font-family: Courier; font-size: 12px;');
+        console.log('%cAll media are extensions of man.', 'color: #00FFFF; font-family: Courier; font-size: 10px;');
+        
+        // Random title changes
+        const titles = [
+            'MEDIUM.EXE - [THE MESSAGE IS THE MEDIUM]',
+            'MCLUHAN.BAT - [EXTENDING CONSCIOUSNESS]',
+            'VILLAGE.SYS - [GLOBAL RETRIBALIZING]',
+            'TETRAD.DLL - [MEDIA LAWS ACTIVE]',
+            'EXTEND.COM - [NERVOUS SYSTEM ONLINE]'
+        ];
+        
+        setInterval(() => {
+            if (Math.random() < 0.07) {
+                document.title = titles[Math.floor(Math.random() * titles.length)];
+                setTimeout(() => {
+                    document.title = 'MEDIUM.EXE - [THE MESSAGE IS THE MEDIUM]';
+                }, 4500);
+            }
+        }, 16000);
+        
+        // Random media transmissions
+        setInterval(() => {
+            if (Math.random() < 0.02) {
+                showMedia();
+            }
+        }, 22000);
+        
+        // Subtle TV static effect
+        setInterval(() => {
+            if (Math.random() < 0.1) {
+                document.querySelector('.static-noise').style.opacity = Math.random() * 0.15 + 0.05;
+                setTimeout(() => {
+                    document.querySelector('.static-noise').style.opacity = '0.1';
+                }, 100);
+            }
+        }, 500);
+    </script>
+</body>
+</html>

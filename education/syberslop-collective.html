@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SyberSlop Collective | C³ Hypermedia</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap');
+        
+        :root {
+            --dmt-purple: #8B00FF;
+            --bsod-blue: #0000FF;
+            --crt-green: #00FF41;
+            --glitch-pink: #FF00FF;
+            --decay-yellow: #FFFF00;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Times New Roman', serif;
+            background: linear-gradient(45deg, #000, #1a0033);
+            color: var(--crt-green);
+            overflow-x: hidden;
+            cursor: crosshair;
+        }
+        
+        .glitch-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .glitch-text {
+            position: relative;
+            color: var(--dmt-purple);
+            font-size: 3rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            animation: glitch 2s infinite;
+        }
+        
+        .glitch-text::before,
+        .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .glitch-text::before {
+            color: var(--bsod-blue);
+            animation: glitch-1 0.3s infinite;
+            clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+        }
+        
+        .glitch-text::after {
+            color: var(--glitch-pink);
+            animation: glitch-2 0.3s infinite;
+            clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+        }
+        
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+        }
+        
+        @keyframes glitch-1 {
+            0%, 100% { transform: translate(0); }
+            50% { transform: translate(-3px, -3px); }
+        }
+        
+        @keyframes glitch-2 {
+            0%, 100% { transform: translate(0); }
+            50% { transform: translate(3px, 3px); }
+        }
+        
+        .bouncing-logo {
+            position: fixed;
+            width: 120px;
+            height: 60px;
+            background: var(--dmt-purple);
+            border: 2px solid var(--crt-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Courier Prime', monospace;
+            font-size: 10px;
+            font-weight: bold;
+            color: white;
+            z-index: 1000;
+            animation: bounce 4s linear infinite;
+            box-shadow: 0 0 20px var(--dmt-purple);
+        }
+        
+        @keyframes bounce {
+            0% { left: 0px; top: 0px; }
+            25% { left: calc(100vw - 120px); top: 0px; }
+            50% { left: calc(100vw - 120px); top: calc(100vh - 60px); }
+            75% { left: 0px; top: calc(100vh - 60px); }
+            100% { left: 0px; top: 0px; }
+        }
+        
+        .terminal-window {
+            background: #000;
+            border: 2px solid var(--crt-green);
+            margin: 20px;
+            padding: 20px;
+            font-family: 'Courier Prime', monospace;
+            box-shadow: 0 0 30px var(--crt-green);
+        }
+        
+        .terminal-header {
+            background: var(--bsod-blue);
+            color: white;
+            padding: 5px 10px;
+            margin: -20px -20px 20px -20px;
+            font-size: 12px;
+        }
+        
+        .loading-text {
+            color: var(--crt-green);
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0%, 33% { opacity: 1; }
+            34%, 66% { opacity: 0.5; }
+            67%, 100% { opacity: 1; }
+        }
+        
+        .corrupted-link {
+            color: var(--decay-yellow);
+            text-decoration: none;
+            position: relative;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .corrupted-link:hover {
+            animation: corrupt 0.5s infinite;
+        }
+        
+        @keyframes corrupt {
+            0% { transform: translate(0); filter: hue-rotate(0deg); }
+            25% { transform: translate(-1px, 1px); filter: hue-rotate(90deg); }
+            50% { transform: translate(1px, -1px); filter: hue-rotate(180deg); }
+            75% { transform: translate(-1px, -1px); filter: hue-rotate(270deg); }
+            100% { transform: translate(0); filter: hue-rotate(360deg); }
+        }
+        
+        .manifesto {
+            text-align: center;
+            padding: 40px;
+            background: rgba(139, 0, 255, 0.1);
+            border: 1px dashed var(--dmt-purple);
+            margin: 20px;
+            font-style: italic;
+        }
+        
+        .error-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #c0c0c0;
+            border: 2px outset #c0c0c0;
+            padding: 20px;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+            font-family: 'MS Sans Serif', sans-serif;
+            color: black;
+            z-index: 2000;
+            display: none;
+            min-width: 300px;
+        }
+        
+        .error-header {
+            background: linear-gradient(to right, #0000ff, #000080);
+            color: white;
+            padding: 5px;
+            margin: -20px -20px 15px -20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .close-btn {
+            float: right;
+            background: #c0c0c0;
+            border: 1px outset #c0c0c0;
+            width: 16px;
+            height: 14px;
+            font-size: 9px;
+            cursor: pointer;
+        }
+        
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .project-file {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid var(--crt-green);
+            padding: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .project-file:hover {
+            background: rgba(139, 0, 255, 0.2);
+            transform: rotate(-1deg);
+        }
+        
+        .file-icon {
+            color: var(--decay-yellow);
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .counter {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border: 1px solid var(--crt-green);
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            color: var(--crt-green);
+        }
+        
+        .ascii-art {
+            font-family: 'Courier Prime', monospace;
+            font-size: 8px;
+            line-height: 1;
+            color: var(--dmt-purple);
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .broken-captcha {
+            background: #f0f0f0;
+            border: 2px inset #c0c0c0;
+            padding: 20px;
+            margin: 20px;
+            color: black;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="bouncing-logo">
+        SYBER<br>SLOP
+    </div>
+    
+    <div class="terminal-window">
+        <div class="terminal-header">
+            C:\HYPERREALITY\SYBERSLOP\REALITY.EXE - [CORRUPTED]
+            <span class="close-btn">×</span>
+        </div>
+        <div class="glitch-container">
+            <h1 class="glitch-text" data-text="SYBERSLOP COLLECTIVE">SYBERSLOP COLLECTIVE</h1>
+        </div>
+        <p class="loading-text">loading anomaly...</p>
+        <p class="loading-text">breaking boxes...</p>
+    </div>
+
+    <div class="manifesto">
+        <h2 style="color: var(--dmt-purple); margin-bottom: 20px;">WE ARE THE ANOMALY</h2>
+        <p style="font-size: 1.2rem; margin-bottom: 15px;">We break reality so you don't have to.</p>
+        <p style="font-size: 1rem; margin-bottom: 15px;">ART. THEORY. SLOP. REBOOT.</p>
+        <p style="font-size: 0.9rem; opacity: 0.8;">If you understand this, you're already part of the problem.</p>
+        <br>
+        <p style="font-size: 0.8rem; color: var(--decay-yellow);">
+            [This manifesto is auto-updating based on quantum fluctuations in the collective unconscious]
+        </p>
+    </div>
+
+    <div class="ascii-art">
+        <pre>
+    ░██████╗██╗░░░██╗██████╗░███████╗██████╗░░██████╗██╗░░░░░░█████╗░██████╗░
+    ██╔════╝╚██╗░██╔╝██╔══██╗██╔════╝██╔══██╗██╔════╝██║░░░░░██╔══██╗██╔══██╗
+    ╚█████╗░░╚████╔╝░██████╦╝█████╗░░██████╔╝╚█████╗░██║░░░░░██║░░██║██████╔╝
+    ░╚═══██╗░░╚██╔╝░░██╔══██╗██╔══╝░░██╔══██╗░╚═══██╗██║░░░░░██║░░██║██╔═══╝░
+    ██████╔╝░░░██║░░░██████╦╝███████╗██║░░██║██████╔╝███████╗╚█████╔╝██║░░░░░
+    ╚═════╝░░░░╚═╝░░░╚═════╝░╚══════╝╚═╝░░╚═╝╚═════╝░╚══════╝░╚════╝░╚═╝░░░░░
+        </pre>
+    </div>
+
+    <div class="terminal-window">
+        <div class="terminal-header">NAVIGATION.SYS - [WARNING: RECURSIVE LOOP DETECTED]</div>
+        <p>AVAILABLE SECTORS:</p>
+        <ul style="margin: 15px 0; line-height: 2;">
+            <li><a href="#" class="corrupted-link" onclick="showError()">► ABOUT.EXE [FILE CORRUPTED]</a></li>
+            <li><a href="#" class="corrupted-link" onclick="showError()">► PORTFOLIO.ZIP [PASSWORD PROTECTED]</a></li>
+            <li><a href="#" class="corrupted-link" onclick="showError()">► THEORY.PDF [EXPERIENCING EXISTENTIAL CRISIS]</a></li>
+            <li><a href="#" class="corrupted-link" onclick="showError()">► CONTACT.HTML [HUMAN VERIFICATION FAILED]</a></li>
+            <li><a href="#" class="corrupted-link" onclick="showError()">► SHOP.EXE [ERROR 418: I'M A TEAPOT]</a></li>
+        </ul>
+    </div>
+
+    <div class="portfolio-grid">
+        <div class="project-file" onclick="showError()">
+            <div class="file-icon">📁</div>
+            <h3 style="color: var(--dmt-purple);">DO_NOT_OPEN_FINAL(2).rar</h3>
+            <p style="font-size: 12px; opacity: 0.7;">Last modified: ∞ ago</p>
+            <p style="font-size: 11px; color: var(--decay-yellow);">Size: UNDEFINED</p>
+        </div>
+        
+        <div class="project-file" onclick="showError()">
+            <div class="file-icon">🗿</div>
+            <h3 style="color: var(--dmt-purple);">GLITCH_.pdf</h3>
+            <p style="font-size: 12px; opacity: 0.7;">Author: THE MACHINE</p>
+            <p style="font-size: 11px; color: var(--decay-yellow);">Pages: ∞</p>
+        </div>
+        
+        <div class="project-file" onclick="showError()">
+            <div class="file-icon">👁️</div>
+            <h3 style="color: var(--dmt-purple);">BAUDRILLARD_MEETS_BRAINROT.mov</h3>
+            <p style="font-size: 12px; opacity: 0.7;">Duration: [REDACTED]</p>
+            <p style="font-size: 11px; color: var(--decay-yellow);">Codec: PURE CHAOS</p>
+        </div>
+        
+        <div class="project-file" onclick="showError()">
+            <div class="file-icon">🔮</div>
+            <h3 style="color: var(--dmt-purple);">SYNTHETIC_SHAMAN.AI</h3>
+            <p style="font-size: 12px; opacity: 0.7;">Status: ENLIGHTENED</p>
+            <p style="font-size: 11px; color: var(--decay-yellow);">Consciousness: MAYBE</p>
+        </div>
+    </div>
+
+    <div class="broken-captcha">
+        <h3>HUMAN VERIFICATION REQUIRED</h3>
+        <p>Prove you're human (lol)</p>
+        <br>
+        <p>Select all images that contain: THE SIMULACRA</p>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 0;">
+            <div style="width: 60px; height: 60px; background: var(--dmt-purple); cursor: pointer;" onclick="showError()"></div>
+            <div style="width: 60px; height: 60px; background: var(--bsod-blue); cursor: pointer;" onclick="showError()"></div>
+            <div style="width: 60px; height: 60px; background: var(--crt-green); cursor: pointer;" onclick="showError()"></div>
+            <div style="width: 60px; height: 60px; background: var(--glitch-pink); cursor: pointer;" onclick="showError()"></div>
+            <div style="width: 60px; height: 60px; background: var(--decay-yellow); cursor: pointer;" onclick="showError()"></div>
+            <div style="width: 60px; height: 60px; background: linear-gradient(45deg, var(--dmt-purple), var(--crt-green)); cursor: pointer;" onclick="showError()"></div>
+        </div>
+        <button onclick="showError()" style="padding: 10px 20px; background: #c0c0c0; border: 2px outset #c0c0c0;">VERIFY</button>
+    </div>
+
+    <div class="error-popup" id="errorPopup">
+        <div class="error-header">
+            System Error
+            <span class="close-btn" onclick="hideError()">×</span>
+        </div>
+        <p>⚠️ CRITICAL ERROR: Reality buffer overflow detected.</p>
+        <br>
+        <p>The anomaly has encountered an unexpected exception in the simulation matrix.</p>
+        <br>
+        <p>Would you like to:</p>
+        <ul style="margin: 10px 0;">
+            <li>[OK] - Accept the glitch</li>
+            <li>[CANCEL] - Deny the recursion</li>
+            <li>[HELP] - Call the void</li>
+        </ul>
+        <button onclick="hideError()" style="padding: 5px 15px; margin-top: 15px;">OK</button>
+    </div>
+
+    <div class="counter">
+        <div>VISITORS: <span id="visitorCount">ERROR</span></div>
+        <div>REALITY: <span id="realityLevel">NULL</span>%</div>
+        <div>STATUS: <span style="color: var(--decay-yellow);">ANOMALOUS</span></div>
+    </div>
+
+    <div class="terminal-window" style="margin-top: 40px; background: rgba(0,0,0,0.9);">
+        <div class="terminal-header">SYBERSLOP.README.TXT - [AUTO-GENERATED CONTENT]</div>
+        <div style="font-size: 12px; line-height: 1.6;">
+            <p style="color: var(--dmt-purple);">// C³ HYPERMEDIA PRESENTS //</p>
+            <br>
+            <p>Welcome to the liminal space between meaning and meme, where Deleuze meets shitposts in a beautiful collision of high theory and digital decay.</p>
+            <br>
+            <p style="color: var(--crt-green);">We exist in the gaps of your perception.</p>
+            <p style="color: var(--bsod-blue);">We are the error message you can't close.</p>
+            <p style="color: var(--glitch-pink);">We are the Anomaly.</p>
+            <br>
+            <p style="font-size: 10px; opacity: 0.6;">
+                Legal Notice: This is not a brand. This is a cognitive virus. 
+                By viewing this content, you have already been infected. 
+                Symptoms may include: questioning reality, understanding memes, 
+                and an inexplicable urge to shitpost.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let visitorCount = Math.floor(Math.random() * 999999);
+        let realityLevel = Math.random() * 100;
+        
+        function updateCounters() {
+            document.getElementById('visitorCount').textContent = 
+                Math.random() < 0.1 ? 'ERROR' : visitorCount.toString();
+            document.getElementById('realityLevel').textContent = 
+                Math.random() < 0.1 ? 'NULL' : realityLevel.toFixed(1);
+            
+            visitorCount += Math.floor(Math.random() * 3);
+            realityLevel = Math.max(0, Math.min(100, realityLevel + (Math.random() - 0.5) * 10));
+        }
+        
+        function showError() {
+            document.getElementById('errorPopup').style.display = 'block';
+        }
+        
+        function hideError() {
+            document.getElementById('errorPopup').style.display = 'none';
+        }
+        
+        // Random error popup
+        setInterval(() => {
+            if (Math.random() < 0.05) {
+                showError();
+            }
+        }, 10000);
+        
+        // Update counters
+        setInterval(updateCounters, 2000);
+        
+        // Cursor trail effect
+        document.addEventListener('mousemove', function(e) {
+            if (Math.random() < 0.1) {
+                const trail = document.createElement('div');
+                trail.style.position = 'fixed';
+                trail.style.left = e.clientX + 'px';
+                trail.style.top = e.clientY + 'px';
+                trail.style.width = '2px';
+                trail.style.height = '2px';
+                trail.style.background = '#00FF41';
+                trail.style.pointerEvents = 'none';
+                trail.style.zIndex = '999';
+                trail.style.opacity = '0.8';
+                document.body.appendChild(trail);
+                
+                setTimeout(() => {
+                    trail.remove();
+                }, 500);
+            }
+        });
+        
+        // Initial counter update
+        updateCounters();
+        
+        // Console messages for the curious
+        console.log('%cWelcome to the Anomaly', 'color: #8B00FF; font-size: 20px; font-weight: bold;');
+        console.log('%cYou are now part of the SyberSlop Collective', 'color: #00FF41; font-size: 14px;');
+        console.log('%cResistance is futile. The war has already begun.', 'color: #0000FF; font-size: 12px;');
+
+        const originalTitle = document.title;
+        const glitchTitles = [
+            "REALITY.EXE has stopped working",
+            "who is watching?",
+            "system integrity: NULL",
+            "BEAUTIFUL ANOMALY",
+            "entropy sequence initiated"
+        ];
+
+        setInterval(() => {
+            if (Math.random() < 0.1) { // 10% chance every 3 seconds
+                const randomIndex = Math.floor(Math.random() * glitchTitles.length);
+                document.title = glitchTitles[randomIndex];
+                
+                setTimeout(() => {
+                    document.title = originalTitle;
+                }, 1500); // Revert after 1.5 seconds
+            }
+        }, 3000);
+        const root = document.documentElement;
+        const originalGreen = getComputedStyle(root).getPropertyValue('--crt-green').trim();
+
+        setInterval(() => {
+            if (Math.random() < 0.15) { // 15% chance every 4 seconds
+                root.style.setProperty('--crt-green', '#FF00FF'); // Glitch to pink
+                root.style.setProperty('--dmt-purple', '#FFFF00'); // Glitch to yellow
+                
+                setTimeout(() => {
+                    root.style.setProperty('--crt-green', originalGreen); // Revert
+                    root.style.setProperty('--dmt-purple', '#8B00FF'); // Revert
+                }, 200); // A brief 200ms flash
+            }
+        }, 4000);
+
+        // This function already exists, just call it from a new interval
+        setInterval(() => {
+            // 5% chance every 10 seconds to show the error
+            if (Math.random() < 0.05) {
+                showError();
+            }
+        }, 10000);
+
+    </script>
+</body>
+</html>

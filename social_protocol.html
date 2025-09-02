@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Protocol (TCP/IP)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap');
+        :root {
+            --win95-gray: #C0C0C0; --bsod-blue: #0000FF; --win-dark-gray: #808080;
+            --crt-green: #00FF41;
+        }
+        body, html {
+            height: 100%; width: 100%; margin: 0; overflow: hidden;
+            background: var(--win95-gray);
+            font-family: 'MS Sans Serif', sans-serif; font-size: 11px;
+        }
+        .window { display: flex; flex-direction: column; height: 100%; border: 2px outset var(--win95-gray); }
+        .title-bar { background: linear-gradient(to right, #000080, var(--bsod-blue)); color: white; padding: 3px 5px; font-weight: bold; }
+        .content-area { flex-grow: 1; padding: 10px; display: flex; flex-direction: column; }
+        .tab-container { display: flex; }
+        .tab { padding: 5px 10px; border: 2px outset var(--win95-gray); border-bottom: none; background: #b0b0b0; position: relative; top: 2px; }
+        .tab.active { background: var(--win95-gray); z-index: 2; font-weight: bold; }
+        .tab-body { border: 2px inset var(--win-dark-gray); padding: 15px; flex-grow: 1; background: var(--win95-gray); }
+        .panel { display: none; }
+        .panel.active { display: block; }
+        .win95-button { background: var(--win95-gray); border: 2px outset var(--win95-gray); padding: 5px 12px; font-size: 11px; cursor: pointer; }
+        .win95-button:active { border-style: inset; }
+        
+        /* Connections Panel */
+        .connection-list { background: white; border: 2px inset var(--win-dark-gray); height: 200px; overflow-y: auto; }
+        .connection-list-header, .connection-item { display: grid; grid-template-columns: 3fr 1fr 1fr; padding: 3px 5px; }
+        .connection-list-header { font-weight: bold; border-bottom: 2px outset var(--win95-gray); }
+        .connection-item:nth-child(even) { background: #f0f0f0; }
+
+        /* Firewall Panel */
+        .rule-list label { display: block; margin-bottom: 8px; }
+        .rule-list input:disabled + span { color: #808080; }
+
+        /* Diagnostics Panel */
+        #diag-output {
+            background: #000; color: var(--crt-green); font-family: 'Courier Prime', monospace;
+            height: 180px; padding: 10px; border: 2px inset var(--win-dark-gray);
+            overflow-y: auto; white-space: pre;
+        }
+
+        /* --- NEW MODAL STYLES --- */
+        #modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.3); z-index: 999;
+            display: none;
+        }
+        .custom-popup {
+            position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 350px;
+            background: var(--win95-gray);
+            border: 2px outset var(--win95-gray);
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            z-index: 1000;
+            display: none;
+        }
+        .popup-titlebar {
+            background: linear-gradient(to right, #000080, var(--bsod-blue));
+            color: white; padding: 3px 5px; font-weight: bold;
+        }
+        .popup-content { padding: 20px; text-align: center; }
+        .popup-buttons { margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <div class="window">
+        <div class="title-bar">Social Protocol Configuration</div>
+        <div class="content-area">
+            <div class="tab-container">
+                <div class="tab active" data-tab="connections">Connections</div>
+                <div class="tab" data-tab="firewall">Firewall</div>
+                <div class="tab" data-tab="diagnostics">Diagnostics</div>
+            </div>
+            <div class="tab-body">
+                <div id="connections-panel" class="panel active">
+                    <p>The following interpersonal network connections are active:</p>
+                    <div class="connection-list">
+                        <div class="connection-list-header">
+                            <span>Node</span><span>Bandwidth</span><span>Latency</span>
+                        </div>
+                        <div id="connection-items"></div>
+                    </div>
+                </div>
+                <div id="firewall-panel" class="panel">
+                    <p>Set rules for incoming and outgoing emotional data packets:</p>
+                    <div class="rule-list" style="margin-top: 15px;">
+                        <label><input type="checkbox" checked disabled><span> Enable Surface-Level Pleasantries (Recommended)</span></label>
+                        <label><input type="checkbox" id="block-vulnerability-check"><span> Block Incoming Vulnerability Packets</span></label>
+                        <label><input type="checkbox"><span> Prioritize Bandwidth for High Social Capital Nodes</span></label>
+                        <label><input type="checkbox" checked><span> Throttle Connections Requiring High Empathy</span></label>
+                    </div>
+                </div>
+                <div id="diagnostics-panel" class="panel">
+                    <p>Test the quality of your network connections.</p>
+                    <button class="win95-button" style="margin: 10px 0;" onclick="runDiagnostics()">Run Diagnostic</button>
+                    <div id="diag-output"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="modal-overlay"></div>
+    <div id="custom-popup" class="custom-popup">
+        <div class="popup-titlebar" id="popup-title">Firewall Rule Updated</div>
+        <div class="popup-content">
+            <p id="popup-message"></p>
+            <div class="popup-buttons">
+                <button class="win95-button" onclick="closeModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    const tabs = document.querySelectorAll('.tab');
+    const panels = document.querySelectorAll('.panel');
+    const connectionItems = document.getElementById('connection-items');
+    const diagOutput = document.getElementById('diag-output');
+    const vulnerabilityCheck = document.getElementById('block-vulnerability-check');
+
+    const connections = [
+        { name: 'Parental_Node', type: 'Legacy', bandwidth: () => `${(Math.random()*5+1).toFixed(2)} kb/s`, latency: () => `${Math.floor(Math.random()*200+400)}ms`},
+        { name: 'Intimate_Partner_01', type: 'P2P', bandwidth: () => `${(Math.random()*10+5).toFixed(2)} kb/s`, latency: () => `${Math.floor(Math.random()*400+800)}ms`},
+        { name: 'Work_Colleague_Cluster', type: 'LAN', bandwidth: () => `${(Math.random()*2+0.5).toFixed(2)} kb/s`, latency: () => `${Math.floor(Math.random()*100+50)}ms`},
+        { name: '@Influencer_77_Stream', type: 'Broadcast', bandwidth: () => `100.00 Mb/s`, latency: () => `2ms`}
+    ];
+
+    function renderConnections() {
+        connectionItems.innerHTML = '';
+        connections.forEach(conn => {
+            const item = document.createElement('div');
+            item.className = 'connection-item';
+            item.innerHTML = `<span>${conn.name}</span><span>${conn.bandwidth()}</span><span>${conn.latency()}</span>`;
+            connectionItems.appendChild(item);
+        });
+    }
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            panels.forEach(p => p.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById(`${tab.dataset.tab}-panel`).classList.add('active');
+        });
+    });
+
+    async function type(element, text, delay = 20) {
+        return new Promise(resolve => {
+            let i = 0;
+            element.innerHTML += '\n';
+            function nextChar() {
+                if (i < text.length) {
+                    element.innerHTML += text[i++];
+                    setTimeout(nextChar, delay);
+                } else {
+                    resolve();
+                }
+            }
+            nextChar();
+        });
+    }
+
+    async function runDiagnostics() {
+        diagOutput.innerHTML = 'Initiating network diagnostic...';
+        await new Promise(res => setTimeout(res, 500));
+        await type(diagOutput, `> Pinging Parental_Node... 840ms (High Latency)`);
+        await new Promise(res => setTimeout(res, 500));
+        await type(diagOutput, `> Pinging Intimate_Partner_01... ERROR (Connection Timed Out)`);
+        await new Promise(res => setTimeout(res, 500));
+        await type(diagOutput, `> Pinging @Influencer_77_Stream... 2ms (Optimal)`);
+        await new Promise(res => setTimeout(res, 1000));
+        await type(diagOutput, `\n> DIAGNOSTIC COMPLETE.`);
+        await type(diagOutput, `> SUMMARY: Interpersonal network is unstable and inefficient.`);
+        await type(diagOutput, `> RECOMMENDATION: Deprioritize high-latency nodes. Reallocate cognitive bandwidth to Spectacle.`);
+    }
+
+    // --- NEW CUSTOM MODAL SYSTEM ---
+    const overlay = document.getElementById('modal-overlay');
+    const popup = document.getElementById('custom-popup');
+    const popupMessage = document.getElementById('popup-message');
+
+    function showModal(message) {
+        popupMessage.textContent = message;
+        overlay.style.display = 'block';
+        popup.style.display = 'block';
+    }
+
+    function closeModal() {
+        overlay.style.display = 'none';
+        popup.style.display = 'none';
+    }
+
+    vulnerabilityCheck.addEventListener('change', (e) => {
+        if (e.target.checked) {
+            showModal("Rule enabled. All incoming packets containing authentic emotional data will now be dropped.");
+        } else {
+            showModal("Rule disabled. Firewall is now open to vulnerability. (Not Recommended)");
+        }
+    });
+
+    // Initial and periodic render
+    renderConnections();
+    setInterval(renderConnections, 3000);
+</script>
+</body>
+</html>

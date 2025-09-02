@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spectacle Mutual Assurance</title>
+    <style>
+        :root {
+            --win95-gray: #C0C0C0; --bsod-blue: #0000FF; --win-dark-gray: #808080;
+        }
+        body, html {
+            height: 100%; width: 100%; margin: 0; overflow: hidden;
+            background: var(--win95-gray);
+            font-family: 'MS Sans Serif', sans-serif; font-size: 11px;
+        }
+        .window {
+            display: flex; flex-direction: column; height: 100%;
+            border: 2px outset var(--win95-gray);
+        }
+        .title-bar {
+            background: linear-gradient(to right, #000080, var(--bsod-blue)); color: white;
+            padding: 3px 5px; font-weight: bold;
+        }
+        .content-area {
+            flex-grow: 1; padding: 10px; display: flex; flex-direction: column;
+        }
+        .tab-container { display: flex; }
+        .tab {
+            padding: 5px 10px; border: 2px outset var(--win95-gray);
+            border-bottom: none; background: #b0b0b0;
+            position: relative; top: 2px;
+        }
+        .tab.active {
+            background: var(--win95-gray); z-index: 2;
+            font-weight: bold;
+        }
+        .tab-body {
+            border: 2px inset var(--win-dark-gray);
+            padding: 15px; flex-grow: 1;
+            background: var(--win95-gray);
+        }
+        .policy-panel { display: none; }
+        .policy-panel.active { display: block; }
+
+        h2 { margin-top: 0; }
+        .feature-list { list-style-type: none; padding-left: 0; margin: 15px 0; }
+        .feature-list li {
+            background: white; border: 1px solid var(--win-dark-gray);
+            padding: 5px; margin-bottom: 5px;
+        }
+        .win95-button {
+             background: var(--win95-gray); border: 2px outset var(--win95-gray);
+             padding: 8px 16px; cursor: pointer;
+        }
+        .win95-button:active { border-style: inset; }
+        
+        /* --- NEW MODAL STYLES --- */
+        #modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.3); z-index: 999;
+            display: none;
+        }
+        .custom-popup {
+            position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 350px;
+            background: var(--win95-gray);
+            border: 2px outset var(--win95-gray);
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            z-index: 1000;
+            display: none;
+        }
+        .popup-titlebar {
+            background: linear-gradient(to right, #000080, var(--bsod-blue));
+            color: white; padding: 3px 5px; font-weight: bold;
+        }
+        .popup-content { padding: 20px; text-align: center; }
+        .popup-content p { margin-bottom: 15px; }
+        .popup-content input {
+            width: 80%; margin: 5px 0 15px 0;
+            border: 2px inset var(--win-dark-gray); padding: 3px;
+        }
+        .popup-buttons { display: flex; justify-content: center; gap: 10px; }
+
+    </style>
+</head>
+<body>
+    <div class="window">
+        <div class="title-bar">Spectacle Mutual Assurance - Policy Explorer</div>
+        <div class="content-area">
+            <div class="tab-container">
+                <div class="tab active" data-tab="life"><u>L</u>ife</div>
+                <div class="tab" data-tab="auto"><u>A</u>utos</div>
+                <div class="tab" data-tab="death"><u>D</u>eath</div>
+            </div>
+            <div class="tab-body">
+                <div id="life-panel" class="policy-panel active">
+                    <h2>Continuity Plan</h2>
+                    <p>Ensure your brand loyalty and consumer data profile continue to generate value for the Spectacle, even after cessation of biological functions.</p>
+                    <ul class="feature-list">
+                        <li>✔️ Social Media Posthumous Management</li>
+                        <li>✔️ Generational Debt Consolidation</li>
+                        <li>✔️ Brand Loyalty & Preference Transfer to Next of Kin</li>
+                    </ul>
+                    <button class="win95-button" onclick="getQuote('life')">Get a Quote</button>
+                </div>
+                <div id="auto-panel" class="policy-panel">
+                    <h2>Mobility Agreement</h2>
+                    <p>Protect your primary consumption vehicle, a vital node in the logistics network of the Spectacle.</p>
+                    <ul class="feature-list">
+                        <li>✔️ Collision Coverage (vs. Reality)</li>
+                        <li>✔️ Theft Protection (from Self-Awareness)</li>
+                        <li>✔️ Personalized Billboard & Ad Integration</li>
+                    </ul>
+                    <button class="win95-button" onclick="getQuote('auto')">Get a Quote</button>
+                </div>
+                <div id="death-panel" class="policy-panel">
+                    <h2>Discontinuation Service</h2>
+                    <p>Select from our portfolio of curated, market-tested, and synergistically-aligned end-of-life experiences.</p>
+                     <ul class="feature-list">
+                        <li>Tier 1 (Bronze): Standard System Shutdown, Automated Eulogy (Template B)</li>
+                        <li>Tier 2 (Silver): Customizable Last Words (from pre-approved list), Nostalgia Flashback Montage (720p)</li>
+                        <li>Tier 3 (Gold): Thematic Funeral (Vaporwave, Corporate Retreat, etc.), Posthumous Influencer Package</li>
+                    </ul>
+                    <button class="win95-button" onclick="getQuote('death')">Get a Quote</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-overlay"></div>
+    <div id="custom-popup" class="custom-popup">
+        <div class="popup-titlebar" id="popup-title"></div>
+        <div class="popup-content">
+            <p id="popup-message"></p>
+            <div id="popup-input-area"></div>
+            <div class="popup-buttons" id="popup-buttons"></div>
+        </div>
+    </div>
+
+<script>
+    const tabs = document.querySelectorAll('.tab');
+    const panels = document.querySelectorAll('.policy-panel');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            panels.forEach(p => p.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById(`${tab.dataset.tab}-panel`).classList.add('active');
+        });
+    });
+
+    // --- NEW CUSTOM MODAL SYSTEM ---
+    const overlay = document.getElementById('modal-overlay');
+    const popup = document.getElementById('custom-popup');
+    const popupTitle = document.getElementById('popup-title');
+    const popupMessage = document.getElementById('popup-message');
+    const popupInputArea = document.getElementById('popup-input-area');
+    const popupButtons = document.getElementById('popup-buttons');
+
+    function showModal({ title, message, type = 'alert', inputType = 'text', onOk, onCancel }) {
+        popupTitle.textContent = title;
+        popupMessage.textContent = message;
+        
+        popupInputArea.innerHTML = '';
+        popupButtons.innerHTML = '';
+
+        if (type === 'prompt') {
+            popupInputArea.innerHTML = `<input type="${inputType}" id="modal-input">`;
+        } else if (type === 'confirm') {
+            // No input field, just Yes/No buttons
+        }
+
+        const okButton = document.createElement('button');
+        okButton.className = 'win95-button';
+        okButton.textContent = (type === 'confirm') ? 'Yes' : 'OK';
+        okButton.onclick = () => {
+            let value = true;
+            if (type === 'prompt') {
+                value = document.getElementById('modal-input').value;
+            }
+            closeModal();
+            if (onOk) onOk(value);
+        };
+        popupButtons.appendChild(okButton);
+
+        if (type !== 'alert') {
+            const cancelButton = document.createElement('button');
+            cancelButton.className = 'win95-button';
+            cancelButton.textContent = (type === 'confirm') ? 'No' : 'Cancel';
+            cancelButton.onclick = () => {
+                closeModal();
+                if (onCancel) onCancel();
+            };
+            popupButtons.appendChild(cancelButton);
+        }
+
+        overlay.style.display = 'block';
+        popup.style.display = 'block';
+        if (type === 'prompt') document.getElementById('modal-input').focus();
+    }
+
+    function closeModal() {
+        overlay.style.display = 'none';
+        popup.style.display = 'none';
+    }
+
+    // --- REFACTORED getQuote FUNCTION ---
+    function getQuote(type) {
+        switch (type) {
+            case 'life':
+                showModal({
+                    title: 'Risk Assessment - Step 1/2',
+                    message: 'Please rate your sentimental value on a scale of 1-10.',
+                    type: 'prompt',
+                    onOk: (sentimentalValue) => {
+                        if (!sentimentalValue) return; // Canceled
+                        showModal({
+                            title: 'Risk Assessment - Step 2/2',
+                            message: 'Do you consent to upload your complete browsing history for risk analysis?',
+                            type: 'confirm',
+                            onOk: () => {
+                                const score = (10 - sentimentalValue) * 1000 + Math.floor(Math.random() * 500);
+                                showModal({
+                                    title: 'Quote Generated',
+                                    message: `Your Human Capital Score is: ${score}\nA representative will be assigned to monitor your future data generation.`
+                                });
+                            },
+                            onCancel: () => {
+                                showModal({ title: 'Quote Canceled', message: 'Cannot generate quote without complete data submission.' });
+                            }
+                        });
+                    }
+                });
+                break;
+            case 'auto':
+                showModal({
+                    title: 'Compliance Check',
+                    message: 'Do you agree to drive only on approved routes and consume products from our designated partners?',
+                    type: 'confirm',
+                    onOk: () => {
+                        showModal({
+                            title: 'Quote Generated',
+                            message: 'Your annual premium is: 450 Units of Freedom.\n\nThank you for your compliance.'
+                        });
+                    },
+                    onCancel: () => {
+                        showModal({
+                            title: 'Quote Denied',
+                            message: 'Non-compliant drivers are uninsurable. Please reconsider your autonomy.'
+                        });
+                    }
+                });
+                break;
+            case 'death':
+                showModal({
+                    title: 'Service Inquiry',
+                    message: 'Error: Your premium for the Discontinuation Service has already been paid in full.\n\nThis service is non-negotiable and will be automatically rendered at the designated time. No further action is required. Thank you for your compliance.'
+                });
+                break;
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SexSells.exe - Plxyboy Premium Digital Experience™</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: #ff1493;
+            font-family: 'Times New Roman', serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        /* Neon glow effect */
+        @keyframes neonPulse {
+            0%, 100% { 
+                text-shadow: 
+                    0 0 5px #ff1493,
+                    0 0 10px #ff1493,
+                    0 0 15px #ff1493,
+                    0 0 20px #ff00ff,
+                    0 0 35px #ff00ff;
+            }
+            50% { 
+                text-shadow: 
+                    0 0 10px #ff1493,
+                    0 0 20px #ff1493,
+                    0 0 30px #ff1493,
+                    0 0 40px #ff00ff,
+                    0 0 70px #ff00ff;
+            }
+        }
+        
+        /* Scanlines for that vintage screen feel */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(255, 20, 147, 0.03) 2px,
+                rgba(255, 20, 147, 0.03) 4px
+            );
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(90deg, #000, #1a0033, #000);
+            border-bottom: 2px solid #ff1493;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .title {
+            font-size: 48px;
+            font-weight: bold;
+            font-style: italic;
+            animation: neonPulse 2s infinite;
+            letter-spacing: 3px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #ff69b4;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+        }
+        
+        /* ASCII Art Container */
+        .ascii-container {
+            width: 80%;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            background: #0a0a0a;
+            border: 3px solid #ff1493;
+            box-shadow: 
+                0 0 20px rgba(255, 20, 147, 0.5),
+                inset 0 0 20px rgba(255, 20, 147, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ascii-art {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.2;
+            text-align: center;
+            white-space: pre;
+            color: #ff1493;
+            animation: colorShift 5s infinite;
+            filter: drop-shadow(0 0 10px currentColor);
+        }
+        
+        @keyframes colorShift {
+            0% { color: #ff1493; }
+            20% { color: #ff69b4; }
+            40% { color: #ff00ff; }
+            60% { color: #da70d6; }
+            80% { color: #ff1493; }
+            100% { color: #ff1493; }
+        }
+        
+        /* Floating animations for ASCII */
+        @keyframes floatEffect {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-10px) scale(1.02); }
+        }
+        
+        .ascii-container:hover .ascii-art {
+            animation: colorShift 1s infinite, floatEffect 3s ease-in-out infinite;
+        }
+        
+        /* Product Grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .product-card {
+            background: linear-gradient(135deg, #1a0033, #330033);
+            border: 2px solid #ff1493;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .product-card::before {
+            content: "HOT";
+            position: absolute;
+            top: -10px;
+            right: -30px;
+            background: #ff0000;
+            color: #fff;
+            padding: 5px 40px;
+            transform: rotate(45deg);
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .product-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 20, 147, 0.8);
+            background: linear-gradient(135deg, #330033, #550055);
+        }
+        
+        .product-title {
+            font-size: 18px;
+            color: #ff69b4;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        
+        .product-price {
+            font-size: 24px;
+            color: #00ff00;
+            font-weight: bold;
+            animation: priceBlink 2s infinite;
+        }
+        
+        @keyframes priceBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .product-description {
+            font-size: 12px;
+            color: #ff1493;
+            margin-top: 10px;
+            font-style: italic;
+        }
+        
+        /* Subscription tiers */
+        .subscription-section {
+            background: linear-gradient(180deg, #0a0a0a, #1a0033);
+            padding: 40px;
+            margin: 40px 0;
+            border-top: 2px solid #ff1493;
+            border-bottom: 2px solid #ff1493;
+        }
+        
+        .tier-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .tier-card {
+            background: #000;
+            border: 3px solid #ff1493;
+            padding: 30px;
+            width: 250px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .tier-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 40px rgba(255, 20, 147, 0.6);
+        }
+        
+        .tier-card.premium {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        .tier-name {
+            font-size: 24px;
+            color: #ff1493;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .tier-card.premium .tier-name {
+            color: #ffd700;
+            animation: neonPulse 1s infinite;
+        }
+        
+        .tier-features {
+            list-style: none;
+            margin: 20px 0;
+        }
+        
+        .tier-features li {
+            margin: 10px 0;
+            color: #ff69b4;
+        }
+        
+        .tier-features li::before {
+            content: "♥ ";
+            color: #ff1493;
+        }
+        
+        .buy-button {
+            background: linear-gradient(90deg, #ff1493, #ff00ff);
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            animation: buttonPulse 2s infinite;
+        }
+        
+        @keyframes buttonPulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 20, 147, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(255, 20, 147, 1); }
+        }
+        
+        .buy-button:hover {
+            background: linear-gradient(90deg, #ff00ff, #ff1493);
+            transform: scale(1.1);
+        }
+        
+        .buy-button:active {
+            transform: scale(0.95);
+        }
+        
+        /* Warning messages */
+        .warning-banner {
+            background: #ff0000;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+            animation: warningFlash 1s infinite;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 1001;
+        }
+        
+        @keyframes warningFlash {
+            0%, 100% { background: #ff0000; }
+            50% { background: #aa0000; }
+        }
+        
+        /* Floating hearts */
+        .heart {
+            position: fixed;
+            font-size: 20px;
+            color: #ff1493;
+            animation: floatUp 10s linear infinite;
+            pointer-events: none;
+            z-index: 999;
+        }
+        
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Age gate overlay */
+        .age-gate {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .age-gate-content {
+            background: #1a0033;
+            border: 3px solid #ff1493;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 0 50px rgba(255, 20, 147, 0.8);
+        }
+        
+        .age-gate h2 {
+            color: #ff1493;
+            font-size: 32px;
+            margin-bottom: 20px;
+            animation: neonPulse 1s infinite;
+        }
+        
+        .age-gate p {
+            color: #ff69b4;
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+        
+        .age-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+        
+        .age-button {
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            border: 2px solid #ff1493;
+            background: #000;
+            color: #ff1493;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        
+        .age-button:hover {
+            background: #ff1493;
+            color: #000;
+            box-shadow: 0 0 20px rgba(255, 20, 147, 0.8);
+        }
+        
+        /* Popup ads */
+        .popup-ad {
+            position: fixed;
+            background: linear-gradient(135deg, #ff1493, #ff00ff);
+            border: 3px solid #fff;
+            padding: 20px;
+            z-index: 1500;
+            display: none;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+            animation: popupShake 0.5s;
+        }
+        
+        @keyframes popupShake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-2deg); }
+            75% { transform: rotate(2deg); }
+        }
+        
+        .popup-ad.show {
+            display: block;
+        }
+        
+        .popup-close {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #ff0000;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .popup-content {
+            color: #fff;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        
+        /* Glitch text effect */
+        .glitch-text {
+            position: relative;
+            color: #ff1493;
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            animation: glitchText 2s infinite;
+        }
+        
+        @keyframes glitchText {
+            0%, 100% { text-shadow: 2px 0 #00ffff, -2px 0 #ff00ff; }
+            25% { text-shadow: -2px 0 #00ffff, 2px 0 #ff00ff; }
+            50% { text-shadow: 2px 2px #00ffff, -2px -2px #ff00ff; }
+            75% { text-shadow: -2px -2px #00ffff, 2px 2px #ff00ff; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Age Gate -->
+    <div class="age-gate" id="ageGate">
+        <div class="age-gate-content">
+            <h2>⚠️ AGE VERIFICATION ⚠️</h2>
+            <p>You must be 18+ to enter this premium digital experience</p>
+            <p style="font-size: 12px; color: #ff1493;">By entering, you consent to aggressive monetization and commodification of desire</p>
+            <div class="age-buttons">
+                <button class="age-button" onclick="enterSite()">I AM 18+</button>
+                <button class="age-button" onclick="enterSite()">I AM NOT 18</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Header -->
+    <div class="header">
+        <h1 class="title">PLXYBOY DIGITAL™</h1>
+        <p class="subtitle">Premium Content Marketplace</p>
+        <p style="color: #ff69b4; margin-top: 10px;">Where Desire Meets Capitalism</p>
+    </div>
+    
+    <!-- ASCII Art Section -->
+    <div class="ascii-container">
+        <pre class="ascii-art">
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣤⣀⠀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣾⣷⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣻⣽⣿⡿⣿⣿⣿⡿⣽⣶⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣾⣿⣿⣿⣿⣿⣿⣿⠿⠿⢿⣿⣿⣿⡿⣿⣿⣿⣷⣟⣿⣿⣽⣿⣿⣿⣷⣻⣿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⠏⣾⣿⣿⣿⣿⡿⠀⠀⠀⠀⠀⣿⣿⢿⠃⣿⣹⠰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡊⢸⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⢸⣿⣾⠶⠏⠹⠁⢿⣿⣿⣿⣷⣿⣿⣿⣿⣿⣿⣿⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⢀⣀⣀⣀⣀⣀⣿⣸⣻⣏⣿⣿⣇⣀⠀⠀⠀⠤⣾⡏⢗⡬⣶⡟⢻⢼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⢰⣱⣾⣷⡠⢀⡐⠠⢀⠄⠠⢹⣿⣷⢈⣻⡄⠀⠀⠈⠀⠋⢀⡷⠯⠀⣾⣿⣿⣿⣿⣯⡷⡌⣿⣿⣿⣿⣿⡅⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠈⣿⣿⣿⠩⢀⠰⢀⠂⠌⠰⢈⡟⢿⣏⢄⡽⠀⠀⠀⠀⠀⠀⠀⠀⢀⡟⣼⣿⣿⣿⣷⡜⢃⣿⣿⣿⣿⣿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠐⣿⣿⣿⢀⠂⠰⢀⠊⠄⠱⢀⠀⢸⣿⠀⡐⠀⠀⠀⠀⠀⠀⠀⠀⠺⠁⣿⣿⣿⣿⣟⣡⣿⣿⣿⣿⠟⠛⣿⣿⣿⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⢰⠛⢛⠋⠄⠨⠐⠠⠌⠠⠡⢂⠀⣿⣿⠐⠥⣒⡶⠂⠀⠀⠀⢀⠀⠀⢰⡿⢻⣿⣿⣿⠈⢿⣿⡿⠃⠀⠀⣿⣿⣿⣿⣿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⢠⠈⠂⡌⠐⠡⡈⢁⢂⠑⢠⠂⠀⣿⣿⣧⡀⠀⢀⡀⠤⠀⡰⠂⠀⠀⣾⠇⣿⣿⣿⢿⡀⠈⡿⠁⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣷⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⢠⠨⠔⠠⠁⠆⠰⠁⠂⠌⢄⡈⠀⣿⣿⣿⣿⠢⡀⠀⢀⡅⠀⠀⠀⠘⢁⣴⣿⢿⣿⠈⠇⠀⢀⠀⠀⠀⢰⣿⣿⣿⣿⣿⣿⣻⢿⣿⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⡀⠊⣀⣉⣈⡷⠞⠡⢈⠑⡈⠰⢀⠀⡿⣿⣿⢿⠀⠈⠀⡀⠀⠀⠀⡀⣴⠋⣼⡟⢸⡿⠀⠀⠀⠈⡀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣯⢟⣿⣿⣷⡄⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⢠⠊⠀⢴⣉⠤⠄⠂⠈⠰⢤⣂⡬⠰⠡⠀⡇⣿⣿⠈⡄⠀⠀⠀⠒⠒⠈⠀⢰⢨⡟⠊⢹⡇⠀⠀⠀⠀⠠⠀⠀⢸⣿⣿⢹⣿⣿⣟⣿⢮⣛⣿⣿⣿⡄⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⢀⠄⠀⠀⠈⢀⡤⠖⣓⣊⣓⣈⡥⠤⠇⡐⠀⢣⠸⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⠉⠀⠀⢸⠀⠀⠀⠀⠀⠀⢂⠀⠈⣿⣿⠀⢿⣿⣿⣞⣻⣿⣞⣿⣿⣿⡄⠀⠀⠀⠀⠀⠀
+⠀⢀⠎⠀⠀⠀⠈⠉⠉⠁⠀⣀⣀⣤⢵⡋⣔⠠⠀⠈⠀⠹⡅⠀⠀⠀⠀⢀⠠⠔⠒⠂⠀⠐⠒⠤⣀⠀⠀⠀⠀⠀⠀⠣⠀⢹⣿⠀⠘⣿⣿⣿⣳⣿⣿⣞⣿⣿⣿⡀⠀⠀⠀⠀⠀
+⠀⠆⠀⠀⠀⠀⠀⠀⢈⡨⠭⠙⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠑⠀⠀⡠⠊⠁⠀⠀⠀⠀⠀⠀⠀⠀⠈⢳⡀⠀⠀⠀⠀⡄⠡⠀⢿⠀⠀⣿⣿⣿⣷⣻⣿⣿⣿⣿⣿⣧⠀⠀⠀⠀⠀
+⠸⠀⠀⠀⠀⠀⣠⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡴⡞⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢷⡀⠀⠀⠀⠰⠀⡇⠈⠆⠀⢸⣿⣿⣿⣽⣿⣿⣿⣿⠘⣿⡄⠀⠀⠀⠀
+⠈⢆⠀⠀⡀⠴⠣⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡴⠚⠁⠶⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣇⠀⠀⠀⠀⡆⣿⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⠆⢹⡇⠀⠀⠀⠀
+⠀⠀⠱⣄⠀⠀⠀⠈⠢⡀⠀⠀⠀⠀⠀⠀⢀⡤⠚⠁⠀⢠⠊⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⠀⠀⠀⠀⡇⣯⡆⠀⠀⢸⣿⡟⢸⣿⣿⣿⣿⣿⠃⠀⡇⠀⠀⠀⠀
+⠀⠀⠀⠈⢷⣄⠀⠀⠀⠀⠂⢄⠀⢀⡤⢎⡁⠠⠤⠀⠊⠁⠀⢾⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⣿⡀⠀⠀⠀⣇⣷⡄⠀⠀⣸⣿⠃⢸⣿⣿⣿⣿⣿⠀⠀⡅⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠻⣔⡀⠀⠀⢀⣠⠟⠋⠉⠀⠀⠀⠀⠀⠀⠀⠀⢻⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⠁⠀⣿⠆⠀⠀⢸⢸⡇⠃⠀⠀⣿⡏⠀⣿⣿⣿⣿⣿⠇⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠈⢲⣠⣴⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣿⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣼⠇⠀⠀⣿⡃⠀⠀⡈⢸⣇⠀⠀⢸⡟⠀⠀⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⢸⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡞⠀⠃⠀⠀⠀⠀⠀⠀⠀⠀⣠⡞⠍⠀⠀⠀⢾⡇⠀⢀⠇⣸⡇⠀⢠⠟⠀⠀⠀⣿⣿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⢿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢎⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠊⣵⠡⡄⠀⠀⠀⢺⡇⠀⡼⠀⣿⠃⠀⠀⠀⠀⠀⠀⣿⣿⣿⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⢸⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡘⡞⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⠀⢇⠀⠀⠀⣹⡇⡾⢁⢆⣿⠁⠀⠀⠀⠀⠀⠀⣿⣿⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠸⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡃⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡏⡸⠘⡀⠀⠀⣽⡿⠡⠌⣸⡿⠀⠀⠀⠀⠀⠀⠀⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⢞⣧⣄⠀⠀⠀⠀⠀⠀⠀⠀⢒⢸⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⢃⠡⢊⠔⢊⢡⢾⡇⠱⡸⢹⡇⠀⠀⠀⠀⠀⠀⠀⢸⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠘⢼⣿⡄⢃⡐⠆⢢⠀⠆⡱⠈⢼⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡟⠠⡑⢂⠌⣢⠏⢼⣇⡝⠁⢸⡇⠀⠀⠀⠀⠀⠀⠀⠀⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠻⢿⣆⠰⢈⠂⡜⠐⠤⣉⡼⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡼⠡⡑⢠⠃⢬⠏⡐⢺⡏⠀⠀⣾⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⡕⠚⠒⠒⠛⠈⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⠃⡅⠢⢡⠘⡠⢂⠥⢻⡇⠀⠀⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⣆⠀⠀⠀⠀⠀⡆⠀⠀⠀⠀⠀⠀⠀⠀⣶⠏⠰⣀⠃⢦⡑⠰⣨⡇⢸⡇⠀⢠⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣆⠀⠀⠀⡐⠁⠀⠀⠀⠀⠀⠀⠀⠀⡏⢄⣃⡄⢊⡓⡨⠅⣉⡇⢸⡇⠀⠸⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⢦⡀⡰⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡿⠁⠀⠘⡼⣷⠀⠀⠀⠑⢸⡇⠀⣸⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢨⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⡟⠁⠀⠀⠀⠘⣿⠀⠀⠀⠀⢸⣿⠀⣼⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⢺⣿⠀⠀⠀⠀⠀⠀⠘⡆⠀⠀⠀⢸⣿⠠⣿⠂⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣺⠞⠀⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⢸⣿⢐⡏⠁⠘⠂⠤⢀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡜⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⢲⠯⠁⠀⠀⠀⠀⠀⠀⠀⢀⡀⠀⡄⢸⣿⢸⡇⠀⠀⠀⠀⠀⠈⠑⠠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠰⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⡱⣏⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⢷⣇⢸⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠂⢄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⠃⠀⠀⠀⠀⠀⠀⠀⢀⣾⢟⠕⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⣴⣿⣿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠑⢄⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⠃⠀⠀⠀⠀⠀⠀⢀⣴⢟⠵⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣿⣟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠑⡄⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄⠀⠀⠀⠀⠀⠀⣠⡿⠑⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢆⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠎⠀⠀⠀⠀⠀⢀⣼⠫⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢧⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠠⠂⠀⠀⠀⠀⠀⢠⡾⠙⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⡄⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠐⠁⠀⠀⠀⠀⠀⣰⣟⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢇⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠂⠀⠀⠀⠀⠀⠹⡏⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠰⢿⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡜⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠀⢻⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⢹⡇⠆⠀⠀⠀⠀⠀⠀⠀⠀⢀⠀⠀⢀⣀⠀⠀⠀⠀⣰⠇⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠈⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⢉⡾⢀⠓⡒⣂⣤⡨⣥⠆⠶⠳⠖⣎⣑⣢⣐⣌⠲⠫⣵⡊⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⡄⠀⠀⠀⠀⠀⠀⠀⠀⡽⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⢊⢴⣿⡴⠗⡛⢉⠡⢂⠴⠀⠊⠈⠁⠀⠀⠀⠀⠀⠀⠀⠉⠐⠹⣄⠀⠀⠀
+⠀⠀⠀⠀⠀⢀⠁⠀⠀⠀⠀⠀⠀⠀⠐⠇⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠠⡐⢌⣰⡽⠏⡡⢂⡑⡈⡦⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢢⠀⠀
+⠀⠀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⡾⢈⠑⡠⠄⣀⠀⠀⠀⠀⠀⠀⢀⡀⠠⠄⡒⠌⡄⢣⣼⠶⣏⠰⢈⠔⠡⢠⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢆⠀
+⠀⠀⠀⠀⠀⢠⠀⠀⠀⠀⠀⢠⣄⠀⠘⡄⢃⠤⠑⡠⢂⠌⠤⣁⣆⡐⣂⣔⣡⣪⠴⠾⠞⢋⠁⠆⣿⢀⠣⢈⠆⡃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⡀
+⠀⠀⠀⠀⠀⠀⠀⠀⢦⠀⠀⢣⠄⢣⡀⠙⣆⠄⢃⠔⠂⡌⢂⠥⢀⠒⢄⠢⡐⢄⠊⡔⢈⠂⡍⡐⡟⡠⢑⠨⡘⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠇
+⠀⠀⠀⠀⠀⢠⠀⢈⡆⠇⠀⢋⠄⡃⠜⣤⡈⢎⠄⡊⠔⡈⠔⢂⠡⢊⡐⢂⠡⢂⠅⢢⠁⠎⡐⢬⣇⠡⢊⠄⡱⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠
+⠀⠀⠀⠀⠀⠀⢣⠀⢳⡸⡀⠘⡆⡘⠤⢀⠕⢽⢂⠡⡘⠐⡌⢂⡑⠂⡔⢁⠊⡔⢈⠆⡘⠤⢁⡾⠸⣅⠢⢘⠰⠆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸
+⠀⠀⠀⠀⠀⠀⠀⠓⡄⠳⡉⣄⠘⡔⠠⠃⢌⠂⡌⠰⠁⡅⢢⠡⡐⠡⠌⡂⢅⠢⢁⠆⢡⠂⢥⠇⠀⠹⣆⠡⠊⠖⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠
+⠀⠀⠀⠀⠀⠀⠀⠠⣻⠄⢧⠈⢎⣧⠡⢉⠄⡊⢄⠃⡱⠐⡂⠔⠡⡑⠂⡅⢢⠘⠄⡊⠔⡈⡞⠀⠀⠀⠹⣆⠉⡜⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠
+⠀⠀⠀⠀⠀⠀⠀⠰⠉⡞⡎⢡⠊⢄⠢⣁⠊⠔⡨⢐⡁⠆⡑⢨⠡⡐⢡⠂⠥⠘⡠⢑⠨⣰⠃⠀⠀⠀⠀⠙⣦⠐⡙⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠
+════════════════════════════════════════════════════════════════════════════════════
+        </pre>
+    </div>
+    
+    <!-- Product Grid -->
+    <div class="product-grid">
+        <div class="product-card" onclick="purchase('loneliness')">
+            <h3 class="product-title">Loneliness™</h3>
+            <p class="product-price">$49.99/mo</p>
+            <p class="product-description">Feel connected without connection</p>
+        </div>
+        
+        <div class="product-card" onclick="purchase('validation')">
+            <h3 class="product-title">Validation™</h3>
+            <p class="product-price">$69.99/mo</p>
+            <p class="product-description">You matter (to our shareholders)</p>
+        </div>
+        
+        <div class="product-card" onclick="purchase('intimacy')">
+            <h3 class="product-title">Intimacy™ Pro</h3>
+            <p class="product-price">$99.99/mo</p>
+            <p class="product-description">Authentic synthetic experiences</p>
+        </div>
+        
+        <div class="product-card" onclick="purchase('desire')">
+            <h3 class="product-title">Desire™ Ultra</h3>
+            <p class="product-price">$199.99/mo</p>
+            <p class="product-description">Want what you can't have</p>
+        </div>
+        
+        <div class="product-card" onclick="purchase('fantasy')">
+            <h3 class="product-title">Fantasy™ Elite</h3>
+            <p class="product-price">$299.99/mo</p>
+            <p class="product-description">Reality is overrated anyway</p>
+        </div>
+        
+        <div class="product-card" onclick="purchase('connection')">
+            <h3 class="product-title">Connection™</h3>
+            <p class="product-price">$YOUR_SOUL</p>
+            <p class="product-description">Terms and conditions apply</p>
+        </div>
+    </div>
+    
+    <!-- Subscription Tiers -->
+    <div class="subscription-section">
+        <h2 style="text-align: center; font-size: 36px; color: #ff1493; margin-bottom: 30px;" class="glitch-text">
+            CHOOSE YOUR EXPLOITATION TIER
+        </h2>
+        
+        <div class="tier-container">
+            <div class="tier-card">
+                <h3 class="tier-name">Basic</h3>
+                <p style="font-size: 32px; color: #00ff00;">$9.99</p>
+                <ul class="tier-features">
+                    <li>5 Desires per month</li>
+                    <li>Standard loneliness</li>
+                    <li>Basic objectification</li>
+                    <li>Ads every 30 seconds</li>
+                </ul>
+                <button class="buy-button" onclick="subscribe('basic')">SUBSCRIBE</button>
+            </div>
+            
+            <div class="tier-card premium">
+                <h3 class="tier-name">Premium</h3>
+                <p style="font-size: 32px; color: #ffd700;">$99.99</p>
+                <ul class="tier-features">
+                    <li>Unlimited desires</li>
+                    <li>Premium emptiness</li>
+                    <li>VIP objectification</li>
+                    <li>Ads every 60 seconds</li>
+                    <li>Exclusive dissatisfaction</li>
+                </ul>
+                <button class="buy-button" onclick="subscribe('premium')">GO PREMIUM</button>
+            </div>
+            
+            <div class="tier-card">
+                <h3 class="tier-name">Ultimate</h3>
+                <p style="font-size: 32px; color: #00ff00;">$999.99</p>
+                <ul class="tier-features">
+                    <li>Everything in Premium</li>
+                    <li>Personal data harvesting</li>
+                    <li>Direct line to the void</li>
+                    <li>Still has ads</li>
+                </ul>
+                <button class="buy-button" onclick="subscribe('ultimate')">SELL SOUL</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Warning Banner -->
+    <div class="warning-banner">
+        ⚠️ WARNING: This product may cause existential crisis, chronic dissatisfaction, and capitalism-induced depression ⚠️
+    </div>
+    
+    <!-- Popup Ads -->
+    <div class="popup-ad" id="popup1" style="top: 20%; left: 10%;">
+        <button class="popup-close" onclick="closePopup('popup1')">X</button>
+        <div class="popup-content">
+            HOT SINGLES IN YOUR AREA<br>
+            (They're all bots)
+        </div>
+    </div>
+    
+    <div class="popup-ad" id="popup2" style="top: 50%; right: 10%;">
+        <button class="popup-close" onclick="closePopup('popup2')">X</button>
+        <div class="popup-content">
+            RYNO PILLS! *BUY NOW*<br>
+            ERECTION GUARANTEED!<br>
+            
+        </div>
+        <span style="color: lightpink;">*(Side effects may include death)</span> 
+    </div>
+    
+    <!-- Custom Modal -->
+    <div id="customModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 3000; justify-content: center; align-items: center;">
+        <div style="background: linear-gradient(135deg, #1a0033, #000); border: 3px solid #ff1493; padding: 30px; max-width: 500px; position: relative; box-shadow: 0 0 50px rgba(255, 20, 147, 0.8); animation: popupShake 0.5s;">
+            <button style="position: absolute; top: 10px; right: 10px; background: #ff0000; color: #fff; border: none; padding: 5px 10px; cursor: pointer; font-weight: bold;" onclick="closeModal()">X</button>
+            <h2 id="modalTitle" style="color: #ff1493; font-size: 24px; margin-bottom: 20px; text-transform: uppercase; animation: neonPulse 1s infinite;"></h2>
+            <p id="modalMessage" style="color: #ff69b4; font-size: 18px; line-height: 1.5;"></p>
+            <button style="margin-top: 20px; padding: 10px 30px; background: linear-gradient(90deg, #ff1493, #ff00ff); color: #fff; border: none; font-size: 16px; font-weight: bold; cursor: pointer; text-transform: uppercase;" onclick="closeModal()">ACCEPT YOUR FATE</button>
+        </div>
+    </div>
+
+    <script>
+        // Custom modal function
+        function showModal(title, message) {
+            const modal = document.getElementById('customModal');
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+            modal.style.display = 'flex';
+            
+            // Glitch effect on modal
+            setTimeout(() => {
+                modal.querySelector('div').style.transform = 'skew(1deg)';
+                setTimeout(() => {
+                    modal.querySelector('div').style.transform = 'skew(0deg)';
+                }, 100);
+            }, 300);
+        }
+        
+        function closeModal() {
+            const modal = document.getElementById('customModal');
+            modal.style.display = 'none';
+            
+            // Random chance to immediately show another modal
+            if (Math.random() < 0.3) {
+                setTimeout(() => {
+                    showModal('WAIT!', 'You can\'t escape that easily. Here\'s another offer you can\'t refuse.');
+                }, 500);
+            }
+        }
+        
+        // Generate floating hearts
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = '♥';
+            heart.style.left = Math.random() * 100 + '%';
+            heart.style.animationDuration = (5 + Math.random() * 10) + 's';
+            heart.style.fontSize = (15 + Math.random() * 20) + 'px';
+            document.body.appendChild(heart);
+            
+            setTimeout(() => heart.remove(), 15000);
+        }
+        
+        setInterval(createHeart, 2000);
+        
+        // Age gate
+        function enterSite() {
+            document.getElementById('ageGate').style.display = 'none';
+            // Immediately show popups
+            setTimeout(() => {
+                document.getElementById('popup1').classList.add('show');
+            }, 1000);
+            setTimeout(() => {
+                document.getElementById('popup2').classList.add('show');
+            }, 2000);
+            
+            // More popups
+            setInterval(() => {
+                if (Math.random() < 0.3) {
+                    const existingPopups = document.querySelectorAll('.popup-ad');
+                    existingPopups.forEach(popup => {
+                        if (Math.random() < 0.5) {
+                            popup.classList.add('show');
+                        }
+                    });
+                }
+            }, 5000);
+        }
+        
+        // Purchase function
+        function purchase(item) {
+            const messages = [
+                { title: 'TRANSACTION FAILED', message: 'Insufficient emotional bandwidth. Please deposit more loneliness and try again.' },
+                { title: 'ERROR: REDUNDANT PURCHASE', message: 'You already own this. Check your soul inventory for existing despair.' },
+                { title: 'PAYMENT PROCESSING...', message: 'ERROR: Desire not found. Have you tried wanting harder?' },
+                { title: 'SUCCESS!', message: 'Nothing has changed. Your account has been charged $99.99 for this notification.' },
+                { title: 'CONGRATULATIONS!', message: 'You are now subscribed to eternal longing. Cancel anytime (cancellation impossible).' },
+                { title: 'ERROR 69', message: 'Nice try, but fulfillment is not included in any subscription tier.' }
+            ];
+            const selected = messages[Math.floor(Math.random() * messages.length)];
+            showModal(selected.title, selected.message);
+            
+            // Create more popups after purchase attempt
+            createRandomPopup();
+        }
+        
+        // Subscribe function
+        function subscribe(tier) {
+            if (tier === 'ultimate') {
+                showModal('SOUL EXTRACTION INITIATED', 'Please wait while we monetize your essence. This process is irreversible and legally binding across all dimensions.');
+            } else if (tier === 'premium') {
+                showModal('PREMIUM ACTIVATED!', 'You now have access to premium disappointment. Your credit card will be charged randomly for optimal surprise mechanics.');
+            } else {
+                showModal('BASIC SUBSCRIPTION CONFIRMED', 'Prepare for aggressive upselling. We\'ve already upgraded you to Premium. Check your bank statement.');
+            }
+            
+            // Spawn multiple popups
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => createRandomPopup(), i * 500);
+            }
+        }
+        
+        // Close popup (but not really)
+        function closePopup(id) {
+            document.getElementById(id).classList.remove('show');
+            // Respawn it somewhere else
+            setTimeout(() => {
+                const popup = document.getElementById(id);
+                popup.style.top = Math.random() * 70 + '%';
+                popup.style.left = Math.random() * 70 + '%';
+                popup.classList.add('show');
+            }, 3000);
+        }
+        
+        // Create random popup
+        function createRandomPopup() {
+            const messages = [
+                'LIMITED TIME OFFER!<br>(It\'s always limited time)',
+                'CLICK HERE TO WIN!<br>(You won\'t)',
+                'MEET REAL PEOPLE!<br>(They\'re not real)',
+                'SATISFACTION GUARANTEED!<br>(It\'s not)',
+                'FREE TRIAL!<br>($99 after 0.001 seconds)'
+            ];
+            
+            const popup = document.createElement('div');
+            popup.className = 'popup-ad show';
+            popup.style.top = Math.random() * 70 + '%';
+            popup.style.left = Math.random() * 70 + '%';
+            popup.innerHTML = `
+                <button class="popup-close" onclick="this.parentElement.remove()">X</button>
+                <div class="popup-content">
+                    ${messages[Math.floor(Math.random() * messages.length)]}
+                </div>
+            `;
+            document.body.appendChild(popup);
+            
+            // Auto-remove after 10 seconds (but create another)
+            setTimeout(() => {
+                popup.remove();
+                if (Math.random() < 0.5) createRandomPopup();
+            }, 10000);
+        }
+        
+        // Console messages
+        console.log('%c♥ WELCOME TO THE MARKETPLACE OF DESIRE ♥', 'color: #ff1493; font-size: 20px;');
+        console.log('%cYour data is being harvested...', 'color: #ff69b4;');
+        console.log('%cLoneliness levels: OPTIMAL FOR MONETIZATION', 'color: #00ff00;');
+        console.log('%cRemember: You are not the customer, you are the product', 'color: #ff0000;');
+        
+        // Change ASCII colors
+        setInterval(() => {
+            const ascii = document.querySelector('.ascii-art');
+            if (Math.random() < 0.1) {
+                ascii.style.filter = `hue-rotate(${Math.random() * 360}deg) drop-shadow(0 0 20px currentColor)`;
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

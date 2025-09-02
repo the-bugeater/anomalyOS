@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Data Reconciliation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Roboto:wght@400;500&display=swap');
+        
+        :root {
+            --google-blue: #4285F4;
+            --google-red: #DB4437;
+            --google-yellow: #F4B400;
+            --google-green: #0F9D58;
+            --background: #f5f5f5;
+            --foreground: #222;
+            --border: #ddd;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background);
+            color: var(--foreground);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #form-container {
+            width: 100%;
+            max-width: 700px;
+            border: 1px solid var(--border);
+            background-color: #fff;
+        }
+
+        .header {
+            font-family: 'Roboto Mono', monospace;
+            background-color: var(--foreground);
+            color: var(--background);
+            padding: 15px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .data-point {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .label {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            width: 100%;
+        }
+
+        .value {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--google-blue);
+        }
+
+        .actions button {
+            font-family: 'Roboto', sans-serif;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            border: 1px solid var(--border);
+            background: transparent;
+            padding: 8px 15px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: background-color 0.1s ease, color 0.1s ease;
+        }
+
+        button.confirm { color: var(--google-green); }
+        button.deny { color: var(--google-red); }
+
+        button:hover { background-color: #eee; }
+        button:active { transform: translateY(1px); }
+
+        .status {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.7rem;
+            color: #999;
+            width: 100%;
+            text-align: right;
+            height: 12px;
+            margin-top: 10px;
+        }
+
+        #submit-button {
+            display: block;
+            width: 100%;
+            background-color: var(--google-blue);
+            color: #fff;
+            border: none;
+            padding: 20px;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        #final-message {
+            display: none;
+            padding: 50px;
+            text-align: center;
+        }
+
+        #final-message h1 {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.2rem;
+            font-weight: 400;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="form-container">
+        <div class="header">
+            [INTERNAL] User Profile Reconciliation // UID: <span id="user-id"></span>
+        </div>
+        
+        <div id="form-content">
+            <div class="data-point">
+                <div>
+                    <div class="label">Inferred Anxiety Level</div>
+                    <div class="value">78.4% (Confidence: 92%)</div>
+                </div>
+                <div class="actions">
+                    <button class="confirm" data-target="status-1">Correct</button>
+                    <button class="deny" data-target="status-1">Incorrect</button>
+                </div>
+                <div class="status" id="status-1"></div>
+            </div>
+
+            <div class="data-point">
+                <div>
+                    <div class="label">Social Graph Market Value</div>
+                    <div class="value">$18.34 USD</div>
+                </div>
+                <div class="actions">
+                    <button class="confirm" data-target="status-2">Correct</button>
+                    <button class="deny" data-target="status-2">Incorrect</button>
+                </div>
+                <div class="status" id="status-2"></div>
+            </div>
+
+            <div class="data-point">
+                <div>
+                    <div class="label">Primary Emotional Driver</div>
+                    <div class="value">Fear of Social Isolation</div>
+                </div>
+                <div class="actions">
+                    <button class="confirm" data-target="status-3">Correct</button>
+                    <button class="deny" data-target="status-3">Incorrect</button>
+                </div>
+                <div class="status" id="status-3"></div>
+            </div>
+
+            <div class="data-point">
+                <div>
+                    <div class="label">Political Compliance Index</div>
+                    <div class="value">89.2 (Acceptable)</div>
+                </div>
+                <div class="actions">
+                    <button class="confirm" data-target="status-4">Correct</button>
+                    <button class="deny" data-target="status-4">Incorrect</button>
+                </div>
+                <div class="status" id="status-4"></div>
+            </div>
+
+            <div class="data-point">
+                <div>
+                    <div class="label">Probability of Impulse Purchase (next 24h)</div>
+                    <div class="value">81.7%</div>
+                </div>
+                <div class="actions">
+                    <button class="confirm" data-target="status-5">Correct</button>
+                    <button class="deny" data-target="status-5">Incorrect</button>
+                </div>
+                <div class="status" id="status-5"></div>
+            </div>
+
+            <button id="submit-button">Submit Corrections</button>
+        </div>
+
+        <div id="final-message">
+            <h1>Thank you. Your feedback is logged for system diagnostics.<br><br>It will not be applied to your profile.<br><br>We already have the data.</h1>
+        </div>
+
+    </div>
+
+    <script>
+        // Generate a random User ID
+        document.getElementById('user-id').textContent = (Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)).toUpperCase();
+
+        // Handle button clicks
+        const buttons = document.querySelectorAll('.actions button');
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                const statusElement = document.getElementById(button.dataset.target);
+                statusElement.textContent = 'INPUT RECORDED...';
+                setTimeout(() => {
+                    statusElement.textContent = '';
+                }, 1500);
+            });
+        });
+
+        // Handle the final submission
+        document.getElementById('submit-button').addEventListener('click', () => {
+            const formContent = document.getElementById('form-content');
+            const finalMessage = document.getElementById('final-message');
+            
+            formContent.style.display = 'none';
+            finalMessage.style.display = 'block';
+        });
+    </script>
+
+</body>
+</html>

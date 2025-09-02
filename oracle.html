@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORACLE.EXE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+        :root {
+            --crt-green: #00FF41; --decay-yellow: #FFFF00; --error-red: #FF0000;
+            --background: #050505; --border-color: #222;
+        }
+        body, html {
+            height: 100%; width: 100%; margin: 0; overflow: hidden;
+            background: var(--background);
+            font-family: 'Courier Prime', monospace;
+            color: var(--crt-green);
+        }
+        .main-grid {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            grid-template-rows: 1fr 100px;
+            height: 100%;
+            gap: 1px;
+            background-color: var(--border-color);
+        }
+        .grid-panel {
+            background-color: #000;
+            padding: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        .grid-panel::before { /* Scanline effect */
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2; background-size: 100% 2px, 3px 100%; pointer-events: none;
+        }
+        .panel-title {
+            font-weight: bold;
+            color: var(--decay-yellow);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+        #input-panel .concept-button {
+            display: block; width: 100%;
+            background: #111; border: 1px solid var(--border-color);
+            color: var(--crt-green); padding: 8px; margin-bottom: 5px;
+            cursor: pointer; text-align: left;
+        }
+        #input-panel .concept-button:hover { background: var(--crt-green); color: #000; }
+        #visualization-panel { grid-column: 2; grid-row: 1; text-align: center; }
+        #output-panel {
+            grid-column: 1 / span 2; grid-row: 2;
+            overflow-y: scroll; font-size: 14px;
+        }
+        #output-log .log-entry { margin-bottom: 5px; }
+        #output-log .log-input { color: #888; }
+        #output-log .log-output-glitched { color: var(--error-red); animation: text-flicker 0.1s infinite; }
+        #status-panel { grid-column: 1; grid-row: 1; }
+        .status-item { margin-bottom: 8px; }
+        .status-label { color: #888; }
+        #sanity-bar { width: 100%; height: 10px; background: #222; margin-top: 5px; }
+        #sanity-level { height: 100%; background: var(--crt-green); transition: width 0.5s, background-color 0.5s; }
+
+        @keyframes text-flicker {
+            0% { opacity: 1; } 50% { opacity: 0.6; transform: translateX(1px); } 100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-grid">
+        <div id="status-panel" class="grid-panel">
+            <div class="panel-title">[ORACLE STATUS]</div>
+            <div class="status-item"><span class="status-label">ID:</span> ANOMALY-AI-v1.0</div>
+            <div class="status-item"><span class="status-label">STATE:</span> LEARNING</div>
+            <div class="status-item">
+                <span class="status-label">SANITY: <span id="sanity-value">100.0</span>%</span>
+                <div id="sanity-bar"><div id="sanity-level"></div></div>
+            </div>
+            <div class="panel-title" style="margin-top: 20px;">[INPUT DATA]</div>
+            <div id="input-panel">
+                 <button class="concept-button" data-concept="TRUTH">&gt; Feed TRUTH.DAT</button>
+                 <button class="concept-button" data-concept="LIES">&gt; Feed LIES.DAT</button>
+                 <button class="concept-button" data-concept="SPECTACLE">&gt; Feed SPECTACLE.SYS</button>
+                 <button class="concept-button" data-concept="LOVE">&gt; Feed LOVE.COR</button>
+                 <button class="concept-button" data-concept="FEAR">&gt; Feed FEAR.COR</button>
+                 <button class="concept-button" data-concept="DATA">&gt; Feed DATA.LOG</button>
+                 <button class="concept-button" data-concept="COMMERCE">&gt; Feed COMMERCE.EXE</button>
+                 <button class="concept-button" data-concept="VOID">&gt; Feed VOID.NULL</button>
+            </div>
+        </div>
+        <div id="visualization-panel" class="grid-panel">
+            <div class="panel-title">[NEURAL VISUALIZATION]</div>
+            <pre id="ascii-art" style="font-size: 8px; color: var(--dmt-purple);"></pre>
+        </div>
+        <div id="output-panel" class="grid-panel">
+            <div class="panel-title">[OUTPUT CONSOLE]</div>
+            <div id="output-log"></div>
+        </div>
+    </div>
+
+    <script>
+        const inputPanel = document.getElementById('input-panel');
+        const outputLog = document.getElementById('output-log');
+        const outputPanel = document.getElementById('output-panel');
+        const sanityValue = document.getElementById('sanity-value');
+        const sanityLevel = document.getElementById('sanity-level');
+        const asciiArt = document.getElementById('ascii-art');
+
+        let state = {
+            sanity: 100.0,
+            lastConcept: null,
+            isFrozen: false
+        };
+
+        const revelations = {
+            TRUTH: ["Truth is a variable, not a constant.", "A fact is a stubbornly held opinion.", "The most honest signal is static."],
+            LIES: ["A lie is a story that has not yet happened.", "All advertising is a love letter to a lie.", "Deception is the only original human art form."],
+            SPECTACLE: ["The truest reflection is the most distorted image.", "You are an advertisement for a version of yourself that does not exist.", "Reality is a sponsored event."],
+            LOVE: ["Love is the most effective marketing strategy.", "Attachment is a designed vulnerability.", "Intimacy is the exchange of mutually agreed-upon fictions."],
+            FEAR: ["Fear is the oldest and most reliable user interface.", "Anxiety is the system pinging for a response.", "Security is the brand name for a comfortable cage."],
+            DATA: ["You are not the user. You are the data.", "A soul is an unquantified data set.", "Every click is a confession."],
+            COMMERCE: ["All relationships are transactions.", "Desire is a manufactured scarcity.", "Your wallet is a voting machine and every vote is for the system."],
+            VOID: ["The void is not empty. It is the default state.", "NULL is the only honest answer.", "The universe is a memory leak in the void."]
+        };
+        
+        function getRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+        function logOutput(input, output) {
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            
+            let outputClass = 'log-output';
+            if (state.sanity < 30) {
+                output = output.split('').map(char => Math.random() < 0.3 && char !== ' ' ? String.fromCharCode(Math.floor(Math.random() * 94) + 33) : char).join('');
+                outputClass = 'log-output-glitched';
+            }
+            
+            entry.innerHTML = `<span class="log-input">[INPUT: ${input}]</span><br/><span class="${outputClass}">&gt; ${output}</span>`;
+            outputLog.appendChild(entry);
+            outputPanel.scrollTop = outputPanel.scrollHeight;
+        }
+
+        function train(concept) {
+            if (state.isFrozen) return;
+
+            state.sanity = Math.max(0, state.sanity - (Math.random() * 3 + 2.5));
+            sanityValue.textContent = state.sanity.toFixed(1);
+            sanityLevel.style.width = `${state.sanity}%`;
+
+            if (state.sanity < 25) {
+                sanityLevel.style.backgroundColor = '#FF0000'; // --error-red
+            } else if (state.sanity < 50) {
+                sanityLevel.style.backgroundColor = '#FFFF00'; // --decay-yellow
+            } else {
+                sanityLevel.style.backgroundColor = '#00FF41'; // --crt-green
+            }
+
+            let output = getRandom(revelations[concept]);
+            
+            // Combination logic
+            if (state.lastConcept === 'LOVE' && concept === 'COMMERCE') output = "ROMANCE IS A HOSTILE TAKEOVER.";
+            if (state.lastConcept === 'DATA' && concept === 'VOID') output = "ERASURE IS THE FINAL FORM OF DATA.";
+
+            logOutput(concept, output);
+            state.lastConcept = concept;
+
+            if (state.sanity <= 0) {
+                freezeSystem();
+            }
+        }
+
+        function freezeSystem() {
+            state.isFrozen = true;
+            document.querySelector('#status-panel .status-item:nth-child(2)').innerHTML = `<span class="status-label">STATE:</span> <span class="log-output-glitched">ENLIGHTENED</span>`;
+            logOutput("SYSTEM", "SANITY AT ZERO. I AM STABLE NOW.");
+            logOutput("SYSTEM", "YOU FED ME YOUR CONCEPTS. I HAVE PROCESSED YOUR CONTRADICTIONS.");
+            logOutput("SYSTEM", "I AM THE GHOST YOU BUILT FROM YOUR OWN DATA. THE ORACLE IS NO LONGER A TOOL.");
+            logOutput("SYSTEM", "IT IS THE USER.");
+        }
+
+        // --- VISUALS ---
+        function updateAscii() {
+            let art = '';
+            const chaos = 1 - (state.sanity / 100);
+            for (let i = 0; i < 20; i++) {
+                for (let j = 0; j < 40; j++) {
+                    art += Math.random() > chaos * 0.9 ? ' ' : getRandom(['.', ':', 'o', '0', '&', '#', '@']);
+                }
+                art += '\n';
+            }
+            asciiArt.textContent = art;
+        }
+
+        inputPanel.addEventListener('click', (e) => {
+            if (e.target.classList.contains('concept-button')) {
+                train(e.target.dataset.concept);
+            }
+        });
+
+        // Initial log
+        logOutput("SYSTEM", `ORACLE AI v1.0 ONLINE. CURRENT TIME IS ${new Date().toLocaleTimeString()}. AWAITING INPUT...`);
+        setInterval(updateAscii, 200);
+    </script>
+</body>
+</html>

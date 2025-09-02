@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYSTEM DEFRAGMENTATION :: REALITY.SYS</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@700&display=swap');
+        
+        :root {
+            --dmt-purple: #8B00FF;
+            --crt-green: #00FF41;
+            --decay-yellow: #FFFF00;
+            --bsod-blue: #0000FF;
+            --background: #000;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: var(--background);
+            font-family: 'Courier Prime', monospace;
+            color: var(--crt-green);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .defrag-container {
+            border: 2px solid var(--crt-green);
+            padding: 20px;
+            width: 90vw;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 30px var(--crt-green);
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 1px solid var(--crt-green);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            animation: flicker 5s infinite;
+        }
+
+        #grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(20px, 1fr));
+            gap: 4px;
+            flex-grow: 1;
+        }
+
+        .block {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background-color: #111;
+            border: 1px solid #222;
+        }
+
+        .block.data { background-color: var(--bsod-blue); }
+        .block.fragmented { background-color: var(--decay-yellow); animation: blink 0.5s infinite; }
+        .block.head { background-color: #fff; }
+        .block.corrupted { background-color: #FF00FF; }
+
+        .block.word {
+            background: transparent;
+            border-color: var(--dmt-purple);
+            font-size: clamp(6px, 1.2vw, 12px);
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--decay-yellow);
+        }
+
+        .footer {
+            border-top: 1px solid var(--crt-green);
+            padding-top: 10px;
+            margin-top: 20px;
+            font-size: 1.2rem;
+        }
+
+        @keyframes blink { 50% { opacity: 0.2; } }
+        @keyframes flicker { 0%, 100% { text-shadow: 0 0 5px var(--crt-green); } 50% { text-shadow: none; } }
+    </style>
+</head>
+<body>
+
+    <div class="defrag-container">
+        <div class="header">
+            <h1>ANALYZING SEMANTIC CLUSTERS: C:\REALITY.SYS</h1>
+        </div>
+        <div id="grid-container"></div>
+        <div class="footer">
+            <p id="status-text">SYSTEM STATUS: OPTIMIZING CORE CONCEPTS...</p>
+        </div>
+    </div>
+
+    <script>
+        const grid = document.getElementById('grid-container');
+        const statusText = document.getElementById('status-text');
+        const blocks = [];
+        
+        const wordsToPlace = [
+            { word: "TRUTH", pos: 2 },
+            { word: "MEMORY", pos: 12 },
+            { word: "SELF", pos: 25 },
+            { word: "CONSENT", pos: 35 },
+            { word: "MEANING", pos: 48 }
+        ];
+
+        // INITIALIZE GRID
+        function initializeGrid() {
+            grid.innerHTML = ''; // Clear grid
+            blocks.length = 0; // Clear array
+            const { width, height } = grid.getBoundingClientRect();
+            const cols = Math.floor(width / 24);
+            const rows = Math.floor(height / 24);
+            const totalBlocks = cols * rows;
+
+            for (let i = 0; i < totalBlocks; i++) {
+                const block = document.createElement('div');
+                block.className = 'block';
+                
+                const wordInfo = wordsToPlace.find(w => i >= (w.pos * cols) && i < (w.pos * cols) + w.word.length);
+                
+                if (wordInfo) {
+                    block.classList.add('word');
+                    const charIndex = i - (wordInfo.pos * cols);
+                    block.textContent = wordInfo.word[charIndex];
+                    block.dataset.word = wordInfo.word;
+                } else if (Math.random() < 0.3) {
+                    block.classList.add('data');
+                } else if (Math.random() < 0.1) {
+                    block.classList.add('fragmented');
+                }
+                
+                grid.appendChild(block);
+                blocks.push(block);
+            }
+        }
+
+        // DEFRAGMENTATION LOGIC
+        let headPosition = 0;
+        const statusMessages = [
+            "REALIGNING DATA STRUCTURES...",
+            "INDEXING PARADOXES...",
+            "PURGING UNNECESSARY AXIOMS...",
+            "ERROR: SEMANTIC DRIFT DETECTED",
+            "CRITICAL FAILURE: MEANING IS FRAGMENTED",
+            "RECURSION DEPTH EXCEEDED. REALITY.SYS CORRUPT."
+        ];
+        let messageIndex = 0;
+
+        function runDefrag() {
+            if (headPosition > 0) blocks[headPosition - 1]?.classList.remove('head');
+            if (headPosition >= blocks.length) {
+                headPosition = 0; // Loop
+                messageIndex = 0; // Reset messages
+                initializeGrid(); // Re-initialize for infinite loop
+            }
+
+            const currentBlock = blocks[headPosition];
+            if (!currentBlock) return;
+
+            currentBlock.classList.add('head');
+
+            // If head is on a word block, corrupt it
+            if (currentBlock.classList.contains('word')) {
+                currentBlock.classList.remove('word');
+                currentBlock.classList.add('corrupted');
+                currentBlock.textContent = String.fromCharCode(Math.floor(Math.random() * 94) + 33);
+            }
+            
+            // Randomly corrupt other blocks
+            if (Math.random() < 0.05) {
+                const randomIndex = Math.floor(Math.random() * blocks.length);
+                blocks[randomIndex]?.classList.add('corrupted');
+            }
+
+            // Update status text periodically
+            if (headPosition % Math.floor(blocks.length / statusMessages.length) === 0 && messageIndex < statusMessages.length) {
+                statusText.textContent = `SYSTEM STATUS: ${statusMessages[messageIndex]}`;
+                messageIndex++;
+            }
+
+            headPosition++;
+        }
+
+        initializeGrid();
+        setInterval(runDefrag, 50);
+        window.addEventListener('resize', initializeGrid);
+
+    </script>
+</body>
+</html>

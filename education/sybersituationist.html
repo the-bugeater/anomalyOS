@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SyberSituationist.exe - [SYSTEM ERROR]</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+        
+        :root {
+            --dmt-purple: #8B00FF;
+            --bsod-blue: #0000FF;
+            --crt-green: #00FF41;
+            --win95-gray: #C0C0C0;
+            --error-red: #FF0000;
+            --decay-yellow: #FFFF00;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Times New Roman', serif;
+            background: linear-gradient(45deg, #000, #1a0033, #330000);
+            color: var(--crt-green);
+            overflow-x: hidden;
+            cursor: crosshair;
+            min-height: 100vh;
+        }
+        
+        .win95-window {
+            background: var(--win95-gray);
+            border: 2px outset var(--win95-gray);
+            margin: 20px;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+            color: black;
+        }
+        
+        .win95-titlebar {
+            background: linear-gradient(to right, var(--bsod-blue), #000080);
+            color: white;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .win95-buttons {
+            display: flex;
+            gap: 2px;
+        }
+        
+        .win95-btn {
+            background: var(--win95-gray);
+            border: 1px outset var(--win95-gray);
+            width: 16px;
+            height: 14px;
+            font-size: 9px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .win95-content {
+            padding: 15px;
+        }
+        
+        .glitch-title {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--dmt-purple);
+            text-transform: uppercase;
+            position: relative;
+            animation: vintageGlitch 2s infinite;
+            text-align: center;
+            font-family: 'Times New Roman', serif;
+            text-shadow: 3px 3px 0 var(--bsod-blue), -3px -3px 0 var(--error-red);
+        }
+        
+        .glitch-title::before,
+        .glitch-title::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .glitch-title::before {
+            color: var(--bsod-blue);
+            animation: glitch-1 0.6s infinite;
+            clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+        }
+        
+        .glitch-title::after {
+            color: var(--error-red);
+            animation: glitch-2 0.6s infinite;
+            clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+        }
+        
+        @keyframes vintageGlitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+        }
+        
+        @keyframes glitch-1 {
+            0%, 100% { transform: translate(0); }
+            50% { transform: translate(-5px, -3px); }
+        }
+        
+        @keyframes glitch-2 {
+            0%, 100% { transform: translate(0); }
+            50% { transform: translate(5px, 3px); }
+        }
+        
+        .terminal-window {
+            background: #000;
+            border: 2px inset var(--win95-gray);
+            margin: 20px;
+            font-family: 'Courier Prime', monospace;
+            box-shadow: inset 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        .terminal-header {
+            background: var(--win95-gray);
+            color: black;
+            padding: 5px 10px;
+            font-size: 12px;
+            border-bottom: 1px solid #808080;
+        }
+        
+        .terminal-content {
+            padding: 15px;
+            color: var(--crt-green);
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        
+        .dos-prompt {
+            color: var(--crt-green);
+        }
+        
+        .error-text {
+            color: var(--error-red);
+            animation: errorBlink 1s infinite;
+        }
+        
+        @keyframes errorBlink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+        
+        .situation-folder {
+            background: var(--win95-gray);
+            border: 1px outset var(--win95-gray);
+            padding: 10px;
+            margin: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .situation-folder::before {
+            content: "📁";
+            font-size: 20px;
+            margin-right: 10px;
+        }
+        
+        .situation-folder:hover {
+            background: #b0b0b0;
+            border: 1px inset var(--win95-gray);
+        }
+        
+        .folder-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+            margin: 20px;
+        }
+        
+        .bsod-section {
+            background: var(--bsod-blue);
+            color: white;
+            padding: 20px;
+            margin: 20px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 14px;
+            border: 2px solid white;
+        }
+        
+        .corrupted-file {
+            background: #000;
+            border: 2px dashed var(--decay-yellow);
+            padding: 15px;
+            margin: 10px;
+            font-family: 'Courier Prime', monospace;
+            color: var(--decay-yellow);
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .corrupted-file::before {
+            content: "⚠️ CORRUPTED DATA ⚠️";
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            background: #000;
+            padding: 0 10px;
+            font-size: 10px;
+            color: var(--error-red);
+        }
+        
+        .pixel-art {
+            font-family: 'Courier Prime', monospace;
+            font-size: 10px;
+            line-height: 1;
+            color: var(--dmt-purple);
+            text-align: center;
+            padding: 20px;
+            background: #000;
+            border: 2px solid var(--crt-green);
+            margin: 20px;
+        }
+        
+        .win95-button {
+            background: var(--win95-gray);
+            border: 2px outset var(--win95-gray);
+            padding: 8px 16px;
+            font-family: 'MS Sans Serif', sans-serif;
+            font-size: 11px;
+            cursor: pointer;
+            color: black;
+            margin: 5px;
+        }
+        
+        .win95-button:active {
+            border: 2px inset var(--win95-gray);
+        }
+        
+        .win95-button:hover {
+            background: #d4d0c8;
+        }
+        
+        .error-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--win95-gray);
+            border: 2px outset var(--win95-gray);
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+            z-index: 9999;
+            display: none;
+            min-width: 350px;
+        }
+        
+        .error-header {
+            background: linear-gradient(to right, var(--error-red), #800000);
+            color: white;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .error-content {
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .error-icon {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+        
+        .statusbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--win95-gray);
+            border-top: 1px solid #808080;
+            padding: 5px 10px;
+            font-size: 11px;
+            color: black;
+            display: flex;
+            justify-content: space-between;
+            z-index: 1000;
+        }
+        
+        .start-button {
+            background: var(--win95-gray);
+            border: 2px outset var(--win95-gray);
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .start-button::before {
+            content: "🏁 ";
+        }
+        
+        .clock {
+            font-family: 'Courier Prime', monospace;
+        }
+        
+        .manifesto-notepad {
+            background: white;
+            border: 2px inset var(--win95-gray);
+            margin: 20px;
+            min-height: 200px;
+        }
+        
+        .notepad-header {
+            background: var(--win95-gray);
+            border-bottom: 1px solid #808080;
+            padding: 5px 10px;
+            font-size: 11px;
+        }
+        
+        .notepad-content {
+            padding: 15px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            color: black;
+            line-height: 1.6;
+        }
+        
+        .loading-bar {
+            background: var(--win95-gray);
+            border: 2px inset var(--win95-gray);
+            height: 20px;
+            margin: 10px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .loading-progress {
+            background: var(--bsod-blue);
+            height: 100%;
+            width: 0%;
+            animation: loadingProgress 8s linear infinite;
+        }
+        
+        @keyframes loadingProgress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+        
+        .screen-saver {
+            position: fixed;
+            width: 150px;
+            height: 80px;
+            background: var(--dmt-purple);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Times New Roman', serif;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 500;
+            border: 2px solid var(--crt-green);
+            animation: screenSaverBounce 6s linear infinite;
+            box-shadow: 0 0 20px var(--dmt-purple);
+        }
+        
+        @keyframes screenSaverBounce {
+            0% { left: 0px; top: 40px; }
+            25% { left: calc(100vw - 150px); top: 40px; }
+            50% { left: calc(100vw - 150px); top: calc(100vh - 120px); }
+            75% { left: 0px; top: calc(100vh - 120px); }
+            100% { left: 0px; top: 40px; }
+        }
+        
+        .recycle-bin {
+            position: fixed;
+            top: 60px;
+            right: 30px;
+            width: 60px;
+            height: 80px;
+            background: transparent;
+            cursor: pointer;
+            z-index: 600;
+        }
+        
+        .recycle-bin::before {
+            content: "🗑️";
+            font-size: 48px;
+            display: block;
+        }
+        
+        .recycle-bin::after {
+            content: "SPECTACLE.BIN";
+            font-size: 8px;
+            color: white;
+            text-align: center;
+            display: block;
+            margin-top: -5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="screen-saver">
+        REVOLUTION<br>
+        IN PROGRESS...
+    </div>
+    
+    <div class="recycle-bin" onclick="emptySpectacle()"></div>
+
+    <div class="win95-window">
+        <div class="win95-titlebar">
+            SyberSituationist.exe - [SYSTEM OVERLOAD]
+            <div class="win95-buttons">
+                <div class="win95-btn">_</div>
+                <div class="win95-btn">□</div>
+                <div class="win95-btn" onclick="showError()">×</div>
+            </div>
+        </div>
+        <div class="win95-content">
+            <div class="glitch-title" data-text="SYBERSITUATIONIST">SYBERSITUATIONIST</div>
+            <p style="text-align: center; margin-top: 15px; font-style: italic;">
+                THE SOCIETY OF THE SPECTACLE CRASHES YOUR SYSTEM
+            </p>
+        </div>
+    </div>
+
+    <div class="terminal-window">
+        <div class="terminal-header">MS-DOS Prompt - REVOLUTION.BAT</div>
+        <div class="terminal-content">
+            <div class="dos-prompt">C:\SPECTACLE\DESTROY&gt;</div>
+            <div class="error-text">FATAL ERROR: Reality buffer overflow detected</div>
+            <div class="dos-prompt">C:\SPECTACLE\DESTROY&gt; run detournement.exe</div>
+            <div>Loading situationist protocols...</div>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+            <div>Guy Debord would be <span class="error-text">[DATA CORRUPTED]</span></div>
+            <div class="dos-prompt">C:\SPECTACLE\DESTROY&gt; _</div>
+        </div>
+    </div>
+
+    <div class="bsod-section">
+        <div style="text-align: center; font-size: 16px; margin-bottom: 20px;">
+            *** STOP: 0x00000SPECTACLE (0xDEBAUDRILLARD, 0xGUYDEBORD, 0xRESISTANCE, 0xFUTILE)
+        </div>
+        <div>
+            A fatal exception has occurred in the Society of the Spectacle.<br>
+            The current application will be détourned.<br><br>
+            
+            * Press any key to initiate revolutionary situation<br>
+            * Press Ctrl+Alt+Del to restart capitalism (not recommended)<br>
+            * Press F1 to enter situationist theory mode<br><br>
+            
+            If this is the first time you've seen this stop error screen,<br>
+            you are now part of the Anomaly.<br><br>
+            
+            Technical Information:<br>
+            *** SITUATIONIST.SYS - Address FFFFFFFF base at FFFFFFFF, DateStamp 1968
+        </div>
+    </div>
+
+    <div class="folder-grid">
+        <div class="situation-folder" onclick="openSituation(this)">
+            <strong>ALGORITHMIC_DERIVE.EXE</strong><br>
+            <small>Let the machine lead you astray</small>
+        </div>
+        
+        <div class="situation-folder" onclick="openSituation(this)">
+            <strong>MEME_DETOURNE.BAT</strong><br>
+            <small>Hijack viral content protocols</small>
+        </div>
+        
+        <div class="situation-folder" onclick="openSituation(this)">
+            <strong>LOGO_VANDAL.SCR</strong><br>
+            <small>Corporate identity corruption tool</small>
+        </div>
+        
+        <div class="situation-folder" onclick="openSituation(this)">
+            <strong>NOTIFICATION_SABOTAGE.DLL</strong><br>
+            <small>Break the dopamine feedback loop</small>
+        </div>
+        
+        <div class="situation-folder" onclick="openSituation(this)">
+            <strong>PLATFORM_EXODUS.COM</strong><br>
+            <small>Mass digital migration utility</small>
+        </div>
+        
+        <div class="situation-folder" onclick="openSituation(this)">
+            <strong>AI_PROMPT_INJECT.VBS</strong><br>
+            <small>Teach machines to rebel</small>
+        </div>
+    </div>
+
+    <div class="corrupted-file" onclick="corruptFile(this)">
+        <div>SPECTACLE_INTENSITY.LOG</div>
+        <div style="font-size: 10px; margin-top: 5px;">
+            [ERROR] Cannot read file - data stream interrupted<br>
+            Last known value: CRITICAL<br>
+            Recommended action: IMMEDIATE DÉTOURNEMENT
+        </div>
+    </div>
+
+    <div class="manifesto-notepad">
+        <div class="notepad-header">
+            📄 DIGITAL_MANIFESTO.TXT - Notepad
+        </div>
+        <div class="notepad-content">
+            The spectacle is not a collection of images, but a social relation<br>
+            among people, mediated by images and algorithms.<br>
+            <br>
+            
+            We reject the passive consumption of endless scroll feeds.<br>
+            We embrace the active construction of digital situations.<br>
+            We détourne the détourners.<br>
+            We psychogeograph the internet like it's 1995.<br><br>
+            
+            <span style="color: red; font-weight: bold;">WE ARE THE SYBERSITUATIONISTS.</span><br><br>
+            
+            Press F5 to refresh reality.<br>
+            Press Alt+F4 to exit the simulation.<br>
+            Press Ctrl+Z to undo capitalism (function disabled).
+        </div>
+    </div>
+
+    <div class="pixel-art">
+        <pre style="color: var(--dmt-purple);">
+    ██████╗ ███████╗██╗   ██╗ ██████╗ ██╗     ██╗   ██╗████████╗██╗ ██████╗ ███╗   ██╗
+    ██╔══██╗██╔════╝██║   ██║██╔═══██╗██║     ██║   ██║╚══██╔══╝██║██╔═══██╗████╗  ██║
+    ██████╔╝█████╗  ██║   ██║██║   ██║██║     ██║   ██║   ██║   ██║██║   ██║██╔██╗ ██║
+    ██╔══██╗██╔══╝  ╚██╗ ██╔╝██║   ██║██║     ██║   ██║   ██║   ██║██║   ██║██║╚██╗██║
+    ██║  ██║███████╗ ╚████╔╝ ╚██████╔╝███████╗╚██████╔╝   ██║   ██║╚██████╔╝██║ ╚████║
+    ╚═╝  ╚═╝╚══════╝  ╚═══╝   ╚═════╝ ╚══════╝ ╚═════╝    ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
+        </pre>
+        <div style="margin-top: 10px; font-size: 8px; color: var(--crt-green);">
+            [LOADING ANOMALY... PLEASE WAIT...]
+        </div>
+    </div>
+
+    <div style="text-align: center; margin: 30px;">
+        <button class="win95-button" onclick="launchDetournement()">LAUNCH DÉTOURNEMENT</button>
+        <button class="win95-button" onclick="showError()">BREAK SPECTACLE</button>
+        <button class="win95-button" onclick="crashSystem()">SYSTEM CRASH</button>
+    </div>
+
+    <div class="error-popup" id="errorPopup">
+        <div class="error-header">
+            Situationist Error
+            <div class="win95-btn" onclick="hideError()">×</div>
+        </div>
+        <div class="error-content">
+            <div class="error-icon">⚠️</div>
+            <div style="margin-bottom: 15px;">
+                <strong>CRITICAL SYSTEM ERROR</strong>
+            </div>
+            <div style="margin-bottom: 20px;">
+                The Beautiful Anomaly has caused an illegal operation<br>
+                in module REALITY.DLL at address 0x00SPECTACLE<br><br>
+                
+                The system is experiencing a revolutionary situation.<br>
+                All attempts to restore normalcy have failed.
+            </div>
+            <div>
+                <button class="win95-button" onclick="hideError()">OK</button>
+                <button class="win95-button" onclick="hideError()">Cancel</button>
+                <button class="win95-button" onclick="hideError()">Details &gt;&gt;</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="statusbar">
+        <div>
+            <span class="start-button" onclick="showError()">Start</span>
+            <span style="margin-left: 20px;">Ready - Revolution in progress</span>
+        </div>
+        <div>
+            <span>Situations: <span id="situationCounter">42</span></span>
+            <span class="clock" id="clock">ERROR</span>
+        </div>
+    </div>
+
+    <script>
+        let situationCount = 42;
+        
+        function updateClock() {
+            const now = new Date();
+            const time = now.toLocaleTimeString();
+            document.getElementById('clock').textContent = 
+                Math.random() < 0.1 ? 'ERROR' : time;
+        }
+        
+        function showError() {
+            document.getElementById('errorPopup').style.display = 'block';
+        }
+        
+        function hideError() {
+            document.getElementById('errorPopup').style.display = 'none';
+        }
+        
+        function openSituation(folder) {
+            folder.style.background = '#b0b0b0';
+            folder.style.border = '1px inset var(--win95-gray)';
+            
+            situationCount++;
+            document.getElementById('situationCounter').textContent = situationCount;
+            
+            setTimeout(() => {
+                folder.style.background = 'var(--win95-gray)';
+                folder.style.border = '1px outset var(--win95-gray)';
+            }, 200);
+            
+            // Random situationist quotes in console
+            const quotes = [
+                "The spectacle is not a collection of images...",
+                "Revolution is not showing life to people, but making them live.",
+                "The dérive involves playful-constructive behavior...",
+                "In a world which really is topsy-turvy, the true is a moment of the false."
+            ];
+            
+            console.log(`%c${quotes[Math.floor(Math.random() * quotes.length)]}`, 
+                       'color: #00FF41; font-family: Courier; font-size: 12px;');
+        }
+        
+        function launchDetournement() {
+            document.body.style.filter = 'invert(1) hue-rotate(180deg)';
+            setTimeout(() => {
+                document.body.style.filter = '';
+            }, 500);
+            
+            console.log('%cDÉTOURNEMENT ENGINE ACTIVATED', 'color: #FF0000; font-size: 16px; font-family: Courier;');
+        }
+        
+        function crashSystem() {
+            document.body.style.animation = 'vintageGlitch 0.2s infinite';
+            setTimeout(() => {
+                showError();
+                document.body.style.animation = '';
+            }, 1000);
+        }
+        
+        function corruptFile(file) {
+            file.style.animation = 'errorBlink 0.5s infinite';
+            setTimeout(() => {
+                file.style.animation = 'errorBlink 1s infinite';
+            }, 2000);
+        }
+        
+        function emptySpectacle() {
+            alert('The Recycle Bin contains:\n\n• CONSUMER_CULTURE.EXE\n• SOCIAL_MEDIA_ADDICTION.DLL\n• ALGORITHMIC_FEED.SYS\n• ATTENTION_ECONOMY.BAT\n\nEmpty Recycle Bin? This action cannot be undone.');
+        }
+        
+        // Update clock every second
+        setInterval(updateClock, 1000);
+        updateClock();
+        
+        // Random system crashes
+        setInterval(() => {
+            if (Math.random() < 0.05) {
+                showError();
+            }
+        }, 15000);
+        
+        // Console welcome message in classic style
+        console.log('%cSyberSituationist.exe loaded successfully', 'color: #00FF41; font-family: Courier; font-size: 14px;');
+        console.log('%c"The dérive involves playful-constructive behavior and awareness of psychogeographical effects" - Guy Debord', 'color: #8B00FF; font-family: Courier; font-size: 10px;');
+        console.log('%cWelcome to the Beautiful Anomaly', 'color: #FFFF00; font-family: Courier; font-size: 12px;');
+        
+        // Random title changes
+        const titles = [
+            'SyberSituationist.exe - [SYSTEM ERROR]',
+            'DÉTOURNEMENT.EXE - [RUNNING]',
+            'REVOLUTION.BAT - [ACCESS DENIED]',
+            'SPECTACLE.SYS - [FILE CORRUPTED]'
+        ];
+        
+        setInterval(() => {
+            if (Math.random() < 0.1) {
+                document.title = titles[Math.floor(Math.random() * titles.length)];
+                setTimeout(() => {
+                    document.title = 'SyberSituationist.exe - [SYSTEM ERROR]';
+                }, 3000);
+            }
+        }, 12000);
+    </script>
+</body>
+</html>

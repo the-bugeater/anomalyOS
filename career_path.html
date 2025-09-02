@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career_Path.exe</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Sans+MS&family=Courier+Prime&display=swap');
+        :root {
+            --win95-gray: #C0C0C0; --bsod-blue: #0000FF; --win-dark-gray: #808080;
+            --crt-green: #00FF41; --error-red: #FF0000;
+        }
+        body, html {
+            height: 100%; width: 100%; margin: 0; overflow: hidden;
+            background: var(--win95-gray);
+            font-family: 'MS Sans Serif', sans-serif; font-size: 11px;
+        }
+        .window {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 700px; height: 550px;
+            background: var(--win95-gray); border: 2px outset var(--win95-gray);
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            display: flex; flex-direction: column;
+        }
+        .title-bar { background: linear-gradient(to right, #000080, var(--bsod-blue)); color: white; padding: 3px 5px; font-weight: bold; }
+        .content { flex-grow: 1; padding: 15px; }
+        .screen { display: none; height: 100%; flex-direction: column; }
+        .screen.active { display: flex; }
+        .stats-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 5px; border: 2px inset var(--win-dark-gray); margin-bottom: 15px; }
+        .stat-item { text-align: center; }
+        .stat-label { font-size: 10px; }
+        .stat-value { font-weight: bold; font-family: 'Courier Prime', monospace; font-size: 14px; }
+        #stat-debt { color: var(--error-red); }
+        #stat-gpa { color: var(--crt-green); }
+        #stat-sanity { color: var(--bsod-blue); }
+        h2 { font-family: 'Comic Sans MS', cursive; color: #000080; text-align: center; margin-top: 0; }
+        .choice-box { border: 2px groove var(--win95-gray); padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
+        .choice-button { display: block; width: 100%; text-align: left; margin: 10px 0; background: var(--win95-gray); border: 2px outset var(--win95-gray); padding: 10px; font-size: 12px; cursor: pointer; }
+        .choice-button:hover { font-weight: bold; }
+        .choice-button:active { border-style: inset; }
+        #job-market-screen { position: relative; background: white; border: 2px inset var(--win-dark-gray); }
+        .resume { position: absolute; font-size: 32px; animation: fly 5s linear; }
+        @keyframes fly { from { left: -50px; } to { left: 100%; } }
+        #shredder { position: absolute; right: 0; top: 0; height: 100%; width: 40px; background: repeating-linear-gradient(45deg, #333, #333 5px, #555 5px, #555 10px); }
+        #review-screen { font-family:'Courier Prime', monospace; background: white; border: 2px inset var(--win-dark-gray); padding: 10px; }
+        .review-header { text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 15px; }
+        .review-table { display: grid; grid-template-columns: 1fr 2fr; gap: 5px 10px; margin-bottom: 15px; }
+
+        /* --- MODAL STYLES --- */
+        #modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.3); z-index: 999; display: none;
+        }
+        .custom-popup {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 350px; background: var(--win95-gray); border: 2px outset var(--win95-gray);
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.5); z-index: 1000;
+            display: none;
+        }
+        .popup-titlebar {
+            background: linear-gradient(to right, #008000, #00A000); /* Cheerful Green */
+            color: white; padding: 3px 5px; font-weight: bold;
+            font-family: 'Comic Sans MS', cursive;
+        }
+        .popup-content { padding: 20px; text-align: center; font-family: 'Comic Sans MS', cursive; }
+        .popup-buttons { margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <div class="window">
+        <div class="title-bar">SynoptiCorp University - Career Path Simulator</div>
+        <div class="content">
+            <div class="stats-bar">
+                <div class="stat-item"><div class="stat-label">DEBT</div><div class="stat-value" id="stat-debt">$0</div></div>
+                <div class="stat-item"><div class="stat-label">GPA</div><div class="stat-value" id="stat-gpa">100%</div></div>
+                <div class="stat-item"><div class="stat-label">SANITY</div><div class="stat-value" id="stat-sanity">100%</div></div>
+                <div class="stat-item"><div class="stat-label">EXPERIENCE</div><div class="stat-value" id="stat-xp">0 XP</div></div>
+            </div>
+            <div id="major-screen" class="screen active">
+                <h2>Welcome, Student! Please Select Your Major:</h2>
+                <div class="choice-box">
+                    <p>Your choice will determine your starting parameters for success in the Spectacle.</p>
+                    <button class="choice-button" onclick="selectMajor('CompSci')">Computer Science (High Debt, 'Practical')</button>
+                    <button class="choice-button" onclick="selectMajor('Humanities')">Humanities (Medium Debt, 'Impractical')</button>
+                    <button class="choice-button" onclick="selectMajor('Art')">Fine Arts (Low Debt, 'Useless')</button>
+                </div>
+            </div>
+            <div id="choice-screen" class="screen">
+                <h2 id="choice-title"></h2>
+                <div class="choice-box">
+                    <p id="choice-desc"></p>
+                    <div id="choice-buttons"></div>
+                </div>
+            </div>
+            <div id="job-market-screen" class="screen">
+                <h2>Congratulations, Graduate! Welcome to the Job Market.</h2>
+                <p>Click the "APPLY" button to submit your resume before it gets shredded.</p>
+                <div id="shredder"></div>
+                <button class="win95-button" style="position:absolute; bottom:10px; left:50%; transform:translateX(-50%);" onclick="applyForJob()">APPLY</button>
+            </div>
+            <div id="review-screen" class="screen"></div>
+        </div>
+    </div>
+    
+    <div id="modal-overlay"></div>
+    <div id="custom-popup" class="custom-popup">
+        <div class="popup-titlebar" id="popup-title">Event</div>
+        <div class="popup-content">
+            <p id="popup-message" style="white-space: pre-wrap;"></p>
+            <div class="popup-buttons">
+                <button class="win95-button" onclick="closeModal()">OK</button>
+            </div>
+        </div>
+    </div>
+<script>
+    const state = { debt: 0, gpa: 100, sanity: 100, xp: 0, year: 0 };
+    
+    // MODIFICATION 1: Dilemmas now include a unique 'outcome' object for each choice.
+    const dilemmas = [
+        { year: 1, title: 'Freshman Year', desc: 'An opportunity for a prestigious, unpaid internship at SynoptiCorp has opened up. It will consume all your free time.', choices: [
+            { 
+                text: 'Take the internship.', 
+                effects: { debt: 5000, gpa: -15, sanity: -20, xp: 500 },
+                outcome: { title: 'Internship Secured', message: 'You spend the summer fetching coffee and updating spreadsheets.\nThe experience is invaluable, but the toll is significant.\n\n[-15% GPA]\n[-20% Sanity]\n[+500 XP]' }
+            },
+            { 
+                text: 'Focus on your classes.', 
+                effects: { debt: 5000, gpa: 10, sanity: -10, xp: 0 },
+                outcome: { title: 'Studious Summer', message: 'You hit the books and ace your summer courses.\nYour parents are proud, but you feel like you missed out on something.\n\n[+10% GPA]\n[-10% Sanity]' }
+            },
+            { 
+                text: 'Work double shifts at the SoyLife Cafe.', 
+                effects: { debt: -2000, gpa: -20, sanity: -30, xp: 50 },
+                outcome: { title: 'The Grind', message: 'The smell of synthetic soy now haunts your dreams.\nYou managed to pay down some debt, but at what cost?\n\n[-$7000 Debt vs Peers]\n[-20% GPA]\n[-30% Sanity]' }
+            }
+        ]},
+        { year: 2, title: 'Sophomore Year', desc: 'A popular influencer collective wants you to join. It requires you to constantly perform a marketable version of yourself.', choices: [
+            { 
+                text: 'Join the collective.', 
+                effects: { debt: 2000, gpa: -10, sanity: -30, xp: 200 },
+                outcome: { title: 'Going Viral', message: 'You master the art of the perfect candid photo and sponsored post.\nYour follower count is high, but your sense of self is low.\n\n[-30% Sanity]\n[+200 XP]' }
+            },
+            { 
+                text: 'Decline and focus on authentic relationships.', 
+                effects: { debt: 2000, gpa: 0, sanity: 5, xp: -50 },
+                outcome: { title: 'Logged Off', message: 'You spend your time with real people in the real world.\nIt\'s refreshing, but your professional network is now a ghost town.\n\n[+5% Sanity]\n[-50 XP]' }
+            },
+        ]},
+        { year: 3, title: 'Junior Year', desc: 'Your professor teaches subversive, non-marketable theory. Do you embrace it, or report them to the dean for a grade boost?', choices: [
+            { 
+                text: 'Embrace critical theory.', 
+                effects: { debt: 1000, gpa: -5, sanity: 10, xp: 0 },
+                outcome: { title: 'Mind Expanded', message: 'You learn to deconstruct power structures, including your own precarious position within them.\nIt\'s enlightening and terrifying.\n\n[+10% Sanity]\n[-5% GPA]' }
+            },
+            { 
+                text: 'Report the professor.', 
+                effects: { debt: 1000, gpa: 15, sanity: -40, xp: 100 },
+                outcome: { title: 'Company Man', message: 'You receive an anonymous commendation from the Dean\'s office and a generous grade boost.\nYou can no longer look at yourself in the mirror.\n\n[+15% GPA]\n[-40% Sanity]' }
+            },
+        ]},
+        { year: 4, title: 'Senior Year', desc: 'The SynoptiCorp recruitment fair requires you to sign an NDA giving them access to your academic and social data.', choices: [
+            { 
+                text: 'Sign the NDA and network.', 
+                effects: { debt: 0, gpa: 0, sanity: -15, xp: 300 },
+                outcome: { title: 'Data Harvested', message: 'You shake hands and smile as SynoptiCorp bots begin indexing your entire digital existence.\nYou make some great "contacts."\n\n[-15% Sanity]\n[+300 XP]' }
+            },
+            { 
+                text: 'Refuse on principle and go home.', 
+                effects: { debt: 0, gpa: 0, sanity: 10, xp: -200 },
+                outcome: { title: 'Principled Stand', message: 'You walk out with your head held high and your data privacy intact.\nRecruiters take note of your "uncooperative" attitude.\n\n[+10% Sanity]\n[-200 XP]' }
+            },
+        ]}
+    ];
+    
+    const screens = document.querySelectorAll('.screen');
+    const debtEl = document.getElementById('stat-debt'), gpaEl = document.getElementById('stat-gpa'), sanityEl = document.getElementById('stat-sanity'), xpEl = document.getElementById('stat-xp');
+    
+    // --- MODAL SYSTEM ---
+    const overlay = document.getElementById('modal-overlay');
+    const popup = document.getElementById('custom-popup');
+    const popupTitle = document.getElementById('popup-title');
+    const popupMessage = document.getElementById('popup-message');
+    let afterModalCallback = null;
+
+    function showModal(message, callback) {
+        popupMessage.textContent = message.replace(/\\n/g, '\n');
+        overlay.style.display = 'block';
+        popup.style.display = 'block';
+        afterModalCallback = callback;
+    }
+
+    function closeModal() {
+        overlay.style.display = 'none';
+        popup.style.display = 'none';
+        if (afterModalCallback) {
+            afterModalCallback();
+            afterModalCallback = null;
+        }
+    }
+
+    // MODIFICATION 2: The game loop now uses the 'outcome' from the chosen option.
+    function resolveChoice(choice) {
+        const effects = choice.effects;
+        state.debt += effects.debt || 0;
+        state.gpa += effects.gpa || 0;
+        state.sanity += effects.sanity || 0;
+        state.xp += effects.xp || 0;
+        updateStats();
+
+        state.year++;
+        
+        // Use the outcome from the specific choice for the modal
+        popupTitle.textContent = choice.outcome.title;
+        showModal(choice.outcome.message, () => {
+            // After the modal, load the next event
+            loadDilemma();
+            // Reset the popup title to the default for future use
+            popupTitle.textContent = 'Event';
+        });
+    }
+
+    function updateStats() {
+        debtEl.textContent = `$${state.debt}`;
+        gpaEl.textContent = `${Math.max(0, state.gpa)}%`;
+        sanityEl.textContent = `${Math.max(0, state.sanity)}%`;
+        xpEl.textContent = `${state.xp} XP`;
+    }
+    function switchScreen(screenId) {
+        screens.forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
+    function selectMajor(major) {
+        if (major === 'CompSci') { state.debt = 40000; state.gpa = 90; }
+        else if (major === 'Humanities') { state.debt = 25000; state.gpa = 100; }
+        else { state.debt = 15000; state.gpa = 110; }
+        state.year = 1;
+        updateStats();
+        loadDilemma();
+    }
+    function loadDilemma() {
+        if (state.year > 4) {
+            startJobMarket();
+            return;
+        }
+        switchScreen('choice-screen');
+        const dilemma = dilemmas.find(d => d.year === state.year);
+        document.getElementById('choice-title').textContent = `${dilemma.title} (${state.year}/4)`;
+        document.getElementById('choice-desc').textContent = dilemma.desc;
+        const buttonsContainer = document.getElementById('choice-buttons');
+        buttonsContainer.innerHTML = '';
+        dilemma.choices.forEach(choice => {
+            const button = document.createElement('button');
+            button.className = 'choice-button';
+            button.textContent = choice.text;
+            // MODIFICATION 3: Pass the entire 'choice' object, not just its effects.
+            button.onclick = () => resolveChoice(choice);
+            buttonsContainer.appendChild(button);
+        });
+    }
+    function startJobMarket() {
+        switchScreen('job-market-screen');
+        setInterval(() => {
+            const resume = document.createElement('div');
+            resume.className = 'resume';
+            resume.textContent = '📄';
+            resume.style.top = `${Math.random() * 80 + 10}%`;
+            document.getElementById('job-market-screen').appendChild(resume);
+            setTimeout(() => resume.remove(), 4900);
+        }, 800);
+        setTimeout(() => { if(document.getElementById('job-market-screen').classList.contains('active')) showFinalReview(false); }, 15000);
+    }
+    function applyForJob() {
+        if (Math.random() < 0.1) {
+            showFinalReview(true);
+        } else {
+            const rejection = document.createElement('div');
+            rejection.textContent = "Thank you for your application...";
+            rejection.style.position = 'absolute';
+            rejection.style.top = `${Math.random()*80}%`;
+            rejection.style.left = `${Math.random()*80}%`;
+            rejection.style.padding = '10px';
+            rejection.style.border = '2px outset var(--win95-gray)';
+            rejection.style.background = 'var(--win95-gray)';
+            document.getElementById('job-market-screen').appendChild(rejection);
+            setTimeout(() => rejection.remove(), 2000);
+        }
+    }
+    function showFinalReview(success) {
+        switchScreen('review-screen');
+        const reviewEl = document.getElementById('review-screen');
+        reviewEl.innerHTML = `
+            <div class="review-header">PERFORMANCE REVIEW: COGNITIVE LABOR UNIT</div><hr>
+            <div class="review-table">
+                <span>CANDIDATE ID:</span><span>#${Date.now()}</span>
+                <span>FINAL GPA:</span><span>${state.gpa}% (Meets Minimum Requirements)</span>
+                <span>EXPERIENCE PORTFOLIO:</span><span>${state.xp} XP (Irrelevant)</span>
+                <span>SANITY INDEX:</span><span>${state.sanity}% (Within Acceptable Deviation)</span>
+                <span>DEBT TOLERANCE:</span><span style="font-weight:bold; color:green;">HIGH (OPTIMAL)</span>
+            </div><hr>
+            <div style="margin-top: 15px;">
+                <p><b>EVALUATION SUMMARY:</b></p>
+                <p>Subject has successfully completed the 4-year indoctrination cycle. Demonstrates a high capacity for enduring repetitive tasks under sustained financial and psychological pressure. Critical theory subroutines have been successfully overwritten by market-compliant logic.</p><br>
+                <p style="text-align:center; font-weight:bold; font-size:16px;">STATUS: QUALIFIED FOR ENTRY-LEVEL COGNITIVE LABOR</p><br>
+                <p style="text-align:center; font-size:14px;">Welcome to the machine.</p>
+            </div>`;
+    }
+
+    // Initial State
+    updateStats();
+</script>
+</body>
+</html>

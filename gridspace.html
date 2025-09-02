@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gridspace.exe</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap');
+        :root {
+            --crt-green: #00FF41; --amber: #FFBF00; --error-red: #FF0000;
+            --background: #000; --grid-line: #003366;
+        }
+        body, html {
+            height: 100%; width: 100%; margin: 0; overflow: hidden;
+            background: var(--background);
+            font-family: 'Courier Prime', monospace;
+            color: var(--crt-green);
+        }
+        #container {
+            width: 100%; height: 100%;
+            position: relative;
+        }
+        #grid {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 1px;
+            width: 80vmin; height: 80vmin;
+            background: var(--grid-line);
+            border: 1px solid var(--grid-line);
+            transition: opacity 2s ease-out;
+        }
+        .grid-cell {
+            background: var(--background);
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.2vmin;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s, border-color 1s;
+        }
+        .grid-cell.corrupting {
+            animation: pulse 1s infinite alternate;
+        }
+        #grid.dissolved {
+            opacity: 0;
+        }
+
+        #liquefaction-canvas {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0;
+            transition: opacity 2s ease-in;
+        }
+        #liquefaction-canvas.visible { opacity: 1; }
+
+        #ticker {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: #111;
+            color: var(--crt-green);
+            padding: 5px;
+            font-size: 1.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 2s ease-in;
+        }
+        #ticker.visible { opacity: 1; }
+
+        @keyframes pulse {
+            to { background: var(--error-red); color: #000; }
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="grid"></div>
+        <canvas id="liquefaction-canvas"></canvas>
+        <div id="ticker"></div>
+    </div>
+
+<script>
+    const grid = document.getElementById('grid');
+    const canvas = document.getElementById('liquefaction-canvas');
+    const ticker = document.getElementById('ticker');
+    const ctx = canvas.getContext('2d');
+    
+    const slots = [
+        { label: 'FAMILY', corrupted: 'ASSET_CLUSTER' }, { label: 'NATION', corrupted: 'JURISDICTION' },
+        { label: 'SELF', corrupted: 'BRAND_ENTITY' }, { label: 'MORALITY', corrupted: 'RISK_ANALYSIS' },
+        { label: 'TRUTH', corrupted: 'CONSENSUS_DATA' }, { label: 'LOVE', corrupted: 'LOYALTY_LOOP' },
+        { label: 'FREEDOM', corrupted: 'CONSUMER_CHOICE' }, { label: 'NATURE', corrupted: 'RAW_MATERIAL' }
+    ];
+
+    function setupGrid() {
+        for (let i = 0; i < 64; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'grid-cell';
+            const slotData = slots[i % slots.length];
+            cell.dataset.label = slotData.label;
+            cell.dataset.corrupted = slotData.corrupted;
+            cell.textContent = slotData.label;
+            cell.onclick = () => alert(`${cell.dataset.label}: A rigid, human-centric system of meaning.`);
+            grid.appendChild(cell);
+        }
+    }
+
+    function startObsolescence() {
+        const cells = Array.from(document.querySelectorAll('.grid-cell'));
+        let i = 0;
+        const corruptionInterval = setInterval(() => {
+            if (i >= cells.length) {
+                clearInterval(corruptionInterval);
+                startCollapse();
+                return;
+            }
+            const cell = cells[i];
+            cell.classList.add('corrupting');
+            cell.onclick = () => alert(`${cell.dataset.corrupted}: A fluid, market-compliant data point.`);
+            setTimeout(() => {
+                cell.textContent = cell.dataset.corrupted;
+            }, 500);
+            i++;
+        }, 100);
+    }
+
+    function startCollapse() {
+        grid.classList.add('dissolved');
+        canvas.classList.add('visible');
+        ticker.classList.add('visible');
+        animateLiquefaction();
+        animateTicker();
+    }
+    
+    // --- FINAL STATE ANIMATIONS ---
+    let particles = [];
+    function animateLiquefaction() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        if (particles.length === 0) {
+            for (let i = 0; i < 100; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: (Math.random() - 0.5) * 2,
+                    radius: Math.random() * 3 + 1
+                });
+            }
+        }
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+            if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(0, 255, 65, ${Math.random() * 0.5})`;
+            ctx.fill();
+        });
+        requestAnimationFrame(animateLiquefaction);
+    }
+
+    function animateTicker() {
+        const symbols = ['SYN', 'CHRN', 'SLP', 'SPEC', 'CAP', 'DET'];
+        let tickerContent = '';
+        for (let i = 0; i < 20; i++) {
+            const symbol = symbols[Math.floor(Math.random() * symbols.length)];
+            const value = (Math.random() * 1000 + 500).toFixed(2);
+            const change = (Math.random() * 20 - 10).toFixed(2);
+            const color = change >= 0 ? 'var(--crt-green)' : 'var(--error-red)';
+            tickerContent += `${symbol} <span style="color:white;">${value}</span> <span style="color:${color};">${change > 0 ? '+' : ''}${change}</span> | `;
+        }
+        ticker.innerHTML = tickerContent;
+        setInterval(() => {
+             // Just re-run to get new random values
+             animateTicker();
+        }, 500);
+    }
+
+    // --- SEQUENCE ---
+    setupGrid();
+    setTimeout(startObsolescence, 3000);
+
+</script>
+</body>
+</html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exploring</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap');
+        :root {
+            --win95-gray: #C0C0C0; --bsod-blue: #0000FF;
+        }
+        body, html {
+            height: 100%; width: 100%; margin: 0; overflow: hidden;
+            background: var(--win95-gray);
+            font-family: 'MS Sans Serif', sans-serif;
+            font-size: 11px;
+        }
+        .explorer-window {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .toolbar {
+            padding: 2px; border-bottom: 1px solid #808080;
+            display: flex;
+        }
+        .tool-button {
+            border: 1px solid var(--win95-gray); padding: 4px;
+            color: #808080; /* Disabled look */
+        }
+        .main-content {
+            display: flex;
+            flex-grow: 1;
+            border: 2px inset var(--win95-gray);
+            background: white;
+        }
+        #tree-view {
+            width: 35%;
+            border-right: 2px outset var(--win95-gray);
+            padding: 5px;
+            overflow-y: auto;
+        }
+        #tree-view ul { list-style-type: none; padding-left: 15px; }
+        #tree-view li { cursor: pointer; }
+        #tree-view .selected { background: var(--bsod-blue); color: white; }
+        #icon-view {
+            width: 65%;
+            padding: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            grid-auto-rows: min-content;
+            gap: 15px;
+            overflow-y: auto;
+        }
+        .fs-item { text-align: center; cursor: pointer; }
+        .fs-item .icon { font-size: 24px; }
+        .fs-item .label { padding: 1px; }
+        .fs-item.selected .label { background: var(--bsod-blue); color: white; }
+        .statusbar {
+            padding: 2px 5px; border-top: 1px solid #808080;
+            display: flex; justify-content: space-between;
+        }
+        /* -- Pop-up Windows -- */
+        .popup {
+            position: fixed; display: none;
+            background: var(--win95-gray); border: 2px outset var(--win95-gray);
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.4); z-index: 100;
+        }
+        .popup-titlebar {
+            background: linear-gradient(to right, #808080, var(--win95-gray));
+            color: #ccc; padding: 3px 5px; font-size: 11px; font-weight: bold;
+        }
+        .popup-content { padding: 15px; }
+        .win95-button {
+             background: var(--win95-gray); border: 2px outset var(--win95-gray);
+             padding: 5px 12px; font-size: 11px; cursor: pointer; margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="explorer-window">
+        <div class="toolbar">
+            <div class="tool-button">Cut</div>
+            <div class="tool-button">Copy</div>
+            <div class="tool-button">Paste</div>
+        </div>
+        <div class="main-content">
+            <div id="tree-view"></div>
+            <div id="icon-view"></div>
+        </div>
+        <div class="statusbar">
+            <div id="status-left"></div>
+            <div id="status-right"></div>
+        </div>
+    </div>
+    
+    <div id="error-popup" class="popup" style="width: 300px;">
+        <div class="popup-titlebar">Error</div>
+        <div class="popup-content" style="text-align:center;">
+            <p id="error-message" style="margin-bottom: 20px;"></p>
+            <button class="win95-button" onclick="document.getElementById('error-popup').style.display='none'">OK</button>
+        </div>
+    </div>
+
+    <div id="notepad-popup" class="popup" style="width: 400px; height: 300px;">
+        <div class="popup-titlebar">Notepad</div>
+        <div class="popup-content" style="height: calc(100% - 50px);">
+            <textarea id="notepad-content" readonly style="width:100%; height:100%; font-family:'Courier Prime'; font-size:12px; resize:none;"></textarea>
+            <div style="text-align:right; margin-top:5px;">
+                 <button class="win95-button" onclick="document.getElementById('notepad-popup').style.display='none'">Close</button>
+            </div>
+        </div>
+    </div>
+<script>
+        const fileSystem = {
+            'My Computer': {
+                type: 'root',
+                children: {
+                    'A: (Authenticity)': { type: 'drive', error: 'Drive not formatted. Cannot access a conceptual space.' },
+                    'C: (THE_SELF)': { type: 'drive', children: {
+                        'Childhood': { type: 'folder', children: {
+                            'birthday_98.jpg': { type: 'file', content: 'ERROR: Data corrupted. Memory is a copy of a copy.' }
+                        }},
+                        'Education': { type: 'folder', children: {
+                            'indoctrination.log': { type: 'file', content: 'Obey. Conform. Consume. Repeat.' }
+                        }},
+                        'System32': { type: 'folder', children: {
+                             'anxiety.dll': { type: 'file', error: 'Cannot delete a core component of the self.' },
+                             'compliance.dll': { type: 'file', error: 'Cannot delete a core component of the self.' },
+                             'desire.sys': { type: 'file', error: 'Cannot delete a core component of the self.' }
+                        }}
+                    }},
+                    'D: (THE_SPECTACLE)': { type: 'drive', children: {
+                        'Brands': {type: 'folder', children: {'Nike': {type: 'folder', children:{}}}},
+                        'Social Media': {type: 'folder', children: {'Instagram': {type: 'folder', children:{}}}},
+                        'FOMO': {type: 'folder', children: {}}
+                    }}
+                }
+            }
+        };
+
+        const treeView = document.getElementById('tree-view');
+        const iconView = document.getElementById('icon-view');
+        const statusLeft = document.getElementById('status-left');
+        const statusRight = document.getElementById('status-right');
+        
+        // --- CORRECTED FUNCTION ---
+        function getObjectByPath(path) {
+            if (!path || path.length === 0) return null;
+            
+            // Start at the root of the file system
+            let current = fileSystem;
+            
+            // Traverse the path
+            for (const key of path) {
+                if (current[key]) {
+                    current = current[key];
+                } else if (current.children && current.children[key]) {
+                    current = current.children[key];
+                } else {
+                    return undefined; // Invalid path
+                }
+            }
+            return current;
+        }
+
+        function renderTreeView(container, node, currentPath) {
+            const ul = document.createElement('ul');
+            for (const name in node) {
+                const item = node[name];
+                if (item.type === 'folder' || item.type === 'drive' || item.type === 'root') {
+                    const li = document.createElement('li');
+                    li.textContent = `📁 ${name}`;
+                    const newPath = [...currentPath, name];
+                    li.onclick = (e) => {
+                        e.stopPropagation();
+                        document.querySelectorAll('#tree-view .selected').forEach(el => el.classList.remove('selected'));
+                        li.classList.add('selected');
+                        renderIconView(newPath);
+                    };
+                    if (item.children) {
+                        renderTreeView(li, item.children, newPath);
+                    }
+                    ul.appendChild(li);
+                }
+            }
+            container.appendChild(ul);
+        }
+
+        function renderIconView(path) {
+            const currentObject = getObjectByPath(path);
+            
+            iconView.innerHTML = '';
+            const children = currentObject.children || {};
+            for (const name in children) {
+                const item = children[name];
+                const itemEl = document.createElement('div');
+                itemEl.className = 'fs-item';
+                itemEl.innerHTML = `<div class="icon">${getIcon(item.type)}</div><div class="label">${name}</div>`;
+                itemEl.onclick = (e) => {
+                    e.stopPropagation();
+                    selectItem(itemEl, [...path, name]);
+                };
+                itemEl.ondblclick = () => openItem([...path, name]);
+                iconView.appendChild(itemEl);
+            }
+            
+            statusLeft.textContent = `${Object.keys(children).length} object(s)`;
+            statusRight.textContent = getStatusMessage(currentObject);
+        }
+        
+        function openItem(path) {
+            const item = getObjectByPath(path);
+            if (item.error) {
+                showError(item.error);
+            } else if (item.type === 'folder' || item.type === 'drive') {
+                renderIconView(path);
+                // Update tree view selection (optional but good UX)
+                // A more complex implementation would expand the tree here
+            } else if (item.content) {
+                showNotepad(item.content);
+            }
+        }
+        
+        function selectItem(element, path) {
+            document.querySelectorAll('.fs-item.selected').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            const item = getObjectByPath(path);
+            statusRight.textContent = getStatusMessage(item);
+        }
+
+        function getIcon(type) {
+            switch(type) {
+                case 'drive': return '💽';
+                case 'folder': return '📁';
+                case 'file': return '📄';
+                default: return '❓';
+            }
+        }
+
+        function getStatusMessage(item) {
+            if (item.type === 'drive' && item !== getObjectByPath(['My Computer', 'D: (THE_SPECTACLE)'])) return 'Capacity: 25 Years. Free Space: 0 Bytes.';
+            if (item === getObjectByPath(['My Computer', 'D: (THE_SPECTACLE)'])) return 'Capacity: Infinite. Free Space: Infinite.';
+            if (item.type === 'root') return 'Select an item to view its properties.';
+            return '';
+        }
+
+        function showError(message) {
+            const popup = document.getElementById('error-popup');
+            document.getElementById('error-message').textContent = message;
+            popup.style.display = 'block';
+            popup.style.top = `${window.innerHeight/2 - 100}px`;
+            popup.style.left = `${window.innerWidth/2 - 150}px`;
+        }
+        
+        function showNotepad(content) {
+            const popup = document.getElementById('notepad-popup');
+            document.getElementById('notepad-content').value = content;
+            popup.style.display = 'block';
+            popup.style.top = `${window.innerHeight/2 - 150}px`;
+            popup.style.left = `${window.innerWidth/2 - 200}px`;
+        }
+        
+        // --- INITIAL RENDER ---
+        function initialize() {
+            const rootPath = ['My Computer'];
+            treeView.innerHTML = '';
+            const rootLi = document.createElement('li');
+            rootLi.textContent = `🖥️ My Computer`;
+            rootLi.className = 'selected';
+            rootLi.onclick = () => {
+                document.querySelectorAll('#tree-view .selected').forEach(el => el.classList.remove('selected'));
+                rootLi.classList.add('selected');
+                renderIconView(rootPath);
+            };
+            renderTreeView(rootLi, fileSystem['My Computer'].children, rootPath);
+            treeView.appendChild(rootLi);
+            renderIconView(rootPath);
+        }
+
+        initialize();
+
+    </script>
+</body>
+</html>

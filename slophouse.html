@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slophouse Studio</title>
+    <style>
+        :root {
+            --win95-gray: #C0C0C0; --bsod-blue: #0000FF; --crt-green: #00FF41;
+            --decay-yellow: #FFFF00; --dmt-purple: #8B00FF;
+        }
+        body, html {
+            height: 100%; width: 100%; margin: 0; overflow: hidden;
+            background: var(--win95-gray);
+            font-family: 'MS Sans Serif', sans-serif; font-size: 11px;
+            user-select: none;
+        }
+        .app-container { display: flex; flex-direction: column; height: 100%; }
+        .menu-bar {
+            background: var(--win95-gray); padding: 2px 4px;
+            border-bottom: 2px outset var(--win95-gray); display: flex; gap: 8px;
+        }
+        .menu-item { padding: 2px 6px; cursor: pointer; }
+        .menu-item:hover { background: var(--bsod-blue); color: white; }
+        .main-content { display: flex; flex-grow: 1; }
+        #toolbox {
+            width: 70px; padding: 5px; border-right: 2px outset var(--win95-gray);
+            display: grid; grid-template-columns: 1fr 1fr; gap: 5px; align-content: start;
+        }
+        .tool-button {
+            border: 2px outset var(--win95-gray); height: 30px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 16px; cursor: pointer;
+        }
+        .tool-button.selected, .tool-button:active { border-style: inset; }
+        #canvas-area {
+            flex-grow: 1; background: #000;
+            border: 2px inset var(--win95-gray);
+            position: relative; overflow: hidden;
+        }
+        #main-canvas { position: absolute; top: 0; left: 0; }
+        .draggable {
+            position: absolute; cursor: grab;
+            font-family: 'Times New Roman', serif;
+            color: var(--decay-yellow); background: rgba(0,0,0,0.5);
+            padding: 10px; border: 1px dashed var(--crt-green);
+        }
+        .draggable img { pointer-events: none; }
+
+        /* --- New Modal Styles --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-window {
+            background: var(--win95-gray);
+            border: 2px outset var(--win95-gray);
+            width: 350px;
+            box-shadow: 3px 3px 5px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-title-bar {
+            background: var(--bsod-blue);
+            color: white;
+            padding: 3px 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            cursor: default;
+        }
+        .modal-close-button {
+            background: var(--win95-gray);
+            border: 2px outset var(--win95-gray);
+            width: 16px; height: 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            font-weight: bold;
+            line-height: 1;
+            padding: 0;
+            cursor: pointer;
+        }
+        .modal-close-button:active {
+            border-style: inset;
+        }
+        .modal-content {
+            padding: 20px;
+            line-height: 1.5;
+        }
+        .modal-buttons {
+            padding: 0 10px 10px;
+            text-align: center;
+        }
+        .modal-ok-button {
+            background: var(--win95-gray);
+            border: 2px outset var(--win95-gray);
+            padding: 4px 12px;
+            min-width: 70px;
+            cursor: pointer;
+        }
+        .modal-ok-button:active {
+            border-style: inset;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="menu-bar">
+            <div class="menu-item" onclick="exportSlop()"><u>F</u>ile</div>
+            <div class="menu-item"><u>E</u>dit</div>
+            <div class="menu-item"><u>H</u>elp</div>
+        </div>
+        <div class="main-content">
+            <div id="toolbox">
+                <div class="tool-button" data-tool="text" title="Generate Text">📝</div>
+                <div class="tool-button" data-tool="stamp" title="Image Stamp">🖼️</div>
+                <div class="tool-button" data-tool="brush" title="Glitch Brush">🖌️</div>
+                <div class="tool-button" data-tool="sound" title="Sound Object">🔊</div>
+                <div class="tool-button" data-tool="bg" title="Background">🎨</div>
+                <div class="tool-button" data-tool="clear" title="Clear Canvas">🗑️</div>
+            </div>
+            <div id="canvas-area">
+                <canvas id="main-canvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+<script>
+    const canvasArea = document.getElementById('canvas-area');
+    const canvas = document.getElementById('main-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let currentTool = null;
+    let isDrawing = false;
+    
+    // Resize canvas to fit container
+    function resizeCanvas() {
+        canvas.width = canvasArea.clientWidth;
+        canvas.height = canvasArea.clientHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // --- TOOL SELECTION ---
+    document.querySelectorAll('.tool-button').forEach(button => {
+        button.addEventListener('click', () => {
+            document.querySelector('.tool-button.selected')?.classList.remove('selected');
+            button.classList.add('selected');
+            currentTool = button.dataset.tool;
+
+            if (currentTool === 'clear') {
+                // Clear canvas and remove draggable items
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                document.querySelectorAll('.draggable').forEach(el => el.remove());
+                button.classList.remove('selected');
+                currentTool = null;
+            }
+             if (currentTool === 'bg') {
+                drawBackground();
+                button.classList.remove('selected');
+                currentTool = null;
+            }
+        });
+    });
+    
+    // --- CANVAS INTERACTION ---
+    canvasArea.addEventListener('mousedown', (e) => {
+        if (e.target !== canvasArea && e.target !== canvas) return;
+        isDrawing = true;
+        
+        if (currentTool === 'text') addDraggableText(e.clientX, e.clientY);
+        if (currentTool === 'stamp') addDraggableStamp(e.clientX, e.clientY);
+        if (currentTool === 'sound') addDraggableSound(e.clientX, e.clientY);
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+        if (!isDrawing || currentTool !== 'brush') return;
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        applyGlitchBrush(x, y);
+    });
+
+    window.addEventListener('mouseup', () => { isDrawing = false; });
+
+    // --- TOOL LOGIC ---
+    function addDraggableText(x, y) {
+        const textFrags = ["Synergy", "Paradigm Shift", "The Spectacle", "Hyperreality", "#viral", "Consume", "Obey", "Error 404"];
+        const text = document.createElement('div');
+        text.className = 'draggable';
+        text.textContent = textFrags[Math.floor(Math.random() * textFrags.length)];
+        setPositionAndDrag(text, x, y);
+        canvasArea.appendChild(text);
+    }
+
+    function addDraggableStamp(x, y) {
+        const stampFrags = ["💀", "👁️", "🔗", "🛒", "™️", "©️"];
+        const stamp = document.createElement('div');
+        stamp.className = 'draggable';
+        stamp.style.fontSize = '48px';
+        stamp.style.background = 'transparent';
+        stamp.style.border = 'none';
+        stamp.textContent = stampFrags[Math.floor(Math.random() * stampFrags.length)];
+        setPositionAndDrag(stamp, x, y);
+        canvasArea.appendChild(stamp);
+    }
+    
+    function addDraggableSound(x, y) {
+        const soundFrags = ["[DIAL-UP NOISE]", "[SYSTEM BEEP]", "[CORRUPTED AUDIO]", "[VAPORWAVE LOOP]"];
+        const sound = document.createElement('div');
+        sound.className = 'draggable';
+        sound.innerHTML = `🔊<br><span style="font-size:9px;">${soundFrags[Math.floor(Math.random() * soundFrags.length)]}</span>`;
+        setPositionAndDrag(sound, x, y);
+        canvasArea.appendChild(sound);
+    }
+
+    function applyGlitchBrush(x, y) {
+        const size = 30;
+        const imageData = ctx.getImageData(x - size/2, y - size/2, size, size);
+        const data = imageData.data;
+        for (let i = 0; i < data.length; i += 4) {
+            data[i] = data[i + Math.floor(Math.random() * 3)];   // Shift R channel
+            data[i + 1] = data[i + 1] ^ 255; // Invert G channel
+        }
+        ctx.putImageData(imageData, x - size/2, y - size/2);
+    }
+    
+    function drawBackground() {
+        const img = new Image();
+        img.crossOrigin = "anonymous"; 
+        img.src = "http://googleusercontent.com/image_collection/image_retrieval/9348444668267197954_0";
+        img.onload = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        };
+        img.onerror = () => {
+             // Fallback to the old random squares if the image fails to load
+            for (let i = 0; i < 500; i++) {
+                ctx.fillStyle = `rgba(${Math.random()*255},${Math.random()*255},${Math.random()*255}, 0.5)`;
+                ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 50, 50);
+            }
+        };
+    }
+
+    // --- MODAL AND EXPORT LOGIC ---
+    function showModal(title, message) {
+        // Remove any existing modal to prevent duplicates
+        document.querySelector('.modal-overlay')?.remove();
+
+        // Create the modal elements from scratch
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+
+        const modalWindow = document.createElement('div');
+        modalWindow.className = 'modal-window';
+
+        modalWindow.innerHTML = `
+            <div class="modal-title-bar">
+                <span>${title}</span>
+                <button class="modal-close-button">x</button>
+            </div>
+            <div class="modal-content">${message}</div>
+            <div class="modal-buttons">
+                <button class="modal-ok-button">OK</button>
+            </div>
+        `;
+
+        overlay.appendChild(modalWindow);
+        document.body.appendChild(overlay);
+
+        // Function to close the modal
+        const closeModal = () => overlay.remove();
+
+        // Add event listeners to the close and OK buttons
+        overlay.querySelector('.modal-close-button').addEventListener('click', closeModal);
+        overlay.querySelector('.modal-ok-button').addEventListener('click', closeModal);
+    }
+
+    function exportSlop() {
+        const title = "Exporting...";
+        const message = "<p>Success! Your content has been uploaded to the feed. Your engagement score has increased by 0.001%.</p><p>Now, make another one.</p>";
+        showModal(title, message);
+    }
+
+    // --- DRAGGABLE ELEMENT LOGIC ---
+    function setPositionAndDrag(el, x, y) {
+        const rect = canvasArea.getBoundingClientRect();
+        el.style.left = `${x - rect.left}px`;
+        el.style.top = `${y - rect.top}px`;
+        
+        let isDragging = false, offsetX, offsetY;
+        el.onmousedown = (e) => {
+            isDragging = true;
+            el.style.cursor = 'grabbing';
+            offsetX = e.clientX - el.offsetLeft;
+            offsetY = e.clientY - el.offsetTop;
+        };
+        window.onmousemove = (e) => {
+            if (isDragging) {
+                el.style.left = `${e.clientX - offsetX}px`;
+                el.style.top = `${e.clientY - offsetY}px`;
+            }
+        };
+        window.onmouseup = () => {
+            isDragging = false;
+            el.style.cursor = 'grab';
+        };
+    }
+</script>
+</body>
+</html>

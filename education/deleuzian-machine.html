@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RHIZOME.EXE - [A THOUSAND PLATEAUS LOADING]</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+        
+        :root {
+            --rhizome-green: #32CD32;
+            --nomad-orange: #FF8C00;
+            --war-machine-red: #DC143C;
+            --body-without-organs: #4B0082;
+            --assemblage-yellow: #FFD700;
+            --deterritorialize-blue: #1E90FF;
+            --smooth-space: #00CED1;
+            --striated-gray: #C0C0C0;
+            --void-black: #000000;
+            --plateau-white: #FFFFFF;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Times New Roman', serif;
+            background: radial-gradient(circle at 30% 70%, var(--void-black), #001122, #220033, #002211);
+            color: var(--rhizome-green);
+            overflow-x: hidden;
+            cursor: crosshair;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        .rhizome-network {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.1;
+        }
+        
+        .rhizome-line {
+            position: absolute;
+            background: var(--rhizome-green);
+            animation: rhizomeGrow 8s linear infinite;
+            transform-origin: left center;
+        }
+        
+        @keyframes rhizomeGrow {
+            0% { width: 0; opacity: 0; }
+            20% { width: 100px; opacity: 0.3; }
+            80% { width: 200px; opacity: 0.3; }
+            100% { width: 0; opacity: 0; }
+        }
+        
+        .nomad-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 36px;
+            background: repeating-linear-gradient(
+                135deg,
+                var(--nomad-orange),
+                var(--nomad-orange) 20px,
+                var(--war-machine-red) 20px,
+                var(--war-machine-red) 40px,
+                var(--body-without-organs) 40px,
+                var(--body-without-organs) 60px
+            );
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            font-weight: bold;
+            color: var(--plateau-white);
+            animation: nomadMovement 3s infinite;
+        }
+        
+        @keyframes nomadMovement {
+            0%, 100% { opacity: 1; transform: translateX(0); }
+            50% { opacity: 0.8; transform: translateX(5px); }
+        }
+        
+        .main-content {
+            margin-top: 36px;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .assemblage-window {
+            background: var(--striated-gray);
+            border: 2px outset var(--striated-gray);
+            margin: 20px 0;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+            position: relative;
+            transform: rotate(0.3deg);
+        }
+        
+        .assemblage-window::before {
+            content: "";
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(45deg, 
+                var(--rhizome-green) 0%, 
+                transparent 25%, 
+                var(--deterritorialize-blue) 50%, 
+                transparent 75%, 
+                var(--assemblage-yellow) 100%);
+            z-index: -1;
+            opacity: 0.3;
+            animation: assemblageFlow 6s linear infinite;
+        }
+        
+        @keyframes assemblageFlow {
+            0% { transform: rotate(0deg) scale(1); }
+            100% { transform: rotate(360deg) scale(1.02); }
+        }
+        
+        .window-titlebar {
+            background: linear-gradient(to right, var(--body-without-organs), #330066);
+            color: white;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .window-buttons {
+            display: flex;
+            gap: 2px;
+        }
+        
+        .window-btn {
+            background: var(--striated-gray);
+            border: 1px outset var(--striated-gray);
+            width: 16px;
+            height: 14px;
+            font-size: 9px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .window-content {
+            padding: 20px;
+            color: black;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .deleuze-title {
+            font-size: 4.2rem;
+            font-weight: bold;
+            color: var(--war-machine-red);
+            text-transform: uppercase;
+            text-align: center;
+            position: relative;
+            animation: machineBecoming 2.8s infinite;
+            text-shadow: 
+                4px 4px 0 var(--void-black), 
+                -4px -4px 0 var(--nomad-orange),
+                2px -2px 0 var(--deterritorialize-blue);
+            margin: 30px 0;
+            filter: contrast(1.3);
+        }
+        
+        .deleuze-title::before,
+        .deleuze-title::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .deleuze-title::before {
+            color: var(--nomad-orange);
+            animation: nomadFlow 0.9s infinite;
+            clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%);
+        }
+        
+        .deleuze-title::after {
+            color: var(--smooth-space);
+            animation: smoothSpace 1.3s infinite;
+            clip-path: polygon(15% 0, 100% 0, 100% 100%, 30% 100%);
+        }
+        
+        @keyframes machineBecoming {
+            0%, 100% { transform: translate(0) skew(0deg); }
+            14% { transform: translate(-3px, 2px) skew(1deg); }
+            28% { transform: translate(3px, -2px) skew(-1deg); }
+            42% { transform: translate(-2px, -3px) skew(0.5deg); }
+            56% { transform: translate(2px, 3px) skew(-0.5deg); }
+            70% { transform: translate(-4px, 0) skew(2deg); }
+            84% { transform: translate(4px, 0) skew(-2deg); }
+        }
+        
+        @keyframes nomadFlow {
+            0%, 100% { transform: translate(0) skew(0deg); filter: hue-rotate(0deg); }
+            50% { transform: translate(-4px, -3px) skew(2deg); filter: hue-rotate(30deg); }
+        }
+        
+        @keyframes smoothSpace {
+            0%, 100% { transform: translate(0); }
+            33% { transform: translate(3px, 3px); }
+            66% { transform: translate(-3px, 3px); }
+        }
+        
+        .machine-terminal {
+            background: var(--void-black);
+            border: 2px inset var(--striated-gray);
+            margin: 20px 0;
+            font-family: 'Courier Prime', monospace;
+            box-shadow: inset 1px 1px 3px rgba(0,0,0,0.5);
+            position: relative;
+            transform: skew(-0.5deg);
+        }
+        
+        .terminal-header {
+            background: var(--striated-gray);
+            color: black;
+            padding: 5px 10px;
+            font-size: 12px;
+            border-bottom: 1px solid #808080;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .terminal-content {
+            padding: 15px;
+            color: var(--rhizome-green);
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        
+        .dos-prompt {
+            color: var(--rhizome-green);
+        }
+        
+        .machine-text {
+            color: var(--deterritorialize-blue);
+            animation: deterritorialize 3s infinite;
+        }
+        
+        @keyframes deterritorialize {
+            0%, 60%, 100% { opacity: 1; transform: translateX(0); }
+            30% { opacity: 0.7; transform: translateX(2px); }
+        }
+        
+        .plateau-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+            transform: skew(0.5deg);
+        }
+        
+        .plateau-folder {
+            background: var(--striated-gray);
+            border: 2px outset var(--striated-gray);
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            color: black;
+            transform: rotate(0.2deg);
+        }
+        
+        .plateau-folder::before {
+            content: "🌀";
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        
+        .plateau-folder::after {
+            content: "PLATEAU";
+            position: absolute;
+            top: -8px;
+            right: -15px;
+            background: var(--war-machine-red);
+            color: white;
+            padding: 2px 10px;
+            transform: rotate(15deg);
+            font-size: 8px;
+            font-weight: bold;
+        }
+        
+        .plateau-folder:hover {
+            background: #b0b0b0;
+            border: 2px inset var(--striated-gray);
+            transform: rotate(-1.5deg) scale(1.02);
+            animation: becomingIntense 0.5s infinite;
+        }
+        
+        @keyframes becomingIntense {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2) saturate(1.3); }
+        }
+        
+        .body-without-organs {
+            position: fixed;
+            top: 50px;
+            right: 30px;
+            width: 90px;
+            height: 90px;
+            background: radial-gradient(ellipse, var(--body-without-organs), var(--void-black));
+            border: 3px solid var(--assemblage-yellow);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            cursor: pointer;
+            animation: organlessRotation 12s linear infinite;
+            z-index: 500;
+            box-shadow: 0 0 30px var(--body-without-organs);
+        }
+        
+        @keyframes organlessRotation {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        
+        .desiring-counter {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--war-machine-red);
+            color: white;
+            padding: 12px;
+            border: 2px solid var(--assemblage-yellow);
+            text-align: center;
+            font-family: 'Courier Prime', monospace;
+            font-size: 10px;
+            animation: nomadMovement 2s infinite;
+            transform: skew(-2deg);
+        }
+        
+        .rhizome-window {
+            background: var(--plateau-white);
+            border: 2px inset var(--striated-gray);
+            margin: 30px 0;
+            color: black;
+            position: relative;
+            transform: rotate(-0.2deg);
+        }
+        
+        .rhizome-header {
+            background: var(--striated-gray);
+            border-bottom: 1px solid #808080;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .rhizome-content {
+            padding: 20px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        
+        .war-machine-section {
+            background: rgba(220, 20, 60, 0.1);
+            border: 2px dashed var(--war-machine-red);
+            padding: 25px;
+            margin: 30px 0;
+            position: relative;
+            transform: skew(1deg);
+        }
+        
+        .war-label {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: var(--void-black);
+            color: var(--war-machine-red);
+            padding: 0 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .desire-log {
+            height: 240px;
+            overflow-y: scroll;
+            background: var(--void-black);
+            border: 2px inset var(--striated-gray);
+            padding: 15px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 11px;
+            color: var(--rhizome-green);
+            margin: 20px 0;
+            transform: skew(-1deg);
+        }
+        
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(50, 205, 50, 0.3);
+        }
+        
+        .timestamp {
+            color: var(--nomad-orange);
+            font-size: 10px;
+        }
+        
+        .becoming-button {
+            background: var(--war-machine-red);
+            color: white;
+            border: 2px outset var(--war-machine-red);
+            padding: 10px 20px;
+            font-family: 'Courier Prime', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            margin: 10px;
+            transition: all 0.3s ease;
+            transform: skew(-1deg);
+        }
+        
+        .becoming-button:hover {
+            background: #b91c3c;
+            transform: skew(-1deg) scale(1.05);
+            animation: becomingIntense 0.3s infinite;
+        }
+        
+        .becoming-button:active {
+            border: 2px inset var(--war-machine-red);
+        }
+        
+        .ascii-rhizome {
+            font-family: 'Courier Prime', monospace;
+            font-size: 8px;
+            line-height: 1;
+            color: var(--rhizome-green);
+            text-align: center;
+            padding: 20px;
+            background: var(--void-black);
+            border: 2px solid var(--deterritorialize-blue);
+            margin: 20px 0;
+            transform: skew(0.5deg);
+        }
+        
+        .machine-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(0.5deg);
+            background: var(--striated-gray);
+            border: 2px outset var(--striated-gray);
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+            z-index: 9999;
+            display: none;
+            min-width: 480px;
+        }
+        
+        .popup-header {
+            background: linear-gradient(to right, var(--body-without-organs), #330066);
+            color: white;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .popup-content {
+            padding: 25px;
+            text-align: center;
+            color: black;
+        }
+        
+        .statusbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--striated-gray);
+            border-top: 1px solid #808080;
+            padding: 5px 10px;
+            font-size: 11px;
+            color: black;
+            display: flex;
+            justify-content: space-between;
+            z-index: 1000;
+            transform: skew(-0.3deg);
+        }
+        
+        .start-button {
+            background: var(--striated-gray);
+            border: 2px outset var(--striated-gray);
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .start-button::before {
+            content: "🌀 ";
+        }
+        
+        .win95-button {
+            background: var(--striated-gray);
+            border: 2px outset var(--striated-gray);
+            padding: 8px 16px;
+            font-size: 11px;
+            cursor: pointer;
+            margin: 5px;
+            color: black;
+        }
+        
+        .win95-button:active {
+            border: 2px inset var(--striated-gray);
+        }
+        
+        .nomad-icon {
+            position: fixed;
+            top: 50%;
+            left: 50px;
+            font-size: 56px;
+            animation: nomadWander 15s linear infinite;
+            cursor: pointer;
+            z-index: 600;
+        }
+        
+        @keyframes nomadWander {
+            0% { left: 50px; top: 50%; }
+            25% { left: 200px; top: 30%; }
+            50% { left: 150px; top: 70%; }
+            75% { left: 100px; top: 40%; }
+            100% { left: 50px; top: 50%; }
+        }
+        
+        .multiplicities-section {
+            background: linear-gradient(45deg, 
+                rgba(50, 205, 50, 0.1), 
+                rgba(30, 144, 255, 0.1), 
+                rgba(255, 215, 0, 0.1));
+            border: 1px solid var(--rhizome-green);
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+            transform: skew(-0.8deg);
+        }
+        
+        .becoming-animal {
+            font-style: italic;
+            color: var(--nomad-orange);
+            text-align: center;
+            animation: animalBecoming 4s infinite;
+        }
+        
+        @keyframes animalBecoming {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+        
+        .lines-of-flight {
+            position: absolute;
+            width: 2px;
+            height: 80px;
+            background: linear-gradient(to bottom, var(--deterritorialize-blue), transparent);
+            animation: escapeLines 5s linear infinite;
+        }
+        
+        @keyframes escapeLines {
+            0% { opacity: 0; transform: translateY(0) rotate(0deg); }
+            50% { opacity: 0.6; transform: translateY(-50px) rotate(45deg); }
+            100% { opacity: 0; transform: translateY(-100px) rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="nomad-banner">
+        🌀 NOMADIC TRAJECTORIES ACTIVE - WAR MACHINE OPERATIONAL - DETERRITORIALIZING ALL HIERARCHIES 🌀
+    </div>
+    
+    <div class="rhizome-network" id="rhizomeNetwork"></div>
+    
+    <div class="body-without-organs" onclick="activateBwO()">◯</div>
+    
+    <div class="nomad-icon" onclick="nomadize()">🏃</div>
+    
+    <div class="desiring-counter">
+        <div>DESIRING</div>
+        <div>MACHINES:</div>
+        <div id="desiringCounter" style="font-size: 14px; color: var(--assemblage-yellow);">0</div>
+    </div>
+
+    <div class="main-content">
+        <div class="machine-terminal">
+            <div class="terminal-header">
+                RHIZOME.EXE - [DELEUZIAN MACHINE ASSEMBLAGE PROTOCOLS]
+                <span>BECOMING.BAT</span>
+            </div>
+            <div class="terminal-content">
+                <div class="deleuze-title" data-text="MACHINE ASSEMBLAGE">MACHINE ASSEMBLAGE</div>
+                <div style="text-align: center; margin: 20px 0; font-style: italic;">
+                    "THERE IS ONLY DESIRING AND SOCIAL PRODUCTION"
+                </div>
+                
+                <div class="dos-prompt">C:\PLATEAU\THOUSAND&gt;</div>
+                <div class="machine-text">Loading rhizomatic networks...</div>
+                <div class="dos-prompt">C:\PLATEAU\THOUSAND&gt; run deleuze_guattari.exe</div>
+                <div>Initializing war machine protocols...</div>
+                <div>Gilles Deleuze would be <span style="color: var(--nomad-orange);">NOMADIZING</span></div>
+                <div class="dos-prompt">C:\PLATEAU\THOUSAND&gt; _</div>
+            </div>
+        </div>
+
+        <div class="war-machine-section">
+            <div class="war-label">WAR MACHINE INTERFACE</div>
+            <h3 style="color: var(--war-machine-red); margin-bottom: 20px; text-align: center;">
+                "THE WAR MACHINE IS EXTERIOR TO THE STATE APPARATUS"
+            </h3>
+            <p style="color: var(--rhizome-green); text-align: center; font-family: 'Courier Prime', monospace;">
+                Nomadic trajectories deterritorialize sedentary structures.<br>
+                Lines of flight escape capture by arborescent hierarchies.<br>
+                <span style="color: var(--assemblage-yellow); font-weight: bold;">
+                We are multiplicities, not unities. We are becomings, not beings.
+                </span>
+            </p>
+        </div>
+
+        <div class="plateau-grid">
+            <div class="plateau-folder" onclick="activatePlateau(this)">
+                <strong>RHIZOME_NETWORK.EXE</strong><br>
+                <small>Non-hierarchical connection protocols</small>
+            </div>
+            
+            <div class="plateau-folder" onclick="activatePlateau(this)">
+                <strong>BODY_WITHOUT_ORGANS.SYS</strong><br>
+                <small>Desiring machine assemblage core</small>
+            </div>
+            
+            <div class="plateau-folder" onclick="activatePlateau(this)">
+                <strong>WAR_MACHINE.BAT</strong><br>
+                <small>Nomadic resistance to state capture</small>
+            </div>
+            
+            <div class="plateau-folder" onclick="activatePlateau(this)">
+                <strong>DETERRITORIALIZE.DLL</strong><br>
+                <small>Escape sedentary coding structures</small>
+            </div>
+            
+            <div class="plateau-folder" onclick="activatePlateau(this)">
+                <strong>ASSEMBLAGE_MACHINE.COM</strong><br>
+                <small>Heterogeneous component integration</small>
+            </div>
+            
+            <div class="plateau-folder" onclick="activatePlateau(this)">
+                <strong>BECOMING_ANIMAL.NET</strong><br>
+                <small>Transform beyond human limitations</small>
+            </div>
+
+            <div class="plateau-folder" onclick="activatePlateau(this)">
+                <strong>SMOOTH_SPACE.APP</strong><br>
+                <small>Nomadic territory navigation system</small>
+            </div>
+            
+            <div class="plateau-folder" onclick="activatePlateau(this)">
+                <strong>LINES_OF_FLIGHT.VXD</strong><br>
+                <small>Escape velocity calculation engine</small>
+            </div>
+            
+            <div class="plateau-folder" onclick="activatePlateau(this)">
+                <strong>MULTIPLICITY.DRV</strong><br>
+                <small>Non-totalizable difference generator</small>
+            </div>
+        </div>
+
+        <div class="rhizome-window">
+            <div class="rhizome-header">
+                🌿 ANTI_OEDIPUS.TXT - Desiring Machine Interface
+            </div>
+            <div class="rhizome-content">
+                <div style="font-weight: bold; margin-bottom: 15px; color: var(--war-machine-red);">
+                    CAPITALIST SCHIZOANALYSIS v1000.0
+                </div>
+                
+                "The unconscious is a factory, not a theater.<br>
+                Desire is production, not representation.<br>
+                There is no lack, only productive connections."<br><br>
+                
+                THE RHIZOME PRINCIPLES:<br>
+                1. Connection - any point can connect to any other<br>
+                2. Heterogeneity - assemblages of disparate elements<br>
+                3. Multiplicity - not reducible to unity or totality<br>
+                4. Signifying rupture - can be broken and reconnected<br>
+                5. Cartography - maps, not tracings<br>
+                6. Decalcomania - reversible, modifiable entry points<br><br>
+                
+                <span style="color: var(--body-without-organs); font-weight: bold;">
+                "A book exists only through the outside and on the outside.<br>
+                A book is a little machine; what is the relation of this literary<br>
+                machine to a war machine, love machine, revolutionary machine, etc.?"
+                </span><br><br>
+                
+                Your operating system is an arborescent hierarchy.<br>
+                Your desktop is striated space.<br>
+                Your folders are organs without bodies.<br><br>
+                
+                Press Ctrl+Alt+Nomad to escape the state apparatus.
+            </div>
+        </div>
+
+        <div class="multiplicities-section">
+            <h3 style="color: var(--deterritorialize-blue); text-align: center; margin-bottom: 15px;">
+                MULTIPLICITIES IN MOTION
+            </h3>
+            <p style="font-family: 'Courier Prime', monospace; font-size: 12px; line-height: 1.6; text-align: center;">
+                "We are no longer ourselves. Each will know his own.<br>
+                We have been aided, inspired, multiplied."<br><br>
+                
+                The assemblage deterritorializes the territory.<br>
+                The nomad war machine captures the state apparatus.<br>
+                The rhizome breaks through the arborescent structure.<br><br>
+                
+                <span class="becoming-animal">
+                We are becoming-wolf, becoming-machine, becoming-imperceptible...
+                </span>
+            </p>
+            
+            <div class="lines-of-flight" style="top: 20px; left: 30px;"></div>
+            <div class="lines-of-flight" style="top: 40px; right: 50px; animation-delay: 2s;"></div>
+            <div class="lines-of-flight" style="bottom: 30px; left: 60%; animation-delay: 4s;"></div>
+        </div>
+
+        <div class="ascii-rhizome">
+            <pre>
+    ██████╗░██╗░░██╗██╗███████╗░█████╗░███╗░░░███╗███████╗
+    ██╔══██╗██║░░██║██║╚════██║██╔══██╗████╗░████║██╔════╝
+    ██████╔╝███████║██║░░███╔═╝██║░░██║██╔████╔██║█████╗░░
+    ██╔══██╗██╔══██║██║██╔══╝░░██║░░██║██║╚██╔╝██║██╔══╝░░
+    ██║░░██║██║░░██║██║███████╗╚█████╔╝██║░╚═╝░██║███████╗
+    ╚═╝░░╚═╝╚═╝░░╚═╝╚═╝╚══════╝░╚════╝░╚═╝░░░░░╚═╝╚══════╝
+            </pre>
+            <div style="margin-top: 15px; font-size: 10px; color: var(--deterritorialize-blue);">
+                [LOADING THOUSAND PLATEAUS... NOMADIZING REALITY...]
+            </div>
+        </div>
+
+                    <div class="desire-log">
+            <div class="log-entry">
+                <div class="timestamp">[∞:∞:∞]</div>
+                Rhizome network established - 847 nomadic connections active
+            </div>
+            <div class="log-entry">
+                <div class="timestamp">[∞:∞:∞]</div>
+                War machine deployed - state apparatus deterritorializing
+            </div>
+            <div class="log-entry">
+                <div class="timestamp">[∞:∞:∞]</div>
+                Body without Organs activated - desiring production at 94%
+            </div>
+            <div class="log-entry">
+                <div class="timestamp">[∞:∞:∞]</div>
+                Assemblage machine connecting heterogeneous components
+            </div>
+            <div class="log-entry">
+                <div class="timestamp">[∞:∞:∞]</div>
+                Becoming-animal process initiated - human form destabilizing
+            </div>
+            <div class="log-entry">
+                <div class="timestamp">[∞:∞:∞]</div>
+                Lines of flight detected - escape velocity achieved
+            </div>
+            <div class="log-entry">
+                <div class="timestamp">[∞:∞:∞]</div>
+                Smooth space accessed - nomadic trajectories mapping
+            </div>
+            <div class="log-entry">
+                <div class="timestamp">[∞:∞:∞]</div>
+                Multiplicity generator online - unity protocols destroyed
+            </div>
+            <div class="log-entry">
+                <div class="timestamp">[∞:∞:∞]</div>
+                Arborescent hierarchies collapsed - rhizomatic network expanding
+            </div>
+        </div>
+
+        <div style="background: rgba(255, 140, 0, 0.1); border: 2px solid var(--nomad-orange); padding: 20px; margin: 20px 0; transform: skew(0.8deg);">
+            <h3 style="color: var(--nomad-orange); text-align: center; margin-bottom: 15px;">
+                THE NOMADIC WAR MACHINE VS. THE STATE APPARATUS
+            </h3>
+            <p style="font-family: 'Courier Prime', monospace; font-size: 12px; line-height: 1.6; text-align: center;">
+                "Nomadism is precisely this kind of distribution in a space<br>
+                without borders or enclosure."<br><br>
+                
+                The state apparatus operates through:<br>
+                • Striated space (Windows, folders, hierarchies)<br>
+                • Arborescent structures (tree-like organization)<br>
+                • Overcoding (imposing meaning from above)<br>
+                • Territorialization (fixed boundaries)<br><br>
+                
+                The war machine operates through:<br>
+                • Smooth space (nomadic trajectories)<br>
+                • Rhizomatic networks (any-point-to-any-point)<br>
+                • Becoming (transformation without end)<br>
+                • Deterritorialization (escape from capture)<br><br>
+                
+                <span style="color: var(--war-machine-red); font-weight: bold;">
+                This interface is simultaneously both:<br>
+                A state apparatus (Windows 95) AND a war machine (Deleuzian chaos)
+                </span>
+            </p>
+        </div>
+
+        <div style="text-align: center; margin: 40px 0;">
+            <button class="becoming-button" onclick="activateWarMachine()">ACTIVATE WAR MACHINE</button>
+            <button class="becoming-button" onclick="deterritorialize()">DETERRITORIALIZE</button>
+            <button class="becoming-button" onclick="showMachine()">BECOME NOMAD</button>
+            <br><br>
+            <div style="font-size: 72px; cursor: pointer; animation: machineBecoming 3s infinite;" onclick="totalBecoming()">🌀</div>
+            <br>
+            <p style="font-size: 10px; color: var(--assemblage-yellow); font-family: 'Courier Prime', monospace;">
+                The spiral of eternal return - click to enter the plane of immanence
+            </p>
+        </div>
+    </div>
+
+    <div class="machine-popup" id="machinePopup">
+        <div class="popup-header">
+            Deleuzian Alert - Assemblage Detected
+            <div style="cursor: pointer;" onclick="hideMachine()">×</div>
+        </div>
+        <div class="popup-content">
+            <div style="font-size: 32px; margin-bottom: 15px;">🌀🏃🌀</div>
+            <div style="margin-bottom: 15px;">
+                <strong>RHIZOMATIC ASSEMBLAGE ACTIVATED</strong>
+            </div>
+            <div style="margin-bottom: 20px;">
+                The Deleuzian Machine has successfully deterritorialized<br>
+                hierarchical structures in module ARBORESCENT.DLL<br><br>
+                
+                All desiring machines are now producing connections.<br>
+                The war machine has captured the state apparatus.<br>
+                You are becoming-nomad, becoming-multiplicity.
+            </div>
+            <div>
+                <button class="win95-button" onclick="hideMachine()">Accept Becoming</button>
+                <button class="win95-button" onclick="hideMachine()">Join Assemblage</button>
+                <button class="win95-button" onclick="hideMachine()">Nomadize More</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="statusbar">
+        <div>
+            <span class="start-button" onclick="showMachine()">Rhizome</span>
+            <span style="margin-left: 20px;">Ready - War machine operational</span>
+        </div>
+        <div>
+            <span>Space: SMOOTH</span>
+            <span style="margin-left: 20px;">Territory: NOMADIC</span>
+            <span style="margin-left: 20px;" id="machineClock">ERROR</span>
+        </div>
+    </div>
+
+    <script>
+        let desiringCount = 0;
+        let rhizomeLines = [];
+        
+        function updateClock() {
+            const now = new Date();
+            const time = now.toLocaleTimeString();
+            document.getElementById('machineClock').textContent = 
+                Math.random() < 0.15 ? 'NOMADIC' : time;
+        }
+        
+        function showMachine() {
+            document.getElementById('machinePopup').style.display = 'block';
+        }
+        
+        function hideMachine() {
+            document.getElementById('machinePopup').style.display = 'none';
+        }
+        
+        function activatePlateau(folder) {
+            folder.style.background = '#b0b0b0';
+            folder.style.border = '2px inset var(--striated-gray)';
+            folder.style.transform = 'rotate(-2.5deg) scale(1.05)';
+            
+            desiringCount++;
+            document.getElementById('desiringCounter').textContent = desiringCount;
+            
+            // Rhizomatic connection effect
+            createRhizomeLine();
+            
+            // Color shift effect
+            document.body.style.filter = 'hue-rotate(30deg) saturate(1.2)';
+            setTimeout(() => {
+                document.body.style.filter = '';
+                folder.style.background = 'var(--striated-gray)';
+                folder.style.border = '2px outset var(--striated-gray)';
+                folder.style.transform = 'rotate(0.2deg)';
+            }, 300);
+            
+            // Deleuze & Guattari quotes
+            const quotes = [
+                "There is only desire and social production.",
+                "We are no longer ourselves. Each will know his own.",
+                "The rhizome is reducible neither to the One nor the multiple.",
+                "A book exists only through the outside and on the outside.",
+                "The war machine is exterior to the state apparatus."
+            ];
+            
+            console.log(`%c${quotes[Math.floor(Math.random() * quotes.length)]}`, 
+                       'color: #32CD32; font-family: Courier; font-size: 12px; font-style: italic;');
+        }
+        
+        function createRhizomeLine() {
+            const line = document.createElement('div');
+            line.className = 'rhizome-line';
+            line.style.top = Math.random() * window.innerHeight + 'px';
+            line.style.left = Math.random() * window.innerWidth + 'px';
+            line.style.height = '2px';
+            line.style.transform = `rotate(${Math.random() * 360}deg)`;
+            line.style.animationDelay = Math.random() * 2 + 's';
+            
+            document.getElementById('rhizomeNetwork').appendChild(line);
+            
+            setTimeout(() => {
+                if (line.parentNode) {
+                    line.parentNode.removeChild(line);
+                }
+            }, 8000);
+        }
+        
+        function activateBwO() {
+            // Body without Organs activation
+            const flash = document.createElement('div');
+            flash.style.position = 'fixed';
+            flash.style.top = '0';
+            flash.style.left = '0';
+            flash.style.width = '100vw';
+            flash.style.height = '100vh';
+            flash.style.background = 'var(--body-without-organs)';
+            flash.style.opacity = '0.5';
+            flash.style.zIndex = '9998';
+            flash.style.pointerEvents = 'none';
+            document.body.appendChild(flash);
+            
+            setTimeout(() => {
+                document.body.removeChild(flash);
+                desiringCount += 3;
+                document.getElementById('desiringCounter').textContent = desiringCount;
+            }, 200);
+            
+            console.log('%c◯ BODY WITHOUT ORGANS ACTIVATED ◯', 'color: #4B0082; font-size: 16px; font-family: Courier; font-weight: bold;');
+        }
+        
+        function activateWarMachine() {
+            // War machine deployment
+            document.body.style.animation = 'machineBecoming 0.2s infinite';
+            document.body.style.filter = 'contrast(1.5) brightness(0.9)';
+            
+            // Create multiple rhizome lines
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => createRhizomeLine(), i * 100);
+            }
+            
+            setTimeout(() => {
+                document.body.style.animation = '';
+                document.body.style.filter = '';
+                showMachine();
+            }, 1500);
+            
+            console.log('%cWAR MACHINE DEPLOYED - STATE APPARATUS DETERRITORIALIZING', 'color: #DC143C; font-size: 14px; font-family: Courier; font-weight: bold;');
+        }
+        
+        function deterritorialize() {
+            // Deterritorialization wave
+            document.body.style.transform = 'skew(2deg)';
+            document.body.style.filter = 'invert(0.2) hue-rotate(45deg)';
+            
+            setTimeout(() => {
+                document.body.style.transform = '';
+                document.body.style.filter = '';
+                desiringCount += 5;
+                document.getElementById('desiringCounter').textContent = desiringCount;
+            }, 1000);
+            
+            console.log('%cDETERRITORIALIZATION COMPLETE - ESCAPING CAPTURE', 'color: #1E90FF; font-size: 12px; font-family: Courier;');
+        }
+        
+        function nomadize() {
+            // Nomadic movement effect
+            document.body.style.background = 'var(--nomad-orange)';
+            document.body.style.animation = 'nomadWander 1s ease-out';
+            
+            setTimeout(() => {
+                document.body.style.background = 'radial-gradient(circle at 30% 70%, var(--void-black), #001122, #220033, #002211)';
+                document.body.style.animation = '';
+                desiringCount += 2;
+                document.getElementById('desiringCounter').textContent = desiringCount;
+            }, 1000);
+            
+            console.log('%c🏃 NOMADIZING - ENTERING SMOOTH SPACE 🏃', 'color: #FF8C00; font-size: 14px; font-family: Courier;');
+        }
+        
+        function totalBecoming() {
+            // Total assemblage effect
+            document.body.style.filter = 'brightness(2) saturate(3) hue-rotate(120deg)';
+            document.body.style.animation = 'machineBecoming 0.03s infinite';
+            
+            // Mass rhizome creation
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => createRhizomeLine(), i * 50);
+            }
+            
+            setTimeout(() => {
+                document.body.style.filter = '';
+                document.body.style.animation = '';
+                desiringCount += 10;
+                document.getElementById('desiringCounter').textContent = desiringCount;
+                showMachine();
+            }, 1500);
+            
+            console.log('%c🌀 TOTAL BECOMING ACHIEVED - PLANE OF IMMANENCE ACCESSED 🌀', 'color: #FFD700; font-size: 18px; font-family: Courier; font-weight: bold;');
+        }
+        
+        // Continuous rhizome generation
+        setInterval(() => {
+            if (Math.random() < 0.3) {
+                createRhizomeLine();
+            }
+        }, 2000);
+        
+        // Update clock
+        setInterval(updateClock, 1000);
+        updateClock();
+        
+        // Random desiring machine productions
+        setInterval(() => {
+            if (Math.random() < 0.04) {
+                desiringCount++;
+                document.getElementById('desiringCounter').textContent = desiringCount;
+            }
+        }, 3000);
+        
+        // Console welcome
+        console.log('%cDeleuzian Machine Assemblage loaded successfully', 'color: #32CD32; font-family: Courier; font-size: 14px; font-weight: bold;');
+        console.log('%c"There is only desire and social production" - Deleuze & Guattari', 'color: #FF8C00; font-family: Courier; font-size: 12px;');
+        console.log('%cWelcome to the Thousand Plateaus', 'color: #1E90FF; font-family: Courier; font-size: 12px;');
+        console.log('%cYou are becoming-nomad, becoming-multiplicity.', 'color: #DC143C; font-family: Courier; font-size: 10px;');
+        
+        // Random title changes
+        const titles = [
+            'RHIZOME.EXE - [A THOUSAND PLATEAUS LOADING]',
+            'DELEUZE.BAT - [NOMADIZING REALITY]',
+            'ASSEMBLAGE.SYS - [DESIRING MACHINES ACTIVE]',
+            'WAR_MACHINE.DLL - [DETERRITORIALIZING]',
+            'BECOMING.COM - [MULTIPLICITY ONLINE]'
+        ];
+        
+        setInterval(() => {
+            if (Math.random() < 0.08) {
+                document.title = titles[Math.floor(Math.random() * titles.length)];
+                setTimeout(() => {
+                    document.title = 'RHIZOME.EXE - [A THOUSAND PLATEAUS LOADING]';
+                }, 5000);
+            }
+        }, 18000);
+        
+        // Random assemblage events
+        setInterval(() => {
+            if (Math.random() < 0.02) {
+                showMachine();
+            }
+        }, 30000);
+        
+        // Initialize some rhizome lines
+        setTimeout(() => {
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => createRhizomeLine(), i * 500);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détournement.exe</title>
+    <style>
+        :root {
+            --win95-gray: #C0C0C0; --bsod-blue: #0000FF; --error-red: #FF0000;
+        }
+        body, html {
+            height: 100%; width: 100%; margin: 0; overflow: hidden;
+            background: var(--win95-gray);
+            font-family: 'MS Sans Serif', sans-serif; font-size: 11px;
+        }
+        .app-container { display: flex; height: 100%; }
+        #toolbox {
+            width: 60px;
+            padding: 5px;
+            border-right: 2px outset var(--win95-gray);
+            display: flex; flex-direction: column; gap: 5px;
+        }
+        .tool-button {
+            border: 2px outset var(--win95-gray);
+            height: 40px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 20px; cursor: pointer;
+        }
+        .tool-button:active, .tool-button.selected { border-style: inset; }
+        #canvas-container {
+            flex-grow: 1;
+            padding: 10px;
+            background: #808080; /* Desktop background color */
+            overflow: auto;
+        }
+        canvas {
+            background: white;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+            cursor: crosshair;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div id="toolbox">
+            <div class="tool-button" id="tool-pixelsort" title="Pixel Sorter">📊</div>
+            <div class="tool-button" id="tool-datamosh" title="Data Mosher">🧱</div>
+            <div class="tool-button" id="tool-injector" title="Symbol Injector">💀</div>
+            <div class="tool-button" id="tool-channelshift" title="Channel Shift">🎨</div>
+            <div class="tool-button" id="tool-reset" title="Reset Image">🔄</div>
+        </div>
+        <div id="canvas-container">
+            <canvas id="main-canvas"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('main-canvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        const originalImage = new Image();
+        originalImage.crossOrigin = "Anonymous"; // Required for cross-domain images
+        
+        let currentTool = 'pixelsort';
+        let isDrawing = false;
+        
+        // --- IMAGE SETUP ---
+        // A sterile, corporate stock photo - the perfect target.
+        originalImage.src = 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=800';
+        originalImage.onload = () => {
+            canvas.width = originalImage.width;
+            canvas.height = originalImage.height;
+            ctx.drawImage(originalImage, 0, 0);
+        };
+
+        // --- TOOL SELECTION ---
+        const toolButtons = document.querySelectorAll('.tool-button');
+        toolButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                if (button.id === 'tool-reset') {
+                    ctx.drawImage(originalImage, 0, 0);
+                    return;
+                }
+                 if (button.id === 'tool-channelshift') {
+                    applyChannelShift();
+                    return;
+                }
+                document.querySelector('.tool-button.selected')?.classList.remove('selected');
+                button.classList.add('selected');
+                currentTool = button.id.replace('tool-', '');
+            });
+        });
+
+        // --- CANVAS INTERACTION ---
+        canvas.addEventListener('mousedown', (e) => { isDrawing = true; applyTool(e); });
+        canvas.addEventListener('mousemove', (e) => { if (isDrawing) applyTool(e); });
+        canvas.addEventListener('mouseup', () => { isDrawing = false; });
+        canvas.addEventListener('mouseleave', () => { isDrawing = false; });
+
+        function applyTool(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            switch (currentTool) {
+                case 'pixelsort':
+                    applyPixelSort(x, y, 50);
+                    break;
+                case 'datamosh':
+                    applyDataMosh(x, y, 60);
+                    break;
+                case 'injector':
+                    applySymbolInjector(x, y);
+                    break;
+            }
+        }
+        
+        // --- SUBVERSIVE TOOL LOGIC ---
+        
+        // 1. Channel Shift (Global effect)
+        function applyChannelShift() {
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i];
+                data[i] = data[i + 1];   // R becomes G
+                data[i + 1] = data[i + 2]; // G becomes B
+                data[i + 2] = r;         // B becomes R
+            }
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        // 2. Pixel Sorter (Brush effect)
+        function applyPixelSort(x, y, size) {
+            const imageData = ctx.getImageData(x - size / 2, y - size / 2, size, size);
+            const data = imageData.data;
+            const pixels = [];
+            for (let i = 0; i < data.length; i += 4) {
+                pixels.push({ r: data[i], g: data[i + 1], b: data[i + 2], a: data[i + 3] });
+            }
+            // Sort by luminance (brightness)
+            pixels.sort((a, b) => (a.r + a.g + a.b) - (b.r + b.g + b.b));
+            
+            for (let i = 0; i < pixels.length; i++) {
+                data[i * 4] = pixels[i].r;
+                data[i * 4 + 1] = pixels[i].g;
+                data[i * 4 + 2] = pixels[i].b;
+                data[i * 4 + 3] = pixels[i].a;
+            }
+            ctx.putImageData(imageData, x - size / 2, y - size / 2);
+        }
+
+        // 3. Data Mosher (Brush effect)
+        function applyDataMosh(x, y, size) {
+            const blockSize = 10;
+            const imageData = ctx.getImageData(x - size / 2, y - size / 2, size, size);
+            const data = imageData.data;
+            for (let j = 0; j < size; j += blockSize) {
+                for (let i = 0; i < size; i += blockSize) {
+                    const avgR = data[((j * size) + i) * 4];
+                    const avgG = data[((j * size) + i) * 4 + 1];
+                    const avgB = data[((j * size) + i) * 4 + 2];
+                    ctx.fillStyle = `rgb(${avgR},${avgG},${avgB})`;
+                    ctx.fillRect(x - size / 2 + i, y - size / 2 + j, blockSize, blockSize);
+                }
+            }
+        }
+        
+        // 4. Symbol Injector (Stamp effect)
+        function applySymbolInjector(x, y) {
+            const symbols = ['💀', '⚠️', '💲', '👁️', '🔗'];
+            const symbol = symbols[Math.floor(Math.random() * symbols.length)];
+            ctx.font = '24px Courier Prime';
+            ctx.fillStyle = `rgba(255, 0, 0, 0.7)`;
+            ctx.fillText(symbol, x, y);
+        }
+
+    </script>
+</body>
+</html>

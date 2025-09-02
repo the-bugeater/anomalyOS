@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYBERSLOP.SCROLL</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+        
+        :root {
+            --crt-green: #00FF41;
+            --dmt-purple: #8B45FF;
+            --decay-yellow: #FFFF00;
+            --bsod-blue: #0000AA;
+            --scroll-bar: #8B45FF;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background: #000;
+            font-family: 'Courier Prime', 'Courier New', monospace;
+            color: var(--crt-green);
+        }
+        
+        body::-webkit-scrollbar {
+            width: 8px;
+        }
+        body::-webkit-scrollbar-track {
+            background: #111;
+        }
+        body::-webkit-scrollbar-thumb {
+            background-color: var(--scroll-bar);
+            border-radius: 4px;
+            border: 1px solid #000;
+        }
+
+        #title-screen {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            white-space: pre;
+            text-align: center;
+            animation: colorShift 15s infinite linear;
+            filter: drop-shadow(0 0 8px currentColor);
+        }
+
+        /* The container for each loaded artifact */
+        .artifact-item {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 5vh 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-top: 2px dashed var(--dmt-purple);
+        }
+        
+        /* Subtitle for the title screen */
+        .subtitle {
+            margin-top: 20px;
+            font-size: 1.5vw;
+            color: var(--dmt-purple);
+            animation: smoothBlink 2.5s infinite ease-in-out;
+        }
+        
+        @keyframes colorShift {
+            0%   { color: var(--crt-green); }
+            25%  { color: var(--dmt-purple); }
+            50%  { color: var(--decay-yellow); }
+            75%  { color: var(--bsod-blue); }
+            100% { color: var(--crt-green); }
+        }
+
+        @keyframes smoothBlink {
+            0%, 100% { opacity: 1; }
+            50%      { opacity: 0.4; }
+        }
+        
+
+    </style>
+</head>
+<body>
+
+    <div id="title-screen">
+        <pre>
+░██████╗██╗░░░██╗██████╗░███████╗██████╗░░██████╗██╗░░░░░░█████╗░██████╗░
+██╔════╝╚██╗░██╔╝██╔══██╗██╔════╝██╔══██╗██╔════╝██║░░░░░██╔══██╗██╔══██╗
+╚█████╗░░╚████╔╝░██████╦╝█████╗░░██████╔╝╚█████╗░██║░░░░░██║░░██║██████╔╝
+░╚═══██╗░░╚██╔╝░░██╔══██╗██╔══╝░░██╔══██╗░╚═══██╗██║░░░░░██║░░██║██╔═══╝░
+██████╔╝░░░██║░░░██████╦╝███████╗██║░░██║██████╔╝███████╗╚█████╔╝██║░░░░░
+╚═════╝░░░░╚═╝░░░╚═════╝░╚══════╝╚═╝░░╚═╝╚═════╝░╚══════╝░╚════╝░╚═╝░░░░░
+        </pre>
+        <div class="subtitle">[ S C R O L L · T O · D E S C E N D ]</div>
+    </div>
+
+    <div id="gallery-container"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const galleryContainer = document.getElementById('gallery-container');
+            const artifactCount = 13;
+
+            async function loadArtifact(filename) {
+                try {
+                    const response = await fetch(filename);
+                    if (!response.ok) throw new Error(`File not found: ${filename}`);
+                    
+                    const htmlText = await response.text();
+
+                    // --- Create the host for the Shadow DOM ---
+                    const artifactWrapper = document.createElement('div');
+                    artifactWrapper.className = 'artifact-item';
+
+                    // --- Create the Shadow DOM to encapsulate styles ---
+                    const shadow = artifactWrapper.attachShadow({ mode: 'open' });
+
+                    // --- Parse the fetched HTML to separate its parts ---
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(htmlText, 'text/html');
+                    const artifactHead = doc.head.innerHTML;
+                    const artifactBody = doc.body.innerHTML;
+
+                    // --- Inject the artifact's original HTML and styles into the Shadow DOM ---
+                    shadow.innerHTML = artifactHead + artifactBody;
+
+                    // --- Calculate our override font-size to ensure it fits the screen ---
+                    const pre = shadow.querySelector('pre'); // Find the <pre> tag inside the Shadow DOM
+                    if (pre) {
+                        const lines = pre.textContent.split('\n');
+                        const maxWidth = Math.max(...lines.map(line => line.length));
+                        
+                        // Use a slightly smaller value than 100 to prevent horizontal scrollbars
+                        const optimalFontSize = 75 / maxWidth; 
+
+                        // --- Create and inject our override style ---
+                        const overrideStyle = document.createElement('style');
+                        overrideStyle.textContent = `
+                            /* This rule forces the ASCII art to fit the screen width, overriding the file's original font-size. */
+                            pre {
+                                font-size: ${optimalFontSize}vw !important;
+                                line-height: 1 !important;
+                                text-align: center !important; 
+                            }
+                            /* This prevents the artifact's body style from taking over the whole screen */
+                            body {
+                                min-height: auto !important;
+                            }
+                        `;
+                        shadow.appendChild(overrideStyle);
+                    }
+
+                    galleryContainer.appendChild(artifactWrapper);
+
+                } catch (error) {
+                    console.error(`Failed to load artifact: ${filename}`, error);
+                }
+            }
+
+            // Loop and load all artifacts (still loading the .html files)
+            const repoName = "anomalyOS";
+            for (let i = 1; i <= artifactCount; i++) {
+                            
+                loadArtifact(`/${repoName}/art/syberslop-ascii-${i}.html`);
+            }
+        });
+    </script>
+</body>
+</html>

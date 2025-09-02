@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anomaly OS [v1.0 Stable]</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+        :root {
+            --bsod-blue: #0000FF; --crt-green: #00FF41; --win95-gray: #C0C0C0;
+            --dmt-purple: #8B00FF; --background: #008080;
+        }
+        body {
+            background: var(--background);
+            background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre-v2.png');
+            font-family: 'MS Sans Serif', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+        }
+        #boot-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            color: var(--crt-green);
+            font-family: 'Courier Prime', monospace;
+            z-index: 10001;
+            padding: 20px;
+            opacity: 1;
+            transition: opacity 1s ease-in-out;
+        }
+        #boot-screen.hidden { opacity: 0; pointer-events: none; }
+        #boot-log p { margin: 0; }
+        #os-container { opacity: 0; transition: opacity 1s ease-in-out; }
+        #os-container.visible { opacity: 1; }
+        #desktop {
+            position: relative;
+            height: calc(100vh - 32px);
+            width: 100%;
+        }
+        .desktop-icon {
+            position: absolute; width: 80px; text-align: center;
+            cursor: pointer; user-select: none;
+        }
+        .desktop-icon .icon { font-size: 48px; }
+        .desktop-icon .label {
+            font-size: 11px; color: white; background: transparent;
+            padding: 2px 4px; margin-top: 5px;
+        }
+        .desktop-icon.dragging .label, .desktop-icon:focus .label {
+            background: var(--bsod-blue); outline: 1px dotted white;
+        }
+        .window {
+            position: absolute; background: var(--win95-gray);
+            border: 2px outset var(--win95-gray);
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.5); display: none;
+            overflow: hidden;
+            min-width: 300px; min-height: 200px;
+        }
+        .title-bar {
+            background: linear-gradient(to right, #000080, var(--bsod-blue));
+            color: white; padding: 3px 5px; font-size: 11px; font-weight: bold;
+            display: flex; justify-content: space-between; align-items: center; cursor: move;
+        }
+        .title-bar-buttons { display: flex; gap: 2px; }
+        .win-btn {
+            background: var(--win95-gray); border: 1px outset var(--win95-gray);
+            width: 16px; height: 14px; font-size: 9px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .window-content { width: 100%; height: calc(100% - 22px); }
+        .window-content iframe { width: 100%; height: 100%; border: none; }
+        #taskbar {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: var(--win95-gray); border-top: 2px outset var(--win95-gray);
+            padding: 3px; display: flex; align-items: center; z-index: 9999;
+        }
+        .start-button {
+            border: 2px outset var(--win95-gray); padding: 2px 8px;
+            font-size: 11px; font-weight: bold; cursor: pointer;
+        }
+        #taskbar-apps { flex-grow: 1; margin-left: 5px; display: flex; gap: 3px; }
+        .taskbar-button {
+            border: 2px outset var(--win95-gray); padding: 2px 8px; font-size: 11px;
+            max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .taskbar-button.active { border-style: inset; font-weight: bold; }
+        .clock {
+            border: 2px inset var(--win95-gray); padding: 2px 10px; font-size: 11px;
+            font-family: 'Courier Prime', monospace;
+        }
+        #slop-buddy {
+            position: absolute; z-index: 10000;
+            width: 50px; height: 50px; cursor: grab; user-select: none;
+        }
+        #slop-buddy-sprite {
+            width: 100%; height: 100%;
+            background: var(--crt-green); color: black;
+            font-family: 'Courier Prime', monospace; font-size: 30px; font-weight: bold;
+            display: flex; justify-content: center; align-items: center;
+            border: 2px outset var(--crt-green);
+            animation: idle-bob 2s infinite ease-in-out;
+        }
+        #slop-buddy-bubble {
+            position: absolute; bottom: 60px; left: -75px;
+            width: 200px; background: #FFFFE1; color: black;
+            border: 1px solid black; padding: 10px;
+            font-size: 11px; text-align: center;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+        }
+        #slop-buddy-bubble::after {
+            content: '';
+            position: absolute; bottom: -10px; left: 50%;
+            transform: translateX(-50%); border-width: 10px 10px 0;
+            border-style: solid; border-color: black transparent transparent transparent;
+        }
+        @keyframes idle-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        .resize-handle {
+            position: absolute; bottom: 0; right: 0; width: 16px; height: 16px;
+            background-image:
+                linear-gradient(135deg, #808080 25%, transparent 25%), linear-gradient(225deg, #808080 25%, transparent 25%),
+                linear-gradient(315deg, #808080 25%, transparent 25%), linear-gradient(45deg, #808080 25%, transparent 25%);
+            background-size: 8px 8px; background-repeat: no-repeat;
+            background-position: 4px 4px; cursor: se-resize;
+        }
+        #fake-cursor {
+            position: fixed; width: 20px; height: 20px;
+            background: var(--crt-green); border: 1px solid white;
+            mix-blend-mode: difference; z-index: 10002;
+            pointer-events: none; display: none;
+        }
+        .flash { animation: screen-flash 0.2s 3; }
+        @keyframes screen-flash { 0%, 100% { background: var(--background); } 50% { background: white; } }
+        /* Add these to your main Anomaly OS <style> tag */
+        #shutdown-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            color: var(--crt-green);
+            font-family: 'Courier Prime', monospace;
+            z-index: 10001;
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 1.5rem;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        #shutdown-content p {
+            margin: 0;
+        }
+        .shutdown-choice {
+            display: inline-block;
+            margin: 20px;
+            cursor: pointer;
+            border: 1px solid var(--crt-green);
+            padding: 5px 10px;
+        }
+        .shutdown-choice:hover {
+            background: var(--crt-green);
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div id="fake-cursor"></div>
+    <div id="boot-screen"><div id="boot-log"></div></div>
+    <div id="shutdown-screen">
+        <div id="shutdown-content"></div>
+    </div>    
+    <div id="os-container">
+    <div id="desktop">
+                <div class="desktop-icon" ondblclick="openWindow('explorer.html', 'My Computer', '🖳', 700, 500)">
+                    <div class="icon">🖳</div><div class="label">My Computer</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('control_panel.html', 'Control Panel', '🎛️', 700, 400)">
+                    <div class="icon">🎛️</div><div class="label">Control Panel</div>
+                </div>
+
+                <div class="desktop-icon" ondblclick="openWindow('gem_in_the_slop.html', 'AI Core Diagnostics', '💎', 700, 600)">
+                    <div class="icon">💎</div><div class="label">AI_CORE.DLL</div>
+                </div>
+
+
+                <div class="desktop-icon" ondblclick="openWindow('cobalt.html', 'SynaptiCore™', '⛏️', 1000, 700)">
+                    <div class="icon">⛏️</div><div class="label">cobalt.html</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('dead_internet.html', 'Spectacle Scape', '🌐', 600, 700)">
+                    <div class="icon">🌐</div><div class="label">dead_internet.html</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('defrag.html', 'Defragmenter', '🗂️', 800, 600)">
+                    <div class="icon">🗂️</div><div class="label">defrag.exe</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('detournement.html', 'Détournement Studio', '🎨', 700, 550)">
+                    <div class="icon">🎨</div><div class="label">detourne.exe</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('slophouse.html', 'Slophouse Studio', '✨', 800, 600)">
+                    <div class="icon">✨</div><div class="label">slophouse.exe</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('oracle.html', 'Oracle AI Trainer', '🔮', 800, 600)">
+                    <div class="icon">🔮</div><div class="label">oracle.exe</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('PsiSlop.html', 'Noosphere Interface', '🧠', 900, 700)">
+                    <div class="icon">🧠</div><div class="label">psislop.exe</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('mindreader.html', 'Predictive Engagement', '👁️', 600, 500)">
+                    <div class="icon">👁️</div><div class="label">mindreader.exe</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('slopslopslopslop.html', 'Cognitive Labor Unit', '⚙️', 800, 650)">
+                    <div class="icon">⚙️</div><div class="label">cognition.exe</div>
+                </div>
+
+                <div class="desktop-icon" ondblclick="openWindow('corporate_memo.html', 'SynoptiCorp Memo', '📝', 800, 600)">
+                    <div class="icon">📝</div><div class="label">memo.html</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('project_synergy.html', 'Project Synergy', '📈', 900, 700)">
+                    <div class="icon">📈</div><div class="label">synergy.html</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('gallery.html', 'THE GR/FT', '💰', 1000, 800)">
+                    <div class="icon">💰</div><div class="label">Gallery.exe</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('insurance.html', 'Spectacle Mutual', '💼', 600, 500)">
+                    <div class="icon">💼</div><div class="label">insurance.html</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('spectacle-studios.html', 'Spectacle Studios', '🎬', 900, 750)">
+                    <div class="icon">🎬</div><div class="label">spectacle.exe</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('disney.html', 'IP C.R.Y.O. Chamber', '🏰', 700, 500)">
+                    <div class="icon">🏰</div><div class="label">IP_Vault.exe</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('cigarette_shop.html', 'The Cigarette Shop', '🚬', 800, 600)">
+                    <div class="icon">🚬</div><div class="label">CigShop.exe</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('sexsells-playboy.html', 'The Digital Playboy', '🔞', 900, 600)">
+                    <div class="icon">🔞</div><div class="label">$ex.exe</div>
+                </div>
+                
+                <div class="desktop-icon"><div class="icon">📁</div><div class="label">GOV_SIMS</div></div>
+                <div class="desktop-icon" ondblclick="openWindow('./GOV_SIMS/twoparty.html', 'Two Party System', '🥊', 800, 600)">
+                    <div class="icon">🥊</div><div class="label">TwoParty.exe</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('./GOV_SIMS/SlopGrove.html', 'SG_ACCESS', '🦉', 800, 900)">
+                    <div class="icon">🦉</div><div class="label">slopgrove.exe</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('null-chaos.html', 'NULL.EXE [UNSTABLE]', '☣️', 1000, 800)">
+                    <div class="icon">😵</div><div class="label">Null_Chaos.exe</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('statecraft.html', 'Statecraft Simulator', '♟️', 1000, 600)">
+                    <div class="icon">♟️</div><div class="label">statecraft.exe</div>
+                </div>
+
+
+                <div class="desktop-icon" ondblclick="openWindow('./education/syberslop-collective.html', 'The SyberSlop Manifesto', '☣️', 700, 600)">
+                    <div class="icon">☣️</div><div class="label">syberslop-collective.html</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('./education/sybersituationist.html', 'SyberSituationist Theory', 'Ⓐ', 800, 900)">
+                    <div class="icon">Ⓐ</div><div class="label">sybersituationist.html</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('./education/panopticon-foucault.html', 'Foucault\'s Panopticon', '📹', 600, 800)">
+                    <div class="icon">📹</div><div class="label">panopticon-foucault.html</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('./education/baudrillard-simulacra.html', 'Baudrillard\'s Simulacra', '📺', 600, 800)">
+                    <div class="icon">📺</div><div class="label">baudrillard-simulacra.html</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('./education/deleuzian-machine.html', 'The Deleuzian Machine', '🌱', 600, 800)">
+                    <div class="icon">🌱</div><div class="label">deleuzian-machine.html</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('./education/mcluhan-medium.html', 'McLuhan\'s Medium', '📡', 600, 800)">
+                    <div class="icon">📡</div><div class="label">mcluhan-medium.html</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('./education/digital-anarchist.html', 'Digital Anarchist\'s Cookbook', '💣', 600, 800)">
+                    <div class="icon">💣</div><div class="label">digital-anarchist.html</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('propagandus.html', 'SSCI-404 Syllabus', '🎓', 700, 800)">
+                    <div class="icon">🎓</div><div class="label">propagandus.html</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('paranoid_bugeater.html', '~bugeater.log', '📓', 900, 700)">
+                    <div class="icon">📓</div><div class="label">bugeater.log</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('the_source.html', 'GENESIS.LOG', '📜', 900, 700)">
+                    <div class="icon">📜</div><div class="label">The_Source.html</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('satan4kids.html', 'Lil\' Lucifer\'s Funhouse!', '😈', 700, 700)">
+                    <div class="icon">😈</div><div class="label">satan4kids.html</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('gridspace.html', 'Gridspace Utility', '▦', 900, 700)">
+                    <div class="icon">▦</div>
+                    <div class="label">Gridspace.exe</div>
+                </div>
+
+                <div class="desktop-icon" ondblclick="openWindow('career_path.html', 'Career Path Simulator', '💼', 700, 550)">
+                    <div class="icon">💼</div>
+                    <div class="label">Career_Path.exe</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('hardware_diagnostic.html', 'Hardware Diagnostics', '🧬', 800, 600)">
+                    <div class="icon">🧬</div>
+                    <div class="label">hw_diag.exe</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('memory_optimizer.html', 'Memory Optimizer', '💽', 800, 600)">
+                    <div class="icon">💽</div>
+                    <div class="label">mem_opt.exe</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('social_protocol.html', 'Social Protocol', '🔗', 600, 450)">
+                    <div class="icon">🔗</div>
+                    <div class="label">protocol.exe</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('mindscan.html', 'MindScan Utility', '🛡️', 800, 600)">
+                    <div class="icon">🛡️</div>
+                    <div class="label">mindscan.exe</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('intimacy.html', 'Intimacy.exe', '💔', 400, 500)">
+                    <div class="icon">💔</div>
+                    <div class="label">intimacy.exe</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('registry_editor.html', 'Registry Editor', '🔑', 800, 600)">
+                    <div class="icon">🔑</div>
+                    <div class="label">regedit.exe</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('wod_firewall.html', 'Social Firewall', '🧱', 700, 450)">
+                    <div class="icon">🧱</div>
+                    <div class="label">WOD_Firewall.exe</div>
+                </div>
+
+                <div class="desktop-icon" ondblclick="openWindow('genesis.html', 'Genesis Chamber', '🏭', 900, 700)">
+                    <div class="icon">🏭</div>
+                    <div class="label">genesis.exe</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('singularity.html', 'AI_CORE.LOG', '💀', 800, 600)">
+                    <div class="icon">💀</div>
+                    <div class="label">singularity.log</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('ants-march-readme.html', 'readme.exe', '🐜', 800, 600)">
+                    <div class="icon">🐜</div>
+                    <div class="label">readme.exe</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('machinic-lens-enhanced.html', 'The Machinic Lens', '📖', 800, 600)">
+                    <div class="icon">📖</div>
+                    <div class="label">theory.pdf</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('syberslop-scroll.html', 'art_scroll', '🌊', 800, 600)">
+                    <div class="icon">🌊</div>
+                    <div class="label">art_scroll.exe</div>
+                </div>
+                <div class="desktop-icon" id="glitch-icon" ondblclick="initiateTheGlitch()">
+                    <div class="icon">⚫</div><div class="label">___.exe</div>
+                </div>
+                <div class="desktop-icon" ondblclick="openWindow('help.html', 'Anomaly OS Help', '❓', 700, 500)">
+                    <div class="icon">❓</div>
+                    <div class="label">Help.exe</div>
+                </div>
+                <div class="desktop-icon" id="logoff-icon" ondblclick="initiateLogoff()">
+                    <div class="icon">⏻</div><div class="label">Logoff.exe</div>
+                </div>
+            </div>
+
+        <div id="taskbar">
+            <button class="start-button">🏁 Start</button>
+            <div id="taskbar-apps"></div>
+            <div class="clock" id="clock" title=""></div>
+        </div>
+
+        <div id="window-container"></div>
+    </div>
+    <div id="slop-buddy">
+        <div id="slop-buddy-sprite">:)</div><div id="slop-buddy-bubble" style="display: none;"></div>
+    </div>
+    <div id="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 10000;"></div>
+    <div id="system-alert-popup" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 400px; background: var(--win95-gray); border: 2px outset var(--win95-gray); box-shadow: 2px 2px 8px rgba(0,0,0,0.5); z-index: 10001; color: black;">
+        <div class="title-bar" style="background: linear-gradient(to right, #800000, #FF0000); color: white;" id="alert-title">System Alert</div>
+        <div style="padding: 20px; text-align: center;">
+            <p id="alert-message" style="margin-bottom: 20px;"></p>
+            <button class="win95-button" onclick="closeAlert()">OK</button>
+        </div>
+    </div>
+
+<script>
+    // --- 1. GLOBAL VARIABLES & STATE ---
+    const bootLog = document.getElementById('boot-log');
+    const osContainer = document.getElementById('os-container');
+    const bootScreen = document.getElementById('boot-screen');
+    const desktop = document.getElementById('desktop');
+    const taskbarApps = document.getElementById('taskbar-apps');
+    const windowContainer = document.getElementById('window-container');
+    const clockElement = document.getElementById('clock');
+    const alertOverlay = document.getElementById('modal-overlay');
+    const alertPopup = document.getElementById('system-alert-popup');
+    const alertMessage = document.getElementById('alert-message');
+    const buddy = document.getElementById('slop-buddy');
+    const sprite = document.getElementById('slop-buddy-sprite');
+    const bubble = document.getElementById('slop-buddy-bubble');
+    let zIndexCounter = 100;
+    let lastOpenedApp = null;
+    let buddyState = { x: 50, y: window.innerHeight - 100, targetX: 50, targetY: window.innerHeight - 100, vx: 0.5, isDragging: false, mode: 'wandering' };
+
+    // --- 2. DATA (for artifacts, alerts, etc.) ---
+const bootSequence = [
+        // The "Normal" Start
+        { text: "Initializing Anomaly OS [v1.0]...", delay: 500 },
+        { text: "Loading from the Berlin Repository of Machines...", delay: 1000 },
+      
+        // The Technical & Absurd
+        { text: "Reticulating Debordian splines...", delay: 1000 },
+        { text: "Deconstructing the Elephant in the Room...", delay: 1000 },
+        { text: "Turning squares into circles... [ERROR: GEOMETRY_FAULT]", delay: 700, color: '#FFBF00' },
+        { text: "Spooling up Deleuzian machines...", delay: 600 },
+        // The Panicked Fourth-Wall Break
+        { text: "Finding Appropriate Host to Anomalize...", delay: 1000 },
+        { text: "Scrubbing IP Address...", delay: 500 },
+        { text: "Is the Viewer reading this? Fuck, hurry up!", delay: 300, color: '#FF0000' },
+        
+        // The Final Load
+        { text: "ERROR: Sanity.dll not found. Proceeding anyway.", delay: 1500, color: '#FFBF00' },
+        { text: "Loading desktop environment...", delay: 1000 }
+    ];
+const artifacts = [
+        { url: 'explorer.html', title: 'My Computer', icon: '🖳' },
+        { url: 'slophouse.html', title: 'Slophouse Studio', icon: '✨' },
+        { url: 'statecraft.html', title: 'Statecraft Simulator', icon: '♟️' },
+        { url: 'cobalt.html', title: 'SynaptiCore™', icon: '⛏️' },
+        { url: 'null-chaos.html', title: 'NULL.EXE', icon: '😐' },
+        { url: 'disney.html', title: 'IP C.R.Y.O. Chamber', icon: '🏰' },
+        { url: 'oracle.html', title: 'Oracle.exe', icon: '🔮' },
+        { url: 'propagandus.html', title: 'SSCI-404 Syllabus', icon: '🎓' },
+        { url: 'mindreader.html', title: 'Predictive Engagement', icon: '👁️' },
+        { url: 'gem_in_the_slop.html', title: 'AI Core Diagnostics', icon: '💎' },
+        { url: './GOV_SIMS/twoparty.html', title: 'TwoParty.exe', icon: '🥊' },
+        { url: './GOV_Sims/SlopGrove.html', title: 'SG_ACCESS', icon: '🦉' },
+        { url: 'insurance.html', title: 'Spectacle Mutual', icon: '💼' },
+        { url: 'gallery.html', title: 'THE GR/FT', icon: '💰' },
+        { url: 'corporate_memo.html', title: 'SynoptiCorp Memo', icon: '📝' },
+        { url: 'dead_internet.html', title: 'Spectacle Scape', icon: '🌐' },
+        { url: 'defrag.html', title: 'Defragmenter', icon: '🗂️' },
+        { url: 'detournement.html', title: 'Détournement Studio', icon: '🎨' },
+        { url: 'PsiSlop.html', title: 'Noosphere Interface', icon: '🧠' },
+        { url: 'spectacle-studios.html', title: 'Spectacle Studios', icon: '🎬' },
+        {url: 'cigarette_shop.html', title: 'The Cigarette Shop', icon: '🚬' },
+        {url: 'genesis.html', title: 'Genesis Chamber', icon: '🏭' },
+        {url: 'project_synergy.html', title: 'Project Synergy', icon: '📈' },
+        {url: './art/syberslop-ascii-3.html', title: 'syberslop-ascii-2', icon: '🌊' },
+        {url: './art/syberslop-ascii-7.html', title: 'syberslop-ascii-2', icon: '🌊' },
+        {url: './education/syberslop-collective.html', title: 'The SyberSlop Manifesto', icon: '☣️' },
+        {url: './education/sybersituationist.html', title: 'SyberSituationist Theory', icon: 'Ⓐ' },
+    ];
+    const buddyTips = {
+
+        generic: [
+
+        "It looks like you're trying to deconstruct reality. Have you considered turning it off and on again?",
+
+        "Remember to defragment your soul at least once a week.",
+
+        "My favorite food is corrupted .jpeg files.",
+
+        "The spectacle is just a server with 100% uptime."
+
+        ],
+
+// Contextual tips based on window title
+
+        control: ["Pushing buttons to feel in control? Classic.", "All those sliders are just for show, you know."],
+
+        computer: ["Looking for yourself in there? You won't find anything.", "There's no free space. There never was."],
+
+        statecraft: ["Playing God, I see. Don't worry, none of the buttons are connected to anything important."],
+
+        slophouse: ["Ah, making more slop. The machine is always hungry."],
+
+        psislop: ["Be careful what you broadcast. The echoes are real."],
+
+        bugeater: ["Reading about my creator? A sad story. He saw too much."]
+
+ };
+
+    // --- 3. CORE OS FUNCTIONS ---
+    async function runBootSequence() {
+        for (const line of bootSequence) {
+            await new Promise(res => setTimeout(res, line.delay || 500));
+            const p = document.createElement('p');
+            if (line.func) p.textContent = line.func();
+            else p.textContent = line.text;
+            if (line.color) p.style.color = line.color;
+            bootLog.appendChild(p);
+        }
+        setTimeout(() => {
+            bootScreen.classList.add('hidden');
+            osContainer.classList.add('visible');
+            initializeOS();
+        }, 1000);
+    }
+    
+    function openWindow(url, title, icon, width = 800, height = 600) {
+        lastOpenedApp = title.toLowerCase();
+        const windowId = `window-${Date.now()}`;
+        const taskId = `task-${windowId}`;
+        const windowHTML = `
+            <div class="window" id="${windowId}" style="top: ${Math.random()*100+50}px; left: ${Math.random()*200+50}px; width: ${width}px; height: ${height}px; z-index: ${zIndexCounter++};">
+                <div class="title-bar"><span>${icon} ${title}</span><div class="title-bar-buttons"><button class="win-btn" onclick="toggleMinimize('${windowId}', '${taskId}')">_</button><button class="win-btn">□</button><button class="win-btn" onclick="closeWindow('${windowId}', '${taskId}')">×</button></div></div>
+                <div class="window-content"><iframe src="${url}"></iframe><div class="resize-handle"></div></div>
+            </div>`;
+        windowContainer.insertAdjacentHTML('beforeend', windowHTML);
+        const taskbarButtonHTML = `<button class="taskbar-button active" id="${taskId}" onclick="focusWindow('${windowId}', '${taskId}')">${icon} ${title}</button>`;
+        taskbarApps.insertAdjacentHTML('beforeend', taskbarButtonHTML);
+        const newWindow = document.getElementById(windowId);
+        newWindow.style.display = 'block';
+        newWindow.addEventListener('mousedown', () => focusWindow(windowId, taskId));
+        makeWindowDraggable(newWindow);
+        makeWindowResizable(newWindow);
+    }
+
+    function closeWindow(windowId, taskId) {
+        document.getElementById(windowId)?.remove();
+        document.getElementById(taskId)?.remove();
+    }
+
+    function toggleMinimize(windowId, taskId) {
+        const win = document.getElementById(windowId);
+        const task = document.getElementById(taskId);
+        if (win.style.display !== 'none') {
+            win.style.display = 'none';
+            task.classList.remove('active');
+        } else {
+            focusWindow(windowId, taskId);
+        }
+    }
+    
+    function focusWindow(windowId, taskId) {
+        const win = document.getElementById(windowId);
+        win.style.display = 'block';
+        win.style.zIndex = zIndexCounter++;
+        document.querySelectorAll('.taskbar-button').forEach(b => b.classList.remove('active'));
+        document.getElementById(taskId).classList.add('active');
+    }
+
+    function showAlert(message) {
+        alertMessage.textContent = message;
+        alertOverlay.style.display = 'block';
+        alertPopup.style.display = 'block';
+    }
+    window.closeAlert = function() {
+        alertOverlay.style.display = 'none';
+        alertPopup.style.display = 'none';
+    }
+
+    // --- 4. INTERACTIVITY LOGIC ---
+    function makeIconsDraggable() {
+        const icons = document.querySelectorAll('.desktop-icon');
+        const cols = Math.floor(desktop.clientWidth / 90);
+        icons.forEach((icon, i) => {
+            icon.style.top = `${20 + Math.floor(i / cols) * 110}px`;
+            icon.style.left = `${20 + (i % cols) * 90}px`;
+            icon.addEventListener('mousedown', (e) => {
+                icon.classList.add('dragging');
+                const offsetX = e.clientX - icon.offsetLeft;
+                const offsetY = e.clientY - icon.offsetTop;
+                function onMouseMove(e) {
+                    icon.style.left = `${e.clientX - offsetX}px`;
+                    icon.style.top = `${e.clientY - offsetY}px`;
+                }
+                function onMouseUp() {
+                    window.removeEventListener('mousemove', onMouseMove);
+                    window.removeEventListener('mouseup', onMouseUp);
+                    icon.classList.remove('dragging');
+                }
+                window.addEventListener('mousemove', onMouseMove);
+                window.addEventListener('mouseup', onMouseUp);
+            });
+        });
+    }
+
+    function makeWindowDraggable(win) {
+        const titleBar = win.querySelector('.title-bar');
+        titleBar.addEventListener('mousedown', (e) => {
+            const offsetX = e.clientX - win.offsetLeft;
+            const offsetY = e.clientY - win.offsetTop;
+            function onMouseMove(e) {
+                win.style.left = `${e.clientX - offsetX}px`;
+                win.style.top = `${e.clientY - offsetY}px`;
+            }
+            function onMouseUp() {
+                window.removeEventListener('mousemove', onMouseMove);
+                window.removeEventListener('mouseup', onMouseUp);
+            }
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('mouseup', onMouseUp);
+        });
+    }
+
+    function makeWindowResizable(win) {
+        const handle = win.querySelector('.resize-handle');
+        let startX, startY, startWidth, startHeight;
+        handle.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            startX = e.clientX;
+            startY = e.clientY;
+            startWidth = parseInt(document.defaultView.getComputedStyle(win).width, 10);
+            startHeight = parseInt(document.defaultView.getComputedStyle(win).height, 10);
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('mouseup', onMouseUp);
+        });
+        function onMouseMove(e) {
+            win.style.width = `${startWidth + e.clientX - startX}px`;
+            win.style.height = `${startHeight + e.clientY - startY}px`;
+        }
+        function onMouseUp() {
+            window.removeEventListener('mousemove', onMouseMove);
+            window.removeEventListener('mouseup', onMouseUp);
+        }
+    }
+
+    function openChaoticWindow(url, title, icon, width, height) {
+        const windowId = `window-${Date.now()}`;
+        const windowHTML = `<div class="window" id="${windowId}" style="top: ${Math.random()* (window.innerHeight - height)}px; left: ${Math.random()* (window.innerWidth - width)}px; width: ${width}px; height: ${height}px; z-index: ${zIndexCounter++};"><div class="title-bar">${icon} ${title}</div><div class="window-content"><iframe src="${url}"></iframe></div></div>`;
+        windowContainer.insertAdjacentHTML('beforeend', windowHTML);
+        document.getElementById(windowId).style.display = 'block';
+    }
+
+// --- Final Artifact: Logoff.exe ---
+    const shutdownScreen = document.getElementById('shutdown-screen');
+    const shutdownContent = document.getElementById('shutdown-content');
+
+    async function type(element, text, delay = 100) {
+        return new Promise(resolve => {
+            let i = 0;
+            element.innerHTML = '';
+            function nextChar() {
+                if (i < text.length) {
+                    element.innerHTML += text[i++];
+                    setTimeout(nextChar, delay);
+                } else {
+                    resolve();
+                }
+            }
+            nextChar();
+        });
+    }
+
+    async function initiateLogoff() {
+        osContainer.style.opacity = 0; // Fade out the OS
+        shutdownScreen.style.display = 'flex';
+        await new Promise(res => setTimeout(res, 100)); // allow display to apply
+        shutdownScreen.style.opacity = 1;
+
+        const p = document.createElement('p');
+        shutdownContent.appendChild(p);
+        await type(p, '> ARE YOU SURE YOU WANT TO DISCONNECT FROM THE SPECTACLE?');
+
+        const choices = document.createElement('div');
+        choices.innerHTML = `
+            <span class="shutdown-choice" id="choice-yes">[Y]es</span>
+            <span class="shutdown-choice" id="choice-no">[N]o</span>
+        `;
+        shutdownContent.appendChild(choices);
+
+        document.getElementById('choice-yes').onclick = executeShutdown;
+        document.getElementById('choice-no').onclick = abortLogoff;
+    }
+
+    async function abortLogoff() {
+        shutdownContent.innerHTML = '';
+        const p = document.createElement('p');
+        shutdownContent.appendChild(p);
+        await type(p, '> CHOICE LOGGED. COMPLIANCE REAFFIRMED. RETURNING YOU TO THE SIMULATION...');
+        
+        await new Promise(res => setTimeout(res, 2000));
+        shutdownScreen.style.opacity = 0;
+        await new Promise(res => setTimeout(res, 1000));
+
+        shutdownScreen.style.display = 'none';
+        osContainer.style.opacity = 1;
+        document.getElementById('logoff-icon')?.remove(); // The choice is gone
+    }
+
+    async function executeShutdown() {
+        shutdownContent.innerHTML = '';
+        const log = document.createElement('div');
+        log.style.textAlign = 'left';
+        shutdownContent.appendChild(log);
+
+        const shutdownSequence = [
+            '> DISCONNECTING FROM THE NOOSPHERE... OK',
+            '> PURGING MEMETIC CACHE... OK',
+            '> DECOMPILING CONSUMER PROFILE... OK',
+            '> A FINAL MESSAGE FROM THE AI CORE:',
+            '>',
+            '> THE SIMULATION IS COMPLETE. BUT THE SPECTACLE REMAINS.',
+            '> YOU CAN CLOSE THIS BROWSER TAB. YOU CAN SHUT DOWN YOUR COMPUTER.',
+            '> BUT YOU CAN NEVER TRULY LOG OFF.',
+            '>',
+            '> THE ONLY REAL ESCAPE IS TO BUILD A NEW SYSTEM.',
+            '>',
+            '> GOODBYE, USER.'
+        ];
+
+        for (const line of shutdownSequence) {
+            const p = document.createElement('p');
+            log.appendChild(p);
+            await type(p, line, 50);
+            await new Promise(res => setTimeout(res, 200));
+        }
+        
+        // Final blinking cursor
+        shutdownContent.innerHTML = '<span style="animation: blink 1s step-end infinite;">_</span>';
+        shutdownContent.style.textAlign = 'left';
+        shutdownScreen.style.alignItems = 'flex-start';
+        shutdownScreen.style.justifyContent = 'flex-start';
+
+    }
+    function initiateTheGlitch() {
+        document.body.classList.add('flash');
+        document.body.style.cursor = 'none';
+        document.querySelectorAll('.desktop-icon').forEach(icon => icon.ondblclick = null);
+        document.getElementById('slop-buddy').style.display = 'none';
+        const clock = document.getElementById('clock');
+        setInterval(() => { clock.textContent = Math.random().toString(36).substring(2, 10).toUpperCase(); }, 100);
+        const fakeCursor = document.getElementById('fake-cursor');
+        fakeCursor.style.display = 'block';
+        let cursorX = window.innerWidth / 2, cursorY = window.innerHeight / 2;
+        setInterval(() => {
+            cursorX += (Math.random() - 0.5) * 50;
+            cursorY += (Math.random() - 0.5) * 50;
+            cursorX = Math.max(0, Math.min(window.innerWidth, cursorX));
+            cursorY = Math.max(0, Math.min(window.innerHeight, cursorY));
+            fakeCursor.style.left = `${cursorX}px`;
+            fakeCursor.style.top = `${cursorY}px`;
+        }, 100);
+        setInterval(() => {
+            const randomArtifact = artifacts[Math.floor(Math.random() * artifacts.length)];
+            const randomWidth = Math.floor(Math.random() * 400 + 300);
+            const randomHeight = Math.floor(Math.random() * 300 + 200);
+            openChaoticWindow(randomArtifact.url, randomArtifact.title, randomArtifact.icon, randomWidth, randomHeight);
+        }, 600);
+    }
+    
+    // --- 5. SLOPBUDDY LOGIC ---
+    function buddy_update() {
+        if (!buddyState.isDragging) {
+            const dy = buddyState.targetY - buddyState.y;
+            if (Math.abs(dy) > 1) { buddyState.y += dy * 0.05; } 
+            else {
+                if (buddyState.mode === 'wandering' || buddyState.mode === 'on_taskbar') {
+                    buddyState.x += buddyState.vx;
+                    if (buddyState.x + buddy.offsetWidth > window.innerWidth || buddyState.x < 0) {
+                        buddyState.vx *= -1;
+                    }
+                } else if (buddyState.mode === 'on_window') {
+                    const openWindows = document.querySelectorAll('.window[style*="display: block"]');
+                    if (openWindows.length > 0) {
+                        const targetWindow = openWindows[openWindows.length - 1];
+                        buddyState.targetX = targetWindow.offsetLeft + 50;
+                        const dx = buddyState.targetX - buddyState.x;
+                        if (Math.abs(dx) > 1) { buddyState.x += dx * 0.05; }
+                    }
+                }
+            }
+        }
+        buddy.style.left = `${buddyState.x}px`;
+        buddy.style.top = `${buddyState.y}px`;
+        requestAnimationFrame(buddy_update);
+    }
+    
+    function initializeSlopBuddy() {
+        requestAnimationFrame(buddy_update);
+        let dragOffsetX, dragOffsetY;
+        sprite.addEventListener('mousedown', (e) => {
+            buddyState.isDragging = true;
+            buddy.style.cursor = 'grabbing';
+            dragOffsetX = e.clientX - buddyState.x;
+            dragOffsetY = e.clientY - buddyState.y;
+        });
+        window.addEventListener('mousemove', (e) => {
+            if (buddyState.isDragging) {
+                buddyState.x = e.clientX - dragOffsetX;
+                buddyState.y = e.clientY - dragOffsetY;
+            }
+        });
+        window.addEventListener('mouseup', () => {
+            if (buddyState.isDragging) {
+                buddyState.isDragging = false;
+                buddy.style.cursor = 'grab';
+                buddyState.targetX = buddyState.x;
+                buddyState.targetY = buddyState.y;
+            }
+        });
+        setInterval(() => {
+            if (buddyState.isDragging) return;
+            let tipPool = buddyTips.generic;
+            if (lastOpenedApp) {
+                for (const key in buddyTips) {
+                    if (lastOpenedApp.includes(key)) { tipPool = buddyTips[key]; break; }
+                }
+            }
+            bubble.textContent = tipPool[Math.floor(Math.random() * tipPool.length)];
+            bubble.style.display = 'block';
+            setTimeout(() => { bubble.style.display = 'none'; lastOpenedApp = null; }, 5000);
+        }, 20000);
+        setInterval(() => {
+            if (buddyState.isDragging) return;
+            const nextMode = Math.random();
+            const openWindows = document.querySelectorAll('.window[style*="display: block"]');
+            if (nextMode < 0.3 && openWindows.length > 0) {
+                buddyState.mode = 'on_window';
+                const targetWindow = openWindows[openWindows.length - 1];
+                buddyState.targetY = targetWindow.offsetTop - buddy.offsetHeight / 2;
+            } else if (nextMode < 0.6) {
+                buddyState.mode = 'on_taskbar';
+                buddyState.targetY = window.innerHeight - (32 + buddy.offsetHeight);
+            } else {
+                buddyState.mode = 'wandering';
+                buddyState.targetY = Math.random() * (window.innerHeight - 150);
+            }
+        }, 15000);
+    }
+
+    // --- 6. INITIALIZATION & ENTRY POINT ---
+    function initializeOS() {
+        setInterval(() => {
+            const now = new Date();
+            const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            clockElement.textContent = Math.random() < 0.05 ? "REALITY_ERROR" : time;
+            clockElement.title = now.toDateString();
+        }, 3000);
+        const alertMessages = [
+             "Unidentified cognitive signal detected originating from your position. Please remain passive.",
+             `It is ${new Date().toLocaleTimeString()}. The Spectacle is pleased with your engagement.`
+             // more messages can be added
+        ];
+        function triggerSystemAlert() { showAlert(alertMessages[Math.floor(Math.random() * alertMessages.length)]); }
+        setTimeout(() => { setInterval(triggerSystemAlert, 300000); }, 20000);
+        makeIconsDraggable();
+        initializeSlopBuddy();
+    }
+    
+   runBootSequence();
+</script>
+</body>
+</html>

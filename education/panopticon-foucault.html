@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PANOPTICON.EXE - [DISCIPLINARY MECHANISMS LOADING]</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+        
+        :root {
+            --surveillance-blue: #0000FF;
+            --panopticon-gray: #C0C0C0;
+            --discipline-green: #00FF41;
+            --power-red: #FF0000;
+            --normalization-yellow: #FFFF00;
+            --void-black: #000000;
+            --observation-white: #FFFFFF;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Times New Roman', serif;
+            background: radial-gradient(circle at center, var(--void-black), #001a33, #330000);
+            color: var(--discipline-green);
+            overflow-x: hidden;
+            cursor: crosshair;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        .surveillance-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 35px;
+            background: repeating-linear-gradient(
+                90deg,
+                var(--surveillance-blue),
+                var(--surveillance-blue) 30px,
+                var(--observation-white) 30px,
+                var(--observation-white) 60px
+            );
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            color: var(--void-black);
+            animation: surveillancePulse 2s infinite;
+        }
+        
+        @keyframes surveillancePulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        .main-content {
+            margin-top: 35px;
+            padding: 20px;
+        }
+        
+        .panopticon-window {
+            background: var(--panopticon-gray);
+            border: 2px outset var(--panopticon-gray);
+            margin: 20px 0;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+        }
+        
+        .window-titlebar {
+            background: linear-gradient(to right, var(--surveillance-blue), #000080);
+            color: white;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .window-buttons {
+            display: flex;
+            gap: 2px;
+        }
+        
+        .window-btn {
+            background: var(--panopticon-gray);
+            border: 1px outset var(--panopticon-gray);
+            width: 16px;
+            height: 14px;
+            font-size: 9px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .window-content {
+            padding: 20px;
+            color: black;
+        }
+        
+        .foucault-title {
+            font-size: 3.2rem;
+            font-weight: bold;
+            color: var(--surveillance-blue);
+            text-transform: uppercase;
+            text-align: center;
+            position: relative;
+            animation: surveillanceGlitch 3s infinite;
+            text-shadow: 2px 2px 0 var(--void-black), -2px -2px 0 var(--power-red);
+            margin: 30px 0;
+        }
+        
+        .foucault-title::before,
+        .foucault-title::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .foucault-title::before {
+            color: var(--power-red);
+            animation: powerShift 0.8s infinite;
+            clip-path: polygon(0 0, 100% 0, 100% 40%, 0 40%);
+        }
+        
+        .foucault-title::after {
+            color: var(--normalization-yellow);
+            animation: normalizeFlicker 1.2s infinite;
+            clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
+        }
+        
+        @keyframes surveillanceGlitch {
+            0%, 100% { transform: translate(0); }
+            10% { transform: translate(-1px, 1px); }
+            20% { transform: translate(1px, -1px); }
+            30% { transform: translate(-1px, -1px); }
+            40% { transform: translate(1px, 1px); }
+            50% { transform: translate(-2px, 0); }
+            60% { transform: translate(2px, 0); }
+            70% { transform: translate(0, -2px); }
+            80% { transform: translate(0, 2px); }
+        }
+        
+        @keyframes powerShift {
+            0%, 100% { transform: translate(0); }
+            50% { transform: translate(-2px, -1px); }
+        }
+        
+        @keyframes normalizeFlicker {
+            0%, 100% { transform: translate(0); }
+            33% { transform: translate(1px, 1px); }
+            66% { transform: translate(-1px, 1px); }
+        }
+        
+        .surveillance-terminal {
+            background: var(--void-black);
+            border: 2px inset var(--panopticon-gray);
+            margin: 20px 0;
+            font-family: 'Courier Prime', monospace;
+            box-shadow: inset 1px 1px 3px rgba(0,0,0,0.5);
+        }
+        
+        .terminal-header {
+            background: var(--panopticon-gray);
+            color: black;
+            padding: 5px 10px;
+            font-size: 12px;
+            border-bottom: 1px solid #808080;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .terminal-content {
+            padding: 15px;
+            color: var(--discipline-green);
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        
+        .dos-prompt {
+            color: var(--discipline-green);
+        }
+        
+        .surveillance-text {
+            color: var(--surveillance-blue);
+            animation: surveillanceFlicker 2s infinite;
+        }
+        
+        @keyframes surveillanceFlicker {
+            0%, 80%, 100% { opacity: 1; }
+            40% { opacity: 0.7; }
+        }
+        
+        .discipline-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .discipline-folder {
+            background: var(--panopticon-gray);
+            border: 2px outset var(--panopticon-gray);
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            color: black;
+        }
+        
+        .discipline-folder::before {
+            content: "👁️";
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        
+        .discipline-folder::after {
+            content: "OBSERVE";
+            position: absolute;
+            top: -8px;
+            right: -15px;
+            background: var(--surveillance-blue);
+            color: white;
+            padding: 2px 12px;
+            transform: rotate(12deg);
+            font-size: 8px;
+            font-weight: bold;
+        }
+        
+        .discipline-folder:hover {
+            background: #b0b0b0;
+            border: 2px inset var(--panopticon-gray);
+            transform: rotate(-0.5deg);
+        }
+        
+        .panopticon-eye {
+            position: fixed;
+            top: 50px;
+            right: 30px;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, var(--power-red), var(--void-black));
+            border: 3px solid var(--surveillance-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            cursor: pointer;
+            animation: eyeRotate 8s linear infinite;
+            z-index: 500;
+            box-shadow: 0 0 20px var(--power-red);
+        }
+        
+        @keyframes eyeRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .normalization-counter {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--surveillance-blue);
+            color: white;
+            padding: 12px;
+            border: 2px solid var(--observation-white);
+            text-align: center;
+            font-family: 'Courier Prime', monospace;
+            font-size: 10px;
+            animation: surveillancePulse 2s infinite;
+        }
+        
+        .discourse-window {
+            background: var(--observation-white);
+            border: 2px inset var(--panopticon-gray);
+            margin: 30px 0;
+            color: black;
+        }
+        
+        .discourse-header {
+            background: var(--panopticon-gray);
+            border-bottom: 1px solid #808080;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .discourse-content {
+            padding: 20px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        
+        .power-relations {
+            background: rgba(0, 0, 255, 0.1);
+            border: 2px dashed var(--surveillance-blue);
+            padding: 25px;
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .power-label {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: var(--void-black);
+            color: var(--surveillance-blue);
+            padding: 0 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .observation-log {
+            height: 200px;
+            overflow-y: scroll;
+            background: var(--void-black);
+            border: 2px inset var(--panopticon-gray);
+            padding: 15px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 11px;
+            color: var(--discipline-green);
+            margin: 20px 0;
+        }
+        
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(0, 255, 65, 0.3);
+        }
+        
+        .timestamp {
+            color: var(--surveillance-blue);
+            font-size: 10px;
+        }
+        
+        .disciplinary-button {
+            background: var(--surveillance-blue);
+            color: white;
+            border: 2px outset var(--surveillance-blue);
+            padding: 10px 20px;
+            font-family: 'Courier Prime', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            margin: 10px;
+            transition: all 0.2s ease;
+        }
+        
+        .disciplinary-button:hover {
+            background: #0000cc;
+            transform: scale(1.02);
+        }
+        
+        .disciplinary-button:active {
+            border: 2px inset var(--surveillance-blue);
+        }
+        
+        .ascii-panopticon {
+            font-family: 'Courier Prime', monospace;
+            font-size: 8px;
+            line-height: 1;
+            color: var(--surveillance-blue);
+            text-align: center;
+            padding: 20px;
+            background: var(--void-black);
+            border: 2px solid var(--discipline-green);
+            margin: 20px 0;
+        }
+        
+        .surveillance-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--panopticon-gray);
+            border: 2px outset var(--panopticon-gray);
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+            z-index: 9999;
+            display: none;
+            min-width: 420px;
+        }
+        
+        .popup-header {
+            background: linear-gradient(to right, var(--surveillance-blue), #000080);
+            color: white;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .popup-content {
+            padding: 25px;
+            text-align: center;
+            color: black;
+        }
+        
+        .statusbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--panopticon-gray);
+            border-top: 1px solid #808080;
+            padding: 5px 10px;
+            font-size: 11px;
+            color: black;
+            display: flex;
+            justify-content: space-between;
+            z-index: 1000;
+        }
+        
+        .start-button {
+            background: var(--panopticon-gray);
+            border: 2px outset var(--panopticon-gray);
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .start-button::before {
+            content: "👁️ ";
+        }
+        
+        .win95-button {
+            background: var(--panopticon-gray);
+            border: 2px outset var(--panopticon-gray);
+            padding: 8px 16px;
+            font-size: 11px;
+            cursor: pointer;
+            margin: 5px;
+            color: black;
+        }
+        
+        .win95-button:active {
+            border: 2px inset var(--panopticon-gray);
+        }
+        
+        .gaze-tracker {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: var(--power-red);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.7;
+            animation: gazeFlicker 1s infinite;
+        }
+        
+        @keyframes gazeFlicker {
+            0%, 50%, 100% { opacity: 0.7; }
+            25%, 75% { opacity: 0.3; }
+        }
+        
+        .power-knowledge-section {
+            background: linear-gradient(45deg, rgba(0,0,255,0.1), rgba(255,0,0,0.1));
+            border: 1px solid var(--surveillance-blue);
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .docile-bodies {
+            font-style: italic;
+            color: var(--power-red);
+            text-align: center;
+            animation: docilityPulse 3s infinite;
+        }
+        
+        @keyframes docilityPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+    </style>
+</head>
+<body>
+    <div class="surveillance-banner">
+        👁️ PANOPTICON SYSTEM ACTIVE - ALL SUBJECTS UNDER OBSERVATION - RESISTANCE IS NORMALIZED 👁️
+    </div>
+    
+    <div class="panopticon-eye" onclick="activateSurveillance()">👁️</div>
+    
+    <div class="normalization-counter">
+        <div>SUBJECTS</div>
+        <div>NORMALIZED:</div>
+        <div id="normalizeCounter" style="font-size: 14px; color: var(--normalization-yellow);">0</div>
+    </div>
+
+    <div class="main-content">
+        <div class="surveillance-terminal">
+            <div class="terminal-header">
+                PANOPTICON.EXE - [FOUCAULT DISCIPLINARY PROTOCOLS]
+                <span>NORMALIZE.BAT</span>
+            </div>
+            <div class="terminal-content">
+                <div class="foucault-title" data-text="PANOPTICON INSTITUTE">PANOPTICON INSTITUTE</div>
+                <div style="text-align: center; margin: 20px 0; font-style: italic;">
+                    "VISIBILITY IS A TRAP"
+                </div>
+                
+                <div class="dos-prompt">C:\DISCIPLINE\PUNISH&gt;</div>
+                <div class="surveillance-text">Loading disciplinary mechanisms...</div>
+                <div class="dos-prompt">C:\DISCIPLINE\PUNISH&gt; run foucault.exe</div>
+                <div>Initializing power/knowledge matrix...</div>
+                <div>Michel Foucault would be <span style="color: var(--power-red);">WATCHING</span></div>
+                <div class="dos-prompt">C:\DISCIPLINE\PUNISH&gt; _</div>
+            </div>
+        </div>
+
+        <div class="power-relations">
+            <div class="power-label">POWER/KNOWLEDGE NEXUS</div>
+            <h3 style="color: var(--surveillance-blue); margin-bottom: 20px; text-align: center;">
+                "POWER PRODUCES KNOWLEDGE"
+            </h3>
+            <p style="color: var(--discipline-green); text-align: center; font-family: 'Courier Prime', monospace;">
+                The examination combines the techniques of an observing hierarchy<br>
+                and those of a normalizing judgment.<br>
+                <span class="docile-bodies">We are all docile bodies in the digital panopticon.</span>
+            </p>
+        </div>
+
+        <div class="discipline-grid">
+            <div class="discipline-folder" onclick="activateDiscipline(this)">
+                <strong>HIERARCHICAL_OBSERVATION.EXE</strong><br>
+                <small>See without being seen protocols</small>
+            </div>
+            
+            <div class="discipline-folder" onclick="activateDiscipline(this)">
+                <strong>NORMALIZING_JUDGMENT.BAT</strong><br>
+                <small>Classify and rank all deviations</small>
+            </div>
+            
+            <div class="discipline-folder" onclick="activateDiscipline(this)">
+                <strong>EXAMINATION.SYS</strong><br>
+                <small>Combine surveillance and evaluation</small>
+            </div>
+            
+            <div class="discipline-folder" onclick="activateDiscipline(this)">
+                <strong>DOCILE_BODIES.DLL</strong><br>
+                <small>Manufacture productive subjects</small>
+            </div>
+            
+            <div class="discipline-folder" onclick="activateDiscipline(this)">
+                <strong>BIOPOWER.COM</strong><br>
+                <small>Govern populations and bodies</small>
+            </div>
+            
+            <div class="discipline-folder" onclick="activateDiscipline(this)">
+                <strong>DISCOURSE_ANALYSIS.NET</strong><br>
+                <small>Map relations between power and truth</small>
+            </div>
+        </div>
+
+        <div class="discourse-window">
+            <div class="discourse-header">
+                📋 DISCIPLINE_AND_PUNISH.TXT - Notepad
+            </div>
+            <div class="discourse-content">
+                <div style="font-weight: bold; margin-bottom: 15px; color: var(--surveillance-blue);">
+                    DIGITAL PANOPTICON ANALYSIS v1.0
+                </div>
+                
+                "He who is subjected to a field of visibility, and who knows it,<br>
+                assumes responsibility for the constraints of power; he makes them<br>
+                play spontaneously upon himself; he inscribes in himself the power<br>
+                relation in which he simultaneously plays both roles..."<br><br>
+                
+                The digital panopticon operates through:<br>
+                • Constant connectivity (visibility)<br>
+                • Data collection (examination)<br>
+                • Algorithmic sorting (normalization)<br>
+                • Behavioral modification (discipline)<br><br>
+                
+                <span style="color: var(--power-red); font-weight: bold;">
+                "Discipline makes individuals; it is the specific technique of a<br>
+                power that regards individuals both as objects and as instruments<br>
+                of its exercise."
+                </span><br><br>
+                
+                Your browser history is a confessional.<br>
+                Your social media is an examination.<br>
+                Your metadata is your soul laid bare.<br><br>
+                
+                Press F12 to inspect the mechanisms of your own surveillance.
+            </div>
+        </div>
+
+        <div class="ascii-panopticon">
+            <pre>
+    ██████╗░░█████╗░███╗░░██╗░█████╗░██████╗░████████╗██╗░█████╗░░█████╗░███╗░░██╗
+    ██╔══██╗██╔══██╗████╗░██║██╔══██╗██╔══██╗╚══██╔══╝██║██╔══██╗██╔══██╗████╗░██║
+    ██████╔╝███████║██╔██╗██║██║░░██║██████╔╝░░░██║░░░██║██║░░╚═╝██║░░██║██╔██╗██║
+    ██╔═══╝░██╔══██║██║╚████║██║░░██║██╔═══╝░░░░██║░░░██║██║░░██╗██║░░██║██║╚████║
+    ██║░░░░░██║░░██║██║░╚███║╚█████╔╝██║░░░░░░░░██║░░░██║╚█████╔╝╚█████╔╝██║░╚███║
+    ╚═╝░░░░░╚═╝░░╚═╝╚═╝░░╚══╝░╚════╝░╚═╝░░░░░░░░╚═╝░░░╚═╝░╚════╝░░╚════╝░╚═╝░░╚══╝
+            </pre>
+            <div style="margin-top: 15px; font-size: 10px; color: var(--discipline-green);">
+                [LOADING DISCIPLINARY MATRIX... YOU ARE BEING OBSERVED...]
+            </div>
+        </div>
+
+        <div class="observation-log">
+            <div class="log-entry">
+                <div class="timestamp">[14:23:07]</div>
+                Subject 7749 normalized through examination protocol
+            </div>
+            <div class="log-entry">
+                <div class="timestamp">[14:21:33]</div>
+                Hierarchical observation active in sector 12B
+            </div>
+            <div class="log-entry">
+                <div class="timestamp">[14:19:45]</div>
+                Biopower mechanisms deployed - population compliance 94%
+            </div>
+            <div class="log-entry">
+                <div class="timestamp">[14:17:22]</div>
+                Discourse analysis complete - truth/power matrix updated
+            </div>
+            <div class="log-entry">
+                <div class="timestamp">[14:15:18]</div>
+                Docile bodies production rate: 847 subjects/hour
+            </div>
+            <div class="log-entry">
+                <div class="timestamp">[14:13:44]</div>
+                Panopticon efficiency at 99.7% - all subjects visible
+            </div>
+            <div class="log-entry">
+                <div class="timestamp">[14:11:29]</div>
+                Normalizing judgment applied to deviant behavior cluster
+            </div>
+        </div>
+
+        <div class="power-knowledge-section">
+            <h3 style="color: var(--surveillance-blue); text-align: center; margin-bottom: 15px;">
+                THE DIGITAL EXAMINATION
+            </h3>
+            <p style="font-family: 'Courier Prime', monospace; font-size: 12px; line-height: 1.6;">
+                Every click is recorded. Every search is catalogued. Every pause is measured.<br>
+                The digital examination never stops, never sleeps, never blinks.<br><br>
+                
+                You are simultaneously the observer and the observed,<br>
+                the subject and the object, the guard and the prisoner.<br><br>
+                
+                <span style="color: var(--power-red); font-weight: bold;">
+                Welcome to the beautiful efficiency of modern discipline.
+                </span>
+            </p>
+        </div>
+
+        <div style="text-align: center; margin: 40px 0;">
+            <button class="disciplinary-button" onclick="activatePanopticon()">ACTIVATE PANOPTICON</button>
+            <button class="disciplinary-button" onclick="normalizeSubjects()">NORMALIZE SUBJECTS</button>
+            <button class="disciplinary-button" onclick="showSurveillance()">EXAMINE POWER</button>
+            <br><br>
+            <div style="font-size: 48px; cursor: pointer; animation: eyeRotate 5s linear infinite;" onclick="totalSurveillance()">👁️</div>
+            <br>
+            <p style="font-size: 10px; color: var(--normalization-yellow); font-family: 'Courier Prime', monospace;">
+                The eye that never closes, the gaze that never rests
+            </p>
+        </div>
+    </div>
+
+    <div class="surveillance-popup" id="surveillancePopup">
+        <div class="popup-header">
+            Panopticon Alert - Disciplinary Mechanism
+            <div style="cursor: pointer;" onclick="hideSurveillance()">×</div>
+        </div>
+        <div class="popup-content">
+            <div style="font-size: 32px; margin-bottom: 15px;">👁️📊👁️</div>
+            <div style="margin-bottom: 15px;">
+                <strong>SURVEILLANCE PROTOCOL ACTIVATED</strong>
+            </div>
+            <div style="margin-bottom: 20px;">
+                The Panopticon Institute has successfully implemented<br>
+                disciplinary mechanisms in module VISIBILITY.DLL<br><br>
+                
+                All subjects are now under constant observation.<br>
+                Normalization procedures are operating at peak efficiency.<br>
+                Power and knowledge circulate freely through the system.
+            </div>
+            <div>
+                <button class="win95-button" onclick="hideSurveillance()">Accept Surveillance</button>
+                <button class="win95-button" onclick="hideSurveillance()">Embrace Discipline</button>
+                <button class="win95-button" onclick="hideSurveillance()">Become Docile</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="statusbar">
+        <div>
+            <span class="start-button" onclick="showSurveillance()">Observe</span>
+            <span style="margin-left: 20px;">Ready - Surveillance active</span>
+        </div>
+        <div>
+            <span>Power: CIRCULATING</span>
+            <span style="margin-left: 20px;">Knowledge: PRODUCED</span>
+            <span style="margin-left: 20px;" id="panopticonClock">ERROR</span>
+        </div>
+    </div>
+
+    <script>
+        let normalizeCount = 0;
+        let gazeTracker = null;
+        
+        function updateClock() {
+            const now = new Date();
+            const time = now.toLocaleTimeString();
+            document.getElementById('panopticonClock').textContent = 
+                Math.random() < 0.12 ? 'WATCHING' : time;
+        }
+        
+        function showSurveillance() {
+            document.getElementById('surveillancePopup').style.display = 'block';
+        }
+        
+        function hideSurveillance() {
+            document.getElementById('surveillancePopup').style.display = 'none';
+        }
+        
+        function activateDiscipline(folder) {
+            folder.style.background = '#b0b0b0';
+            folder.style.border = '2px inset var(--panopticon-gray)';
+            folder.style.transform = 'rotate(-1deg)';
+            
+            normalizeCount++;
+            document.getElementById('normalizeCounter').textContent = normalizeCount;
+            
+            // Surveillance flash
+            document.body.style.background = 'var(--surveillance-blue)';
+            setTimeout(() => {
+                document.body.style.background = 'radial-gradient(circle at center, var(--void-black), #001a33, #330000)';
+                folder.style.background = 'var(--panopticon-gray)';
+                folder.style.border = '2px outset var(--panopticon-gray)';
+                folder.style.transform = '';
+            }, 200);
+            
+            // Foucault quotes
+            const quotes = [
+                "Visibility is a trap.",
+                "Power produces knowledge.",
+                "Discipline makes individuals.",
+                "The examination combines surveillance and normalization.",
+                "We are all docile bodies."
+            ];
+            
+            console.log(`%c${quotes[Math.floor(Math.random() * quotes.length)]}`, 
+                       'color: #0000FF; font-family: Courier; font-size: 12px; font-style: italic;');
+        }
+        
+        function activatePanopticon() {
+            // Visual surveillance effect
+            document.body.style.filter = 'contrast(1.5) brightness(0.8)';
+            document.body.style.animation = 'surveillanceGlitch 0.5s infinite';
+            
+            setTimeout(() => {
+                document.body.style.filter = '';
+                document.body.style.animation = '';
+                showSurveillance();
+            }, 1500);
+            
+            console.log('%cPANOPTICON ACTIVATED - ALL SUBJECTS UNDER OBSERVATION', 'color: #0000FF; font-size: 14px; font-family: Courier; font-weight: bold;');
+        }
+        
+        function activateSurveillance() {
+            // Eye tracking effect
+            if (!gazeTracker) {
+                gazeTracker = document.createElement('div');
+                gazeTracker.className = 'gaze-tracker';
+                document.body.appendChild(gazeTracker);
+            }
+            
+            normalizeCount += 3;
+            document.getElementById('normalizeCounter').textContent = normalizeCount;
+            
+            console.log('%c👁️ THE GAZE IS ACTIVATED 👁️', 'color: #FF0000; font-size: 16px; font-family: Courier;');
+        }
+        
+        function normalizeSubjects() {
+            // Normalization wave effect
+            const wave = document.createElement('div');
+            wave.style.position = 'fixed';
+            wave.style.top = '0';
+            wave.style.left = '-100%';
+            wave.style.width = '100%';
+            wave.style.height = '100vh';
+            wave.style.background = 'linear-gradient(90deg, transparent, var(--surveillance-blue), transparent)';
+            wave.style.opacity = '0.3';
+            wave.style.zIndex = '9998';
+            wave.style.pointerEvents = 'none';
+            wave.style.animation = 'slideWave 2s ease-out';
+            document.body.appendChild(wave);
+            
+            setTimeout(() => {
+                document.body.removeChild(wave);
+                normalizeCount += 5;
+                document.getElementById('normalizeCounter').textContent = normalizeCount;
+            }, 2000);
+            
+            console.log('%cNORMALIZATION COMPLETE - SUBJECTS DISCIPLINED', 'color: #FFFF00; font-size: 12px; font-family: Courier;');
+        }
+        
+        function totalSurveillance() {
+            // Total panopticon effect
+            document.body.style.filter = 'invert(1) sepia(1) hue-rotate(200deg)';
+            document.body.style.animation = 'surveillanceGlitch 0.1s infinite';
+            
+            setTimeout(() => {
+                document.body.style.filter = '';
+                document.body.style.animation = '';
+                normalizeCount += 10;
+                document.getElementById('normalizeCounter').textContent = normalizeCount;
+                showSurveillance();
+            }, 1000);
+            
+            console.log('%c👁️ TOTAL SURVEILLANCE ACHIEVED - RESISTANCE IS FUTILE 👁️', 'color: #FF0000; font-size: 18px; font-family: Courier; font-weight: bold;');
+        }
+        
+        // Mouse tracking for gaze effect
+        document.addEventListener('mousemove', function(e) {
+            if (gazeTracker && Math.random() < 0.3) {
+                gazeTracker.style.left = (e.clientX - 5) + 'px';
+                gazeTracker.style.top = (e.clientY - 5) + 'px';
+            }
+        });
+        
+        // Add slideWave animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideWave {
+                0% { left: -100%; }
+                100% { left: 100%; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Update clock
+        setInterval(updateClock, 1000);
+        updateClock();
+        
+        // Random normalization events
+        setInterval(() => {
+            if (Math.random() < 0.04) {
+                normalizeCount++;
+                document.getElementById('normalizeCounter').textContent = normalizeCount;
+            }
+        }, 3000);
+        
+        // Console welcome
+        console.log('%cPanopticon Institute loaded successfully', 'color: #0000FF; font-family: Courier; font-size: 14px; font-weight: bold;');
+        console.log('%c"Visibility is a trap" - Michel Foucault', 'color: #00FF41; font-family: Courier; font-size: 12px;');
+        console.log('%cYou are being observed.', 'color: #FF0000; font-family: Courier; font-size: 12px;');
+        console.log('%cPower produces knowledge. Knowledge reinforces power.', 'color: #FFFF00; font-family: Courier; font-size: 10px;');
+        
+        // Random title changes
+        const titles = [
+            'PANOPTICON.EXE - [DISCIPLINARY MECHANISMS LOADING]',
+            'FOUCAULT.BAT - [SURVEILLANCE ACTIVE]',
+            'DISCIPLINE.SYS - [SUBJECTS NORMALIZED]',
+            'EXAMINE.DLL - [POWER CIRCULATING]',
+            'BIOPOWER.COM - [DOCILE BODIES PRODUCED]'
+        ];
+        
+        setInterval(() => {
+            if (Math.random() < 0.06) {
+                document.title = titles[Math.floor(Math.random() * titles.length)];
+                setTimeout(() => {
+                    document.title = 'PANOPTICON.EXE - [DISCIPLINARY MECHANISMS LOADING]';
+                }, 5000);
+            }
+        }, 18000);
+        
+        // Random surveillance alerts
+        setInterval(() => {
+            if (Math.random() < 0.015) {
+                showSurveillance();
+            }
+        }, 25000);
+        
+        // Initialize gaze tracker after a delay
+    </script>
+</body>
+</html>

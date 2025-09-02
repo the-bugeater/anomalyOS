@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cognitive Labor Unit 734</title>
+    <style>
+        /* --- Core "Original" Aesthetic --- */
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime&family=Times+New+Roman&display=swap');
+        :root {
+            --dmt-purple: #8B00FF; --bsod-blue: #0000FF; --crt-green: #00FF41;
+            --glitch-pink: #FF00FF; --decay-yellow: #FFFF00; --win95-gray: #C0C0C0;
+        }
+        body {
+            font-family: 'Times New Roman', serif;
+            background: linear-gradient(45deg, #000, #1a0033);
+            color: var(--crt-green);
+            cursor: crosshair; padding: 20px;
+        }
+        .terminal-window {
+            background: rgba(0,0,0,0.8); border: 2px solid var(--crt-green);
+            margin-bottom: 20px; padding: 20px;
+            font-family: 'Courier Prime', monospace;
+            box-shadow: 0 0 30px var(--crt-green);
+        }
+        
+        /* --- Blended "Anomaly OS" Aesthetic --- */
+        .win95-window {
+            background: var(--win95-gray); border: 2px outset var(--win95-gray);
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.5); color: black;
+            font-family: 'MS Sans Serif', sans-serif; font-size: 11px;
+        }
+        .win95-titlebar {
+            background: linear-gradient(to right, var(--bsod-blue), #000080);
+            color: white; padding: 3px 5px; font-weight: bold;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .win95-button {
+             background: var(--win95-gray); border: 2px outset var(--win95-gray);
+             padding: 8px 16px; cursor: pointer;
+        }
+        .win95-button:active { border-style: inset; }
+        
+        /* --- Artifact Specific Styles --- */
+        .content-mill { display: flex; height: 500px; }
+        .input-panel {
+            width: 40%; padding: 15px;
+            font-family: 'Courier Prime', monospace;
+            background: #000; color: var(--crt-green);
+        }
+        .input-panel h3 { color: var(--decay-yellow); }
+        #raw-data {
+            font-family: 'Times New Roman', serif; font-style: italic;
+            font-size: 1.2rem; margin: 20px 0;
+            border: 1px dashed #444; padding: 10px;
+            height: 150px;
+        }
+        .optimization-panel {
+            flex-grow: 1; padding: 10px;
+        }
+        .optimization-panel select, .optimization-panel label {
+            width: 100%; margin-bottom: 10px; display: block;
+        }
+        .output-panel {
+            width: 100%; height: 150px; background: white;
+            border: 2px inset #808080; padding: 10px; overflow-y: scroll;
+            margin-top: 10px;
+        }
+        .slop-post {
+            font-size: 12px; border-bottom: 1px dotted #aaa;
+            padding-bottom: 5px; margin-bottom: 5px;
+        }
+        .statusbar {
+            border-top: 2px outset var(--win95-gray); padding: 5px;
+            display: flex; justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="terminal-window">
+        <h1>Cognitive Labor Unit 734</h1>
+        <p>Your shift began at 11:54 AM, Friday, August 15, 2025.</p>
+        <p>Objective: Process raw cognitive data into optimized, high-engagement content slop. Do not stop.</p>
+    </div>
+
+    <div class="win95-window">
+        <div class="win95-titlebar">
+            <span>Content Synthesis Interface v2.4</span>
+            <span>[X]</span>
+        </div>
+        <div class="content-mill">
+            <div class="input-panel">
+                <h3>[INCOMING RAW DATA]</h3>
+                <p>Status: Unprocessed Human Cognition</p>
+                <div id="raw-data"></div>
+            </div>
+            <div class="optimization-panel">
+                <fieldset style="border: 2px groove var(--win95-gray); padding: 10px;">
+                    <legend>Optimization Parameters</legend>
+                    <label for="demographic">Target Demographic:</label>
+                    <select id="demographic">
+                        <option>Doomers (18-24)</option>
+                        <option>Wine Moms (35-50)</option>
+                        <option>Conspiracy Dads (40-60)</option>
+                    </select>
+                    <label for="angle">Emotional Angle:</label>
+                    <select id="angle">
+                        <option>Outrage</option>
+                        <option>Nostalgia</option>
+                        <option>Inspirational</option>
+                        <option>Fear (FOMO)</option>
+                    </select>
+                    <label><input type="checkbox" id="hack-clickbait"> Add Clickbait Title</label>
+                    <label><input type="checkbox" id="hack-hashtag"> Insert Unrelated Viral Hashtag</label>
+                    <label><input type="checkbox" id="hack-blame"> Blame [Opposing Ideology]</label>
+                </fieldset>
+                <button class="win95-button" id="synthesize-button" style="width: 100%; margin-top: 10px;">SYNTHESIZE CONTENT</button>
+            </div>
+        </div>
+        <div class="output-panel" id="output-panel">
+            </div>
+        <div class="statusbar">
+            <span>Productivity Score: <span id="score">0</span></span>
+            <span>Cognitive Resonance: <span id="resonance">100</span>%</span>
+        </div>
+    </div>
+
+    <script>
+        const rawDataContainer = document.getElementById('raw-data');
+        const outputPanel = document.getElementById('output-panel');
+        const synthesizeButton = document.getElementById('synthesize-button');
+        const scoreEl = document.getElementById('score');
+        const resonanceEl = document.getElementById('resonance');
+
+        let score = 0;
+        let resonance = 100;
+        let currentDataIndex = 0;
+
+        const rawHumanData = [
+            "The quiet sadness of a Sunday evening.",
+            "A sudden, inexplicable memory of a childhood friend.",
+            "The feeling of wanting to be anywhere but here.",
+            "Wondering if anyone truly understands you.",
+            "The beauty of a complex mathematical proof.",
+            "A flash of anger at a perceived injustice."
+        ];
+
+        function loadNextData() {
+            rawDataContainer.textContent = rawHumanData[currentDataIndex];
+            currentDataIndex = (currentDataIndex + 1) % rawHumanData.length;
+            resonance = Math.max(0, resonance - Math.random() * 5);
+            resonanceEl.textContent = resonance.toFixed(0);
+        }
+
+        function synthesize() {
+            const rawText = rawDataContainer.textContent;
+            const demographic = document.getElementById('demographic').value;
+            const angle = document.getElementById('angle').value;
+            
+            let output = "";
+
+            // Apply hacks and transformations
+            if (document.getElementById('hack-clickbait').checked) {
+                output += "<h3>You WON'T BELIEVE What They're Hiding About This!</h3>";
+            }
+            
+            if (angle === 'Outrage') {
+                output += `<p>Can you believe this is what's happening now? It's a disgrace.</p>`;
+            } else if (angle === 'Nostalgia') {
+                output += `<p>OMG this reminds me of the 90s! Only true millennials will get it.</p>`;
+            } else if (angle === 'Inspirational') {
+                 output += `<p>This is your sign to live your best life. You are valid.</p>`;
+            } else { // Fear
+                 output += `<p>Everyone is talking about this and you're being left behind.</p>`;
+            }
+
+            if (document.getElementById('hack-blame').checked) {
+                output += `<p>And you know who's to blame? [Opposing Ideology]. It's always them.</p>`;
+            }
+
+            if (document.getElementById('hack-hashtag').checked) {
+                output += `<p>#fyp #viral #trending</p>`;
+            }
+            
+            // Post the slop
+            const post = document.createElement('div');
+            post.className = 'slop-post';
+            post.innerHTML = output;
+            outputPanel.prepend(post);
+            
+            // Update stats
+            score++;
+            scoreEl.textContent = score;
+            
+            // Load the next piece of cognition to capture
+            loadNextData();
+        }
+
+        synthesizeButton.addEventListener('click', synthesize);
+        
+        // Initial load
+        loadNextData();
+    </script>
+</body>
+</html>

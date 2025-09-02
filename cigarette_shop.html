@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYS_SALES TERMINAL v3.2</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+        
+        :root {
+            --dmt-purple: #8B00FF;
+            --crt-green: #00FF41;
+            --decay-yellow: #FFFF00;
+            --background: #0a0a0a;
+            --foreground: #1a1a1a;
+        }
+
+        body {
+            background-color: var(--background);
+            font-family: 'Courier Prime', monospace;
+            color: var(--crt-green);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .pos-terminal {
+            width: 90vw;
+            max-width: 800px;
+            height: 90vh;
+            max-height: 600px;
+            background-color: var(--foreground);
+            border: 2px solid var(--crt-green);
+            box-shadow: 0 0 25px rgba(0, 255, 65, 0.5);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ascii-header {
+            font-size: 8px;
+            line-height: 0.8;
+            text-align: center;
+            padding: 10px 0;
+            color: var(--dmt-purple);
+            border-bottom: 1px solid var(--crt-green);
+            white-space: pre;
+        }
+
+        .main-content {
+            display: flex;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        #product-list {
+            width: 40%;
+            border-right: 1px dashed var(--crt-green);
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        .product-item {
+            padding: 8px;
+            cursor: pointer;
+            margin-bottom: 5px;
+        }
+
+        .product-item:hover, .product-item.selected {
+            background-color: var(--crt-green);
+            color: var(--background);
+        }
+
+        #display-screen {
+            width: 60%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #display-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--decay-yellow);
+            margin-bottom: 15px;
+            height: 30px;
+        }
+
+        #display-desc {
+            font-size: 1rem;
+            line-height: 1.6;
+            flex-grow: 1;
+            height: 150px;
+        }
+
+        #display-price {
+            font-size: 1.2rem;
+            text-align: right;
+            color: var(--decay-yellow);
+            height: 25px;
+        }
+
+        .action-bar {
+            border-top: 1px solid var(--crt-green);
+            padding: 10px;
+        }
+
+        #buy-button {
+            width: 100%;
+            background: transparent;
+            border: 2px solid var(--decay-yellow);
+            color: var(--decay-yellow);
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 15px;
+            cursor: pointer;
+        }
+
+        #buy-button:hover { background-color: rgba(255, 255, 0, 0.1); }
+        #buy-button:disabled {
+            color: #555;
+            border-color: #555;
+            cursor: not-allowed;
+            background: transparent;
+        }
+
+        #cursor {
+            display: inline-block;
+            background-color: var(--crt-green);
+            width: 1ch;
+            height: 1.2rem;
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink { 50% { visibility: hidden; } }
+
+    </style>
+</head>
+<body>
+    <div class="pos-terminal">
+        <div class="ascii-header">
+  
+    // SENTIENCE VENDING UNIT 734 //
+    //         "Your Daily Dose of Real"         //
+
+        </div>
+        <div class="main-content">
+            <div id="product-list">
+                </div>
+            <div id="display-screen">
+                <h2 id="display-name">SELECT PRODUCT<span id="cursor"></span></h2>
+                <p id="display-desc">Clerk: Welcome. Pick your poison.</p>
+                <p id="display-price"></p>
+            </div>
+        </div>
+        <div class="action-bar">
+            <button id="buy-button" disabled>PURCHASE</button>
+        </div>
+    </div>
+
+    <script>
+        const products = [
+            {
+                name: "Nostalgia (Light)",
+                desc: "A mild, 15-minute yearning for a past you never actually experienced. Filtered for your comfort. Contains trace amounts of fabricated childhood memories.",
+                price: "22 Mins of Lifespan"
+            },
+            {
+                name: "Righteous Indignation",
+                desc: "A pre-packaged moment of shared, comfortable outrage. 7-minute duration. Perfect for online arguments. Side effects include a temporary feeling of moral superiority.",
+                price: "15 Mins of Lifespan"
+            },
+            {
+                name: "Feigned Interest",
+                desc: "Concentrated empathy-surrogate. Allows for 45 minutes of active listening without any actual cognitive engagement. Ideal for corporate meetings and family gatherings.",
+                price: "35 Mins of Lifespan"
+            },
+            {
+                name: "Déjà Vu (Uncut)",
+                desc: "A powerful, disorienting sensation that this exact moment has happened before. Unsettling and recursive. Not recommended for stable personalities.",
+                price: "5 Mins of Lifespan"
+            },
+            {
+                name: "Sonder",
+                desc: "A brief, crushing realization that every random passerby is living a life as vivid and complex as your own. Potent and destabilizing. Use with caution.",
+                price: "90 Mins of Lifespan"
+            },
+             {
+                name: "Manufactured Serenity",
+                desc: "A synthetic calm. Suppresses background anxiety for up to 3 hours by temporarily disabling long-term memory and abstract thought. Productivity may increase.",
+                price: "180 Mins of Lifespan"
+            }
+        ];
+
+        const productList = document.getElementById('product-list');
+        const displayName = document.getElementById('display-name');
+        const displayDesc = document.getElementById('display-desc');
+        const displayPrice = document.getElementById('display-price');
+        const buyButton = document.getElementById('buy-button');
+        const cursor = document.getElementById('cursor');
+
+        let selectedProduct = null;
+
+        products.forEach((product, index) => {
+            const item = document.createElement('div');
+            item.className = 'product-item';
+            item.textContent = `> ${product.name}`;
+            item.dataset.index = index;
+            productList.appendChild(item);
+        });
+
+        productList.addEventListener('click', (e) => {
+            if (e.target.classList.contains('product-item')) {
+                // Clear previous selection
+                const prevSelected = document.querySelector('.product-item.selected');
+                if (prevSelected) prevSelected.classList.remove('selected');
+
+                // Set new selection
+                e.target.classList.add('selected');
+                selectedProduct = products[e.target.dataset.index];
+                
+                displayName.textContent = selectedProduct.name;
+                cursor.style.display = 'none'; // Hide cursor when text is present
+                displayDesc.textContent = `Clerk: ${selectedProduct.desc}`;
+                displayPrice.textContent = `PRICE: ${selectedProduct.price}`;
+                buyButton.disabled = false;
+            }
+        });
+
+        buyButton.addEventListener('click', () => {
+            if (selectedProduct) {
+                displayName.textContent = "TRANSACTION FAILED";
+                displayDesc.textContent = "Clerk: Insufficient authenticity. The machine requires a soul for this transaction. Please acquire one and try again.";
+                displayPrice.textContent = "ERROR: SOUL_NOT_FOUND";
+                buyButton.textContent = "SYSTEM LOCK";
+                buyButton.disabled = true;
+
+                const allItems = document.querySelectorAll('.product-item');
+                allItems.forEach(item => item.style.pointerEvents = 'none');
+            }
+        });
+
+    </script>
+</body>
+</html>

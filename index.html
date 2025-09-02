@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Unavailable</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime&family=Inter:wght@400;700&display=swap');
+        :root {
+            --corp-blue: #0073e6;
+            --corp-gray: #f0f2f5;
+            --text-color: #333;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- STATE 1: CORPORATE FACADE --- */
+        #corporate-facade {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--corp-gray);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0; left: 0;
+            z-index: 10;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+        .error-container { max-width: 600px; padding: 20px; }
+        .error-container h1 { font-size: 3rem; color: var(--corp-blue); }
+        .error-container p { color: #666; }
+        .tech-details {
+            margin-top: 20px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 0.8rem;
+            color: #888;
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        #rupture-trigger {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        #rupture-trigger:hover { color: var(--corp-blue); }
+
+        #corporate-facade.glitching-out {
+            animation: glitch-out 1s forwards;
+        }
+        @keyframes glitch-out {
+            0% { opacity: 1; filter: none; }
+            50% { opacity: 0.5; transform: skewX(5deg); filter: hue-rotate(90deg) contrast(2); }
+            100% { opacity: 0; transform: skewX(-5deg); filter: hue-rotate(180deg) contrast(0); visibility: hidden; }
+        }
+
+        /* --- STATE 2: THE OS CONTAINER --- */
+        #os-container {
+            width: 100%;
+            height: 100%;
+            display: none; /* Hidden by default */
+        }
+        #os-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="corporate-facade">
+        <div class="error-container">
+            <h1>503 Service Unavailable</h1>
+            <p>The server is temporarily unable to handle the request due to maintenance or capacity problems. Please try again later.</p>
+            <div class="tech-details">
+                <p>Transaction ID: a4f8-3b1e-9c2d-7a6f</p>
+                <p>Error Code: <span id="rupture-trigger" onclick="initiateRupture()">0x00SPECTACLE</span></p>
+                <p>Server Node: prod-web-734</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="os-container">
+        <iframe id="os-frame"></iframe>
+    </div>
+    
+<script>
+    function initiateRupture() {
+        const facade = document.getElementById('corporate-facade');
+        const osContainer = document.getElementById('os-container');
+        const osFrame = document.getElementById('os-frame');
+
+        // Trigger the glitch-out animation
+        facade.classList.add('glitching-out');
+
+        // After the animation, load the OS
+        setTimeout(() => {
+            facade.style.display = 'none'; // Hide the facade
+            osContainer.style.display = 'block'; // Show the container
+            osFrame.src = 'Anomaly_OS.html'; // Load the OS into the iframe
+        }, 1000); // Must match animation duration
+    }
+</script>
+</body>
+</html>

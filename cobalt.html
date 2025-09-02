@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SynaptiCore Neural Link</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime&family=Inter:wght@300;700&display=swap');
+        :root {
+            --crt-green: #00FF41; --error-red: #FF0000;
+        }
+        body, html {
+            margin: 0; padding: 0;
+            background-color: #000;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+        }
+        .scroll-container {
+            height: 400vh; /* Make the page long to scroll through */
+        }
+        .sticky-container {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+        }
+        .layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        /* --- Surface Layer: Clean Corporate --- */
+        #surface-layer {
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            z-index: 2;
+            transition: opacity 1s ease-in-out;
+        }
+        #surface-layer h1 { font-size: 5rem; font-weight: 700; }
+        #surface-layer p { font-size: 1.5rem; font-weight: 300; }
+
+        /* --- Hidden Layer: Corrupted Reality --- */
+        #hidden-layer {
+            background-color: #000;
+            color: var(--crt-green);
+            font-family: 'Courier Prime', monospace;
+            z-index: 1;
+        }
+        .glitch-text {
+            font-size: 1.2rem;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        .glitch-text.visible { opacity: 1; }
+        .glitch-text .label { color: #888; }
+        .glitch-text .value { color: var(--error-red); font-weight: bold; }
+        
+        /* --- Background Image that is Revealed --- */
+        #background-image {
+            background-image: url('https://images.pexels.com/photos/8532433/pexels-photo-8532433.jpeg?auto=compress&cs=tinysrgb&w=1260');
+            background-size: cover;
+            background-position: center;
+            filter: grayscale(1) contrast(1.5);
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        /* --- Final "Buy" Button --- */
+        #buy-button-container {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 50px 0;
+            text-align: center;
+            opacity: 0;
+            z-index: 3;
+        }
+        .buy-button {
+            background: #0071e3; color: white;
+            border: none; padding: 15px 30px;
+            border-radius: 30px; font-size: 1rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="scroll-container">
+        <div class="sticky-container">
+            <div id="background-image" class="layer"></div>
+
+            <div id="hidden-layer" class="layer">
+                <div class="glitch-text" id="glitch1">
+                    <span class="label">MINERAL:</span> Co-59 (Cobalt)<br>
+                    <span class="label">SUPPLY CHAIN INTEGRITY:</span> <span class="value">COMPROMISED</span>
+                </div>
+                 <div class="glitch-text" id="glitch2">
+                    <span class="label">HUMAN COST:</span> CALCULATED<br>
+                    <span class="label">CHILD LABOR INPUT:</span> <span class="value">72% (ACCEPTABLE MARGIN)</span>
+                </div>
+                 <div class="glitch-text" id="glitch3">
+                    <span class="label">YOUR DEVICE IS BUILT ON</span><br>
+                    <span class="value">THE FORGOTTEN</span>
+                </div>
+            </div>
+
+            <div id="surface-layer" class="layer">
+                <div id="surface-text1">
+                    <h1>SynaptiCore™ Neural Link</h1>
+                    <p>The future of thought.</p>
+                </div>
+                <div id="surface-text2" style="display:none;">
+                    <h1>Seamless Integration.</h1>
+                    <p>Connect your mind to the digital world, effortlessly.</p>
+                </div>
+                 <div id="surface-text3" style="display:none;">
+                    <h1>Powered by Innovation.</h1>
+                    <p>Built with next-generation materials for unparalleled speed.</p>
+                </div>
+            </div>
+            
+            <div id="buy-button-container">
+                <button class="buy-button" onclick="placeOrder()">Buy Now</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const scrollContainer = document.querySelector('.scroll-container');
+        const stickyContainer = document.querySelector('.sticky-container');
+        const surfaceLayer = document.getElementById('surface-layer');
+        const backgroundImage = document.getElementById('background-image');
+        const buyButtonContainer = document.getElementById('buy-button-container');
+
+        const surfaceTexts = [document.getElementById('surface-text1'), document.getElementById('surface-text2'), document.getElementById('surface-text3')];
+        const glitchTexts = [document.getElementById('glitch1'), document.getElementById('glitch2'), document.getElementById('glitch3')];
+
+        window.addEventListener('scroll', () => {
+            const scrollableHeight = scrollContainer.offsetHeight - window.innerHeight;
+            const scrollProgress = window.scrollY / scrollableHeight;
+
+            // Animate through the 3 phases of text
+            const phase = Math.min(2, Math.floor(scrollProgress * 3));
+            surfaceTexts.forEach((text, i) => text.style.display = i === phase ? 'block' : 'none');
+
+            // Fade out the surface layer and fade in the background image
+            if (scrollProgress > 0.1) {
+                const opacity = Math.max(0, 1 - (scrollProgress - 0.1) / 0.5);
+                surfaceLayer.style.opacity = opacity;
+                backgroundImage.style.opacity = Math.min(0.5, (scrollProgress - 0.1) / 0.5);
+            } else {
+                surfaceLayer.style.opacity = 1;
+                backgroundImage.style.opacity = 0;
+            }
+
+            // Reveal glitch text at specific scroll points
+            if (scrollProgress > 0.3) glitchTexts[0].classList.add('visible');
+            if (scrollProgress > 0.5) glitchTexts[1].classList.add('visible');
+            if (scrollProgress > 0.7) glitchTexts[2].classList.add('visible');
+
+            // Reveal buy button at the very end
+            if (scrollProgress > 0.9) {
+                buyButtonContainer.style.opacity = 1;
+            } else {
+                buyButtonContainer.style.opacity = 0;
+            }
+        });
+
+        function placeOrder() {
+            document.body.innerHTML = `
+                <div style="width:100vw; height:100vh; background:#000; color:var(--crt-green); font-family:'Courier Prime', monospace; display:flex; justify-content:center; align-items:center; text-align:center; font-size:1.5rem;">
+                    YOUR ORDER HAS BEEN PLACED.<br><br>THE COST IS ALREADY PAID.<br><br>IT IS NOT MEASURED IN DOLLARS.
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

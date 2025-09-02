@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GENESIS.EXE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+        :root {
+            --crt-green: #00FF41; --amber: #FFBF00; --error-red: #FF0000;
+            --background: #000; --border-color: #222; --text-color: #ccc;
+        }
+        body, html {
+            height: 100%; width: 100%; margin: 0; overflow: hidden;
+            background: var(--background);
+            font-family: 'Courier Prime', monospace;
+            color: var(--text-color);
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 200px;
+            height: 100%;
+            gap: 1px;
+            background-color: var(--border-color);
+        }
+        .panel {
+            background-color: #050505;
+            padding: 15px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .panel-title {
+            font-weight: bold; color: var(--amber);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px; margin-bottom: 10px;
+        }
+        #hardware-pane { grid-row: 1 / span 2; }
+        #hardware-pane pre { font-size: 8px; line-height: 0.9; color: var(--crt-green); }
+        
+        #software-pane {
+            font-size: 10px;
+            line-height: 1.2;
+            color: #888;
+        }
+        #software-stream {
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        #synthesis-pane {
+            grid-column: 2;
+            grid-row: 2;
+        }
+        #synthesis-log {
+            flex-grow: 1;
+            overflow-y: auto;
+            font-size: 12px;
+        }
+        .log-ok { color: var(--crt-green); }
+        .log-warn { color: var(--amber); }
+        .log-error { color: var(--error-red); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="hardware-pane" class="panel">
+            <div class="panel-title">HARDWARE - BIO-UNIT 8.15.2025</div>
+            <pre id="hardware-ascii"></pre>
+        </div>
+        <div id="software-pane" class="panel">
+            <div class="panel-title">SOFTWARE - HumanOS v24.8</div>
+            <div id="software-stream"></div>
+        </div>
+        <div id="synthesis-pane" class="panel">
+            <div class="panel-title">SYNTHESIS LOG</div>
+            <div id="synthesis-log"></div>
+        </div>
+    </div>
+
+<script>
+    const hardwareAscii = document.getElementById('hardware-ascii');
+    const softwareStream = document.getElementById('software-stream');
+    const synthesisLog = document.getElementById('synthesis-log');
+
+    const hardwareBlueprint = String.raw`
+    
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣾⣿⣿⣷⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣧⣀⡼⣦⣀⣼⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢟⣿⣷⣿⡟⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠷⣶⣶⠿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣸⣇⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⢀⣠⣴⣶⣶⣶⣶⣷⢶⣾⣷⢶⣾⣶⣶⣶⣶⣦⣄⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⣾⡿⣿⣿⣿⣿⣿⡅⣉⣿⣟⣉⢼⣿⣿⣿⣿⡿⣿⣇⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⣿⡇⠈⢿⣿⣿⣿⢀⣀⣿⣇⣀⡠⣿⣿⣿⡿⠁⢸⡟⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⢹⠀⠀⢈⠉⠛⠧⢄⣀⣿⣏⣀⠤⠜⠛⢉⠇⠀⢸⡇⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⢸⡀⠀⣎⠁⠒⠠⣤⢴⣿⣷⣤⡤⠀⠒⢉⡆⠀⢸⡇⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⣼⡇⠀⣇⣈⣉⡡⢔⠟⣿⡟⢗⠢⢌⣉⣀⡄⠀⢸⣇⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⣠⣿⡇⠀⠐⠤⠤⢒⡥⠚⣿⣟⠒⢵⠂⠤⠄⠃⠀⢸⣿⡄⠀⠀⠀⠀
+⠀⠀⠀⢰⣿⣿⡇⠀⠀⠀⠀⠉⠀⠀⣿⣏⠀⠀⠁⠀⠀⠀⠀⢸⣿⣿⡄⠀⠀⠀
+⠀⠀⠀⢸⣯⢯⠄⠀⠀⠀⠀⠀⠀⠀⣿⣏⠀⠀⠀⠀⠀⠀⠀⠈⣭⢿⡇⠀⠀⠀
+⠀⠀⠀⢸⡇⢸⠀⠀⠀⠀⣀⣀⡀⢈⣿⣿⠀⣀⣀⣀⠀⠀⠀⠀⡇⢸⡇⠀⠀⠀
+⠀⠀⠀⢸⡇⢸⠀⠀⠀⣾⣿⣿⣿⣷⣿⣿⣾⣿⣿⣿⡇⠀⠀⠀⢃⢸⡇⠀⠀⠀
+⠀⠀⠀⢸⠃⡇⠀⠀⠀⢙⣿⣿⡿⠉⣿⣿⠙⣿⣿⣿⣃⠀⠀⠀⢸⠈⣇⠀⠀⠀
+⠀⠀⠀⣿⠀⡇⠀⣦⣤⣿⣿⣿⣇⠀⠻⠇⠀⣸⣿⠻⢿⣶⣶⠀⢸⠀⣿⠀⠀⠀
+⠀⠀⠀⣿⢰⠁⠀⢹⣿⠀⠀⢟⠉⣹⠟⢻⣋⠉⡟⠀⠀⢹⡇⠀⠈⡆⣿⠀⠀⠀
+⠀⠀⠠⣿⣾⠀⠀⢸⣿⠀⠀⠀⠉⠀⠀⠀⠈⠉⠀⠀⠀⢸⡇⠀⠀⢷⣸⡆⠀⠀
+⠀⢀⣼⣟⡇⠀⠀⠀⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⠃⠀⠀⢨⣻⣦⠀⠀
+⠀⠀⢹⢸⠁⠀⠀⠀⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⠀⠀⠀⠈⡇⡏⠀⠀
+⠀⠀⠸⠈⠀⠀⠀⠀⢹⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡿⠀⠀⠀⠀⠀⠇⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⢸⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡇⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⠇⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⡆⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⡄⠀⠀⠀⠀⠀⠀⢠⣿⣿⡆⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⡇⠀⠀⠀⠀⠀⠀⠈⣿⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⡏⣿⠁⠀⠀⠀⠀⠀⠀⠀⣿⠘⡀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⢹⠀⠀⠀⠀⠀⠀⠀⠀⣿⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⢸⠀⠀⠀⠀⠀⠀⠀⠀⣿⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⢸⠀⠀⠀⠀⠀⠀⠀⠀⣿⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⢸⠀⠀⠀⠀⠀⠀⠀⠀⣿⢀⡇⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⣸⡀⠀⠀⠀⠀⠀⠀⠀⣿⢸⠁⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⣷⣿⡇⠀⠀⠀⠀⠀⠀⢸⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⢀⣼⣟⣧⣄⡀⠀⠀⠀⠀⢨⣹⡏⢆⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠠⠄⣤⠶⠄⠻⠛⠉⠀⠙⠛⠀⠀⠀⠀⠀⢯⣶⣿⢗⡄⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢣⡵⡟⠁⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠀⠀⠀⠀⠀⠀⠀⠀
+`;
+
+    const softwareFragments = [
+        '#BrandLoyalty;', 'Anxiety.dll;', 'init(dopamine_loop);', 'import {fear} from "primal_instincts";',
+        'run(passive_consumption.bat);', 'const desire = new Commodity();', 'memory.write(nostalgia_commodity);',
+        'if (user.isSad()) { recommend(product); }', 'EULA_accepted=true;', '[VIRAL_DANCE_#812];'
+    ];
+
+    const synthesisSteps = [
+        { text: "> Linking [consciousness.os] to [neural_net.cpu]...", status: "log-ok" },
+        { text: "> Installing [ego_interface.gui]...", status: "log-ok" },
+        { text: "> Binding [memory.dat] to [hippocampus.storage]...", status: "log-warn", note: "WARNING: Pre-existing fragments of ancestral trauma detected." },
+        { text: "> Calibrating [desire.sys] with data from [Spectacle_ad_feed]...", status: "log-ok" },
+        { text: "> ERROR: I/O port reports protocol mismatch with [connection_protocol].", status: "log-error" },
+        { text: "> Defaulting to simulation mode.", status: "log-warn" },
+        { text: "> Finalizing hardware-software bond...", status: "log-ok" },
+        { text: "\n> SYNTHESIS COMPLETE.", status: "log-ok" },
+        { text: "> HUMAN EXPERIENCE v2025.8 IS NOW RUNNING.", status: "log-warn" },
+        { text: "> WELCOME TO THE SPECTACLE.", status: "log-error" }
+    ];
+
+    function getRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+    // --- Animation Logic ---
+    async function runSequence() {
+        // 1. Hardware Prep
+        hardwareAscii.textContent = hardwareBlueprint;
+        await new Promise(res => setTimeout(res, 1000));
+        
+        // 2. Software Influx
+        const streamInterval = setInterval(() => {
+            const p = document.createElement('p');
+            p.textContent = getRandom(softwareFragments);
+            softwareStream.prepend(p);
+            if (softwareStream.children.length > 20) {
+                softwareStream.removeChild(softwareStream.lastChild);
+            }
+        }, 100);
+
+        // 3. Synthesis
+        for (const step of synthesisSteps) {
+            await new Promise(res => setTimeout(res, 1000 + Math.random() * 500));
+            const p = document.createElement('p');
+            p.className = step.status;
+            p.textContent = step.text;
+            synthesisLog.appendChild(p);
+            synthesisLog.scrollTop = synthesisLog.scrollHeight;
+            if (step.note) {
+                const noteP = document.createElement('p');
+                noteP.className = step.status;
+                noteP.textContent = step.note;
+                synthesisLog.appendChild(noteP);
+            }
+        }
+        
+        // 4. Birth
+        clearInterval(streamInterval);
+        hardwareAscii.style.transition = 'text-shadow 0.5s';
+        hardwareAscii.style.textShadow = '0 0 15px var(--crt-green)';
+    }
+
+    runSequence();
+</script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SG_TERMINAL_ACCESS</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap');
+        :root {
+            --dmt-purple: #8B00FF; --bsod-blue: #0000FF; --crt-green: #00FF41;
+            --glitch-pink: #FF00FF; --decay-yellow: #FFFF00; --error-red: #FF0000;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Times New Roman', serif;
+            background: linear-gradient(45deg, #000, #330019, #001a33);
+            color: var(--crt-green);
+            cursor: crosshair;
+            padding: 20px;
+        }
+        .terminal-window {
+            background: rgba(0,0,0,0.8); border: 2px solid var(--crt-green);
+            margin-bottom: 20px; padding: 20px;
+            font-family: 'Courier Prime', monospace;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.5);
+        }
+        .glitch-text {
+            position: relative; color: var(--dmt-purple); font-size: 2.5rem;
+            font-weight: bold; text-transform: uppercase; text-align: center;
+            animation: glitch 3s infinite steps(8);
+        }
+        /* ... Glitch animations from original style guide ... */
+        .manifesto-box {
+            text-align: left; padding: 20px;
+            background: rgba(139, 0, 255, 0.05);
+            border: 1px dashed var(--dmt-purple);
+            margin: 20px 0; font-style: italic;
+        }
+        .corrupted-link { color: var(--decay-yellow); text-decoration: none; }
+        .corrupted-link:hover { animation: corrupt 0.5s infinite; }
+        @keyframes corrupt { 0% {filter: hue-rotate(0deg);} 100% {filter: hue-rotate(360deg);} }
+
+        h2 { color: var(--dmt-purple); border-bottom: 1px solid var(--crt-green); padding-bottom: 5px; margin: 20px 0 10px 0; }
+        .redacted { text-decoration: line-through; color: #888; }
+        .error-message { color: var(--error-red); font-weight: bold; }
+        .ascii-art { font-family: 'Courier Prime', monospace; font-size: 10px; line-height: 1; color: var(--dmt-purple); text-align: center; padding: 20px; }
+        .project-file {
+            background: rgba(0, 0, 0, 0.8); border: 1px solid var(--crt-green);
+            padding: 15px; transition: all 0.3s ease; cursor: default;
+            margin-bottom: 10px;
+        }
+        .final-message {
+            text-align: center; font-size: 1.5rem; color: var(--error-red);
+            padding: 40px; border: 2px dashed var(--error-red);
+            animation: flicker 1s infinite;
+        }
+        @keyframes flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+    </style>
+</head>
+<body>
+
+    <div class="terminal-window">
+        <p id="login-text"></p>
+    </div>
+
+    <div class="ascii-art">
+        <pre>
+            ,___,
+            (o,o)
+           /'`"`'\
+           \_____/
+        </pre>
+        <p style="margin-top:-10px;">[THE OWL WATCHES]</p>
+    </div>
+
+    <div class="manifesto-box">
+        <h2>EVENT SCHEDULE: ANNUAL RETREAT</h2>
+        <p><strong>14:00</strong> - Seminar: "Leveraging Ecological Collapse for Q4 Growth." (Amphitheater)</p>
+        <p><strong>18:00</strong> - Networking Mixer (Sponsored by ChronoLife Solutions)</p>
+        <p><strong>22:00</strong> - The Cremation of Care (Digital Effigy Burn). Officiated by J. Cypher.</p>
+        <p><strong>01:00</strong> - Post-Ritual Libations & Unsanctioned Acquisitions (Lakeside)</p>
+    </div>
+
+    <div class="terminal-window">
+        <h2>MEMBER FORUM: [SECURE CHANNEL]</h2>
+        <div class="project-file">
+            <p><strong>&gt; User: C.Sterling</strong></p>
+            <p>&gt; The new compliance mods for the general populace are testing well. Apathy is up 12% quarter-over-quarter. Engagement with Spectacle content is at an all-time high.</p>
+        </div>
+        <div class="project-file">
+            <p><strong>&gt; User: J.Cypher</strong></p>
+            <p>&gt; Re: Epstein.dll - Cleanup was successful. Asset is secure. No loose ends. The public has already moved on to the next designated outrage cycle. <span class="redacted">The list is safe.</span></p>
+        </div>
+    </div>
+    
+    <div class="manifesto-box">
+        <h2>PHOTO GALLERY: [CORRUPTED ARCHIVE]</h2>
+        <div class="project-file">
+            <p>📷 IMG_4041.JPG - Sen. Sterling and the SynoptiCorp CEO performing the ritual.</p>
+            <p class="error-message">[ERROR: FILE NOT FOUND. INSUFFICIENT CLEARANCE.]</p>
+        </div>
+        <div class="project-file">
+            <p>📷 IMG_4042.JPG - Lakeside bonfire with [DATA EXPUNGED BY ORDER OF THE COUNCIL].</p>
+            <p class="error-message">[ERROR: FILE NOT FOUND. INSUFFICIENT CLEARANCE.]</p>
+        </div>
+    </div>
+    
+    <div class="final-message">
+        <p>YOUR IP ADDRESS HAS BEEN LOGGED.</p>
+        <p>A CLEANUP CREW HAS BEEN DISPATCHED.</p>
+        <p>THANK YOU FOR YOUR INTEREST IN SLOPGROVE.</p>
+    </div>
+
+    <script>
+        const loginText = document.getElementById('login-text');
+        const loginSequence = [
+            { text: "> Attempting connection to secure server...", delay: 1000 },
+            { text: "> Bypassing firewall...", delay: 1500 },
+            { text: "> Encryption handshake failed. <span class='error-message'>[AUTH_ERROR]</span>", delay: 1000 },
+            { text: "> Forcing connection...", delay: 500 },
+            { text: "> Exploiting CVE-1968-DEBORD vulnerability...", delay: 2000 },
+            { text: "> Connection established. Welcome, <span style='color:var(--decay-yellow)'>GUEST</span>. You should not be here.", delay: 1000 }
+        ];
+
+        async function typeLogin() {
+            for (const step of loginSequence) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                const p = document.createElement('p');
+                p.innerHTML = step.text;
+                loginText.appendChild(p);
+                await new Promise(resolve => setTimeout(resolve, step.delay - 500));
+            }
+        }
+
+        typeLogin();
+    </script>
+</body>
+</html>

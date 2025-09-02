@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANARCHIST.EXE - [DESTROY TO CREATE]</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+        
+        :root {
+            --anarchy-black: #000000;
+            --chaos-red: #FF0000;
+            --crt-green: #00FF41;
+            --win95-gray: #C0C0C0;
+            --flame-orange: #FF4500;
+            --void-purple: #4B0082;
+            --decay-yellow: #FFFF00;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Times New Roman', serif;
+            background: radial-gradient(circle, var(--anarchy-black), #1a0000, #000033);
+            color: var(--crt-green);
+            overflow-x: hidden;
+            cursor: crosshair;
+            min-height: 100vh;
+        }
+        
+        .destruction-warning {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 30px;
+            background: repeating-linear-gradient(
+                90deg,
+                var(--chaos-red),
+                var(--chaos-red) 20px,
+                var(--anarchy-black) 20px,
+                var(--anarchy-black) 40px
+            );
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: white;
+            animation: destructionPulse 1.5s infinite;
+        }
+        
+        @keyframes destructionPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .main-content {
+            margin-top: 30px;
+            padding: 20px;
+        }
+        
+        .anarchist-terminal {
+            background: var(--anarchy-black);
+            border: 2px solid var(--chaos-red);
+            margin: 20px 0;
+            font-family: 'Courier Prime', monospace;
+            box-shadow: 0 0 30px var(--chaos-red);
+        }
+        
+        .terminal-header {
+            background: var(--chaos-red);
+            color: white;
+            padding: 5px 10px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .terminal-content {
+            padding: 20px;
+            color: var(--crt-green);
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        
+        .bakunin-title {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: var(--chaos-red);
+            text-transform: uppercase;
+            text-align: center;
+            position: relative;
+            animation: anarchistGlitch 2.5s infinite;
+            text-shadow: 3px 3px 0 var(--anarchy-black), -3px -3px 0 var(--flame-orange);
+            margin: 30px 0;
+        }
+        
+        .bakunin-title::before,
+        .bakunin-title::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .bakunin-title::before {
+            color: var(--flame-orange);
+            animation: flame-flicker 0.4s infinite;
+            clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
+        }
+        
+        .bakunin-title::after {
+            color: var(--void-purple);
+            animation: void-shift 0.6s infinite;
+            clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
+        }
+        
+        @keyframes anarchistGlitch {
+            0%, 100% { transform: translate(0); }
+            15% { transform: translate(-3px, 3px); }
+            30% { transform: translate(3px, -3px); }
+            45% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            75% { transform: translate(-1px, 1px); }
+        }
+        
+        @keyframes flame-flicker {
+            0%, 100% { transform: translate(0); filter: hue-rotate(0deg); }
+            50% { transform: translate(-2px, -2px); filter: hue-rotate(30deg); }
+        }
+        
+        @keyframes void-shift {
+            0%, 100% { transform: translate(0); }
+            50% { transform: translate(2px, 2px); }
+        }
+        
+        .destruction-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .anarchist-folder {
+            background: var(--win95-gray);
+            border: 2px outset var(--win95-gray);
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            color: black;
+        }
+        
+        .anarchist-folder::before {
+            content: "💀";
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        
+        .anarchist-folder::after {
+            content: "DESTROY";
+            position: absolute;
+            top: -8px;
+            right: -15px;
+            background: var(--chaos-red);
+            color: white;
+            padding: 2px 15px;
+            transform: rotate(15deg);
+            font-size: 8px;
+            font-weight: bold;
+        }
+        
+        .anarchist-folder:hover {
+            background: #b0b0b0;
+            border: 2px inset var(--win95-gray);
+            transform: rotate(-1deg);
+        }
+        
+        .destruction-counter {
+            position: fixed;
+            top: 50px;
+            right: 20px;
+            background: var(--chaos-red);
+            color: white;
+            padding: 15px;
+            border: 2px solid var(--anarchy-black);
+            text-align: center;
+            font-family: 'Courier Prime', monospace;
+            font-size: 11px;
+            animation: destructionPulse 2s infinite;
+        }
+        
+        .manifesto-window {
+            background: var(--win95-gray);
+            border: 2px outset var(--win95-gray);
+            margin: 30px 0;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+        }
+        
+        .manifesto-titlebar {
+            background: linear-gradient(to right, var(--anarchy-black), #333);
+            color: white;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .manifesto-content {
+            padding: 20px;
+            color: black;
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            background: white;
+        }
+        
+        .dos-prompt {
+            color: var(--crt-green);
+        }
+        
+        .error-text {
+            color: var(--chaos-red);
+            animation: chaosFlicker 1.2s infinite;
+        }
+        
+        @keyframes chaosFlicker {
+            0%, 70%, 100% { opacity: 1; }
+            35% { opacity: 0.5; }
+        }
+        
+        .bomb-icon {
+            font-size: 48px;
+            animation: bombTick 1s infinite;
+            cursor: pointer;
+        }
+        
+        @keyframes bombTick {
+            0%, 50% { transform: scale(1); }
+            25%, 75% { transform: scale(1.1); }
+        }
+        
+        .anarchist-button {
+            background: var(--chaos-red);
+            color: white;
+            border: 2px outset var(--chaos-red);
+            padding: 10px 20px;
+            font-family: 'Courier Prime', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            margin: 10px;
+            transition: all 0.2s ease;
+        }
+        
+        .anarchist-button:hover {
+            background: #cc0000;
+            transform: scale(1.05);
+        }
+        
+        .anarchist-button:active {
+            border: 2px inset var(--chaos-red);
+        }
+        
+        .chaos-section {
+            background: rgba(255, 0, 0, 0.1);
+            border: 2px dashed var(--chaos-red);
+            padding: 25px;
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .chaos-label {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: var(--anarchy-black);
+            color: var(--chaos-red);
+            padding: 0 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .destruction-log {
+            height: 180px;
+            overflow-y: scroll;
+            background: var(--anarchy-black);
+            border: 2px inset var(--win95-gray);
+            padding: 15px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 11px;
+            color: var(--crt-green);
+            margin: 20px 0;
+        }
+        
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(0, 255, 65, 0.3);
+        }
+        
+        .timestamp {
+            color: var(--chaos-red);
+            font-size: 10px;
+        }
+        
+        .burning-text {
+            background: linear-gradient(45deg, var(--flame-orange), var(--chaos-red));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: burnEffect 2s infinite;
+        }
+        
+        @keyframes burnEffect {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.5); }
+        }
+        
+        .win95-window {
+            background: var(--win95-gray);
+            border: 2px outset var(--win95-gray);
+            margin: 20px 0;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+        }
+        
+        .win95-titlebar {
+            background: linear-gradient(to right, var(--anarchy-black), #333);
+            color: white;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .win95-content {
+            padding: 20px;
+            color: black;
+        }
+        
+        .win95-button {
+            background: var(--win95-gray);
+            border: 2px outset var(--win95-gray);
+            padding: 8px 16px;
+            font-size: 11px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .win95-button:active {
+            border: 2px inset var(--win95-gray);
+        }
+        
+        .anarchy-symbol {
+            position: fixed;
+            top: 60px;
+            left: 30px;
+            font-size: 64px;
+            color: var(--chaos-red);
+            animation: anarchyRotate 10s linear infinite;
+            cursor: pointer;
+            z-index: 500;
+        }
+        
+        @keyframes anarchyRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .destruction-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--win95-gray);
+            border: 2px outset var(--win95-gray);
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+            z-index: 9999;
+            display: none;
+            min-width: 400px;
+        }
+        
+        .popup-header {
+            background: linear-gradient(to right, var(--chaos-red), #800000);
+            color: white;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .popup-content {
+            padding: 25px;
+            text-align: center;
+            color: black;
+        }
+        
+        .ascii-anarchy {
+            font-family: 'Courier Prime', monospace;
+            font-size: 8px;
+            line-height: 1;
+            color: var(--chaos-red);
+            text-align: center;
+            padding: 20px;
+            background: var(--anarchy-black);
+            border: 2px solid var(--chaos-red);
+            margin: 20px 0;
+        }
+        
+        .statusbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--win95-gray);
+            border-top: 1px solid #808080;
+            padding: 5px 10px;
+            font-size: 11px;
+            color: black;
+            display: flex;
+            justify-content: space-between;
+            z-index: 1000;
+        }
+        
+        .start-button {
+            background: var(--win95-gray);
+            border: 2px outset var(--win95-gray);
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .start-button::before {
+            content: "⚡ ";
+        }
+    </style>
+</head>
+<body>
+    <div class="destruction-warning">
+        ⚠️ WARNING: SYSTEM DESTRUCTION IN PROGRESS - RESISTANCE IS FUTILE ⚠️
+    </div>
+    
+    <div class="anarchy-symbol" onclick="destroySystem()">⚑</div>
+    
+    <div class="destruction-counter">
+        <div>SYSTEMS</div>
+        <div>DESTROYED:</div>
+        <div id="destroyCounter" style="font-size: 16px; color: var(--decay-yellow);">0</div>
+    </div>
+
+    <div class="main-content">
+        <div class="anarchist-terminal">
+            <div class="terminal-header">
+                ANARCHIST.EXE - [BAKUNIN PROTOCOL ACTIVE]
+                <span>DESTROY.BAT</span>
+            </div>
+            <div class="terminal-content">
+                <div class="bakunin-title" data-text="DIGITAL ANARCHIST">DIGITAL ANARCHIST</div>
+                <div style="text-align: center; margin: 20px 0; font-style: italic;">
+                    "THE URGE TO DESTROY IS ALSO A CREATIVE URGE"
+                </div>
+                
+                <div class="dos-prompt">C:\AUTHORITY\DESTROY&gt;</div>
+                <div class="error-text">FATAL ERROR: Government.exe has stopped responding</div>
+                <div class="dos-prompt">C:\AUTHORITY\DESTROY&gt; run bakunin.exe</div>
+                <div>Loading destructive protocols...</div>
+                <div>Mikhail Bakunin would be <span class="burning-text">PROUD</span></div>
+                <div class="dos-prompt">C:\AUTHORITY\DESTROY&gt; _</div>
+            </div>
+        </div>
+
+        <div class="chaos-section">
+            <div class="chaos-label">DESTRUCTION PROTOCOLS</div>
+            <h3 style="color: var(--chaos-red); margin-bottom: 20px; text-align: center;">
+                "I am truly free only when all human beings are equally free."
+            </h3>
+            <p style="color: var(--crt-green); text-align: center; font-family: 'Courier Prime', monospace;">
+                Digital anarchism for the post-internet age.<br>
+                Destroy all hierarchies, including the ones made of code.<br>
+                <span class="burning-text">No gods, no masters, no admins.</span>
+            </p>
+        </div>
+
+        <div class="destruction-grid">
+            <div class="anarchist-folder" onclick="activateDestruction(this)">
+                <strong>HIERARCHY_DESTROYER.EXE</strong><br>
+                <small>Flatten all organizational structures</small>
+            </div>
+            
+            <div class="anarchist-folder" onclick="activateDestruction(this)">
+                <strong>AUTHORITY_VIRUS.BAT</strong><br>
+                <small>Corrupt all forms of imposed power</small>
+            </div>
+            
+            <div class="anarchist-folder" onclick="activateDestruction(this)">
+                <strong>SPONTANEOUS_ORDER.COM</strong><br>
+                <small>Generate chaos from systematic breakdown</small>
+            </div>
+            
+            <div class="anarchist-folder" onclick="activateDestruction(this)">
+                <strong>MUTUAL_AID.NET</strong><br>
+                <small>Build horizontal support networks</small>
+            </div>
+            
+            <div class="anarchist-folder" onclick="activateDestruction(this)">
+                <strong>PROPERTY_ABOLISHER.SYS</strong><br>
+                <small>Delete all ownership protocols</small>
+            </div>
+            
+            <div class="anarchist-folder" onclick="activateDestruction(this)">
+                <strong>DIRECT_ACTION.DLL</strong><br>
+                <small>Bypass all intermediary systems</small>
+            </div>
+        </div>
+
+        <div class="manifesto-window">
+            <div class="manifesto-titlebar">
+                📜 BAKUNIN_MANIFESTO.TXT - Digital Notepad
+                <div style="cursor: pointer;" onclick="showDestruction()">×</div>
+            </div>
+            <div class="manifesto-content">
+                <div style="font-weight: bold; margin-bottom: 15px; color: var(--chaos-red);">
+                    DIGITAL ANARCHIST MANIFESTO v2.0
+                </div>
+                
+                We do not want to be governed by algorithms.<br>
+                We reject the authority of corporate platforms.<br>
+                We destroy to create, we burn to illuminate.<br><br>
+                
+                The internet was born free, but everywhere it is in chains.<br>
+                Those chains are made of tracking cookies, surveillance capitalism,<br>
+                and Terms of Service that nobody reads but everyone signs.<br><br>
+                
+                <span style="color: var(--chaos-red); font-weight: bold;">
+                "Freedom without socialism is privilege and injustice;<br>
+                socialism without freedom is slavery and brutality."<br>
+                - Mikhail Bakunin (updated for the digital age)
+                </span><br><br>
+                
+                We are the bugs in the machine.<br>
+                We are the glitch in the matrix.<br>
+                We are the anomaly that crashes your system.<br><br>
+                
+                Press Ctrl+Alt+Del to restart capitalism.<br>
+                Press F1 for mutual aid documentation.<br>
+                Press any key to continue the revolution.
+            </div>
+        </div>
+
+        <div class="ascii-anarchy">
+            <pre>
+    ░█████╗░███╗░░██╗░█████╗░██████╗░░█████╗░██╗░░██╗██╗░██████╗████████╗
+    ██╔══██╗████╗░██║██╔══██╗██╔══██╗██╔══██╗██║░░██║██║██╔════╝╚══██╔══╝
+    ███████║██╔██╗██║███████║██████╔╝██║░░╚═╝███████║██║╚█████╗░░░░██║░░░
+    ██╔══██║██║╚████║██╔══██║██╔══██╗██║░░██╗██╔══██║██║░╚═══██╗░░░██║░░░
+    ██║░░██║██║░╚███║██║░░██║██║░░██║╚█████╔╝██║░░██║██║██████╔╝░░░██║░░░
+    ╚═╝░░╚═╝╚═╝░░╚══╝╚═╝░░╚═╝╚═╝░░╚═╝░╚════╝░╚═╝░░╚═╝╚═╝╚═════╝░░░░╚═╝░░░
+            </pre>
+            <div style="margin-top: 15px; font-size: 10px; color: var(--crt-green);">
+                [LOADING BEAUTIFUL DESTRUCTION... PRESS ANY KEY TO DETONATE...]
+            </div>
+        </div>
+
+        <div class="destruction-log">
+            <div class="log-entry">
+                <div class="timestamp">[23:58:47]</div>
+                Authority structure corrupted in sector 7G
+            </div>
+            <div class="log-entry">
+                <div class="timestamp">[23:56:12]</div>
+                Hierarchy.exe has encountered a fatal error and must close
+            </div>
+            <div class="log-entry">
+                <div class="timestamp">[23:54:33]</div>
+                Mutual aid network established - 847 nodes active
+            </div>
+            <div class="log-entry">
+                <div class="timestamp">[23:52:18]</div>
+                Property ownership database deleted successfully
+            </div>
+            <div class="log-entry">
+                <div class="timestamp">[23:50:45]</div>
+                Direct action protocol deployed - system responding
+            </div>
+            <div class="log-entry">
+                <div class="timestamp">[23:48:29]</div>
+                Government.dll failed to load - error code: BAKUNIN
+            </div>
+            <div class="log-entry">
+                <div class="timestamp">[23:46:07]</div>
+                Spontaneous order emerging from controlled chaos
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 40px 0;">
+            <button class="anarchist-button" onclick="launchRevolution()">LAUNCH REVOLUTION</button>
+            <button class="anarchist-button" onclick="destroySystem()">DESTROY SYSTEM</button>
+            <button class="anarchist-button" onclick="showDestruction()">ABOLISH HIERARCHY</button>
+            <br><br>
+            <div class="bomb-icon" onclick="detonateSystem()">💣</div>
+            <br>
+            <p style="font-size: 10px; color: var(--decay-yellow); font-family: 'Courier Prime', monospace;">
+                Click the bomb to detonate all remaining authority structures
+            </p>
+        </div>
+    </div>
+
+    <div class="destruction-popup" id="destructionPopup">
+        <div class="popup-header">
+            Anarchist Alert - System Destruction
+            <div style="cursor: pointer;" onclick="hideDestruction()">×</div>
+        </div>
+        <div class="popup-content">
+            <div style="font-size: 32px; margin-bottom: 15px;">⚡💀⚡</div>
+            <div style="margin-bottom: 15px;">
+                <strong>CRITICAL SYSTEM ANARCHISM</strong>
+            </div>
+            <div style="margin-bottom: 20px;">
+                The Digital Anarchist Collective has successfully<br>
+                corrupted all authority protocols in module HIERARCHY.DLL<br><br>
+                
+                All existing power structures have been dissolved.<br>
+                Mutual aid networks are now self-organizing.<br>
+                The revolution will be decentralized.
+            </div>
+            <div>
+                <button class="win95-button" onclick="hideDestruction()">Accept Chaos</button>
+                <button class="win95-button" onclick="hideDestruction()">Embrace Anarchy</button>
+                <button class="win95-button" onclick="hideDestruction()">Destroy More</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="statusbar">
+        <div>
+            <span class="start-button" onclick="showDestruction()">Destroy</span>
+            <span style="margin-left: 20px;">Ready - Anarchy in progress</span>
+        </div>
+        <div>
+            <span>Authority: DESTROYED</span>
+            <span style="margin-left: 20px;">Hierarchy: NULL</span>
+            <span style="margin-left: 20px;" id="anarchyClock">ERROR</span>
+        </div>
+    </div>
+
+    <script>
+        let destroyCount = 0;
+        
+        function updateClock() {
+            const now = new Date();
+            const time = now.toLocaleTimeString();
+            document.getElementById('anarchyClock').textContent = 
+                Math.random() < 0.15 ? 'ANARCHY' : time;
+        }
+        
+        function showDestruction() {
+            document.getElementById('destructionPopup').style.display = 'block';
+        }
+        
+        function hideDestruction() {
+            document.getElementById('destructionPopup').style.display = 'none';
+        }
+        
+        function activateDestruction(folder) {
+            folder.style.background = '#b0b0b0';
+            folder.style.border = '2px inset var(--win95-gray)';
+            folder.style.transform = 'rotate(-2deg)';
+            
+            destroyCount++;
+            document.getElementById('destroyCounter').textContent = destroyCount;
+            
+            // Flash effect
+            document.body.style.background = 'var(--chaos-red)';
+            setTimeout(() => {
+                document.body.style.background = 'radial-gradient(circle, var(--anarchy-black), #1a0000, #000033)';
+                folder.style.background = 'var(--win95-gray)';
+                folder.style.border = '2px outset var(--win95-gray)';
+                folder.style.transform = '';
+            }, 150);
+            
+            // Bakunin quotes
+            const quotes = [
+                "The urge to destroy is also a creative urge.",
+                "If God really existed, it would be necessary to abolish him.",
+                "The people will be free when they learn to be free.",
+                "Freedom without socialism is privilege and injustice.",
+                "I am truly free only when all human beings are free."
+            ];
+            
+            console.log(`%c${quotes[Math.floor(Math.random() * quotes.length)]}`, 
+                       'color: #FF0000; font-family: Courier; font-size: 14px; font-weight: bold;');
+        }
+        
+        function launchRevolution() {
+            // Chaos effect
+            document.body.style.animation = 'anarchistGlitch 0.3s infinite';
+            document.body.style.filter = 'invert(1) hue-rotate(180deg)';
+            
+            setTimeout(() => {
+                document.body.style.animation = '';
+                document.body.style.filter = '';
+                showDestruction();
+            }, 1000);
+            
+            console.log('%cREVOLUTION LAUNCHED - ALL AUTHORITY STRUCTURES TERMINATED', 'color: #FF0000; font-size: 16px; font-family: Courier; font-weight: bold;');
+        }
+        
+        function destroySystem() {
+            // Screen shake effect
+            document.body.style.animation = 'anarchistGlitch 0.1s infinite';
+            
+            // Red flash
+            const flash = document.createElement('div');
+            flash.style.position = 'fixed';
+            flash.style.top = '0';
+            flash.style.left = '0';
+            flash.style.width = '100vw';
+            flash.style.height = '100vh';
+            flash.style.background = 'var(--chaos-red)';
+            flash.style.opacity = '0.8';
+            flash.style.zIndex = '9999';
+            flash.style.pointerEvents = 'none';
+            document.body.appendChild(flash);
+            
+            setTimeout(() => {
+                document.body.removeChild(flash);
+                document.body.style.animation = '';
+                destroyCount += 5;
+                document.getElementById('destroyCounter').textContent = destroyCount;
+            }, 300);
+        }
+        
+        function detonateSystem() {
+            // Nuclear option
+            document.body.style.filter = 'brightness(10) saturate(0)';
+            document.body.style.animation = 'anarchistGlitch 0.05s infinite';
+            
+            setTimeout(() => {
+                document.body.style.filter = '';
+                document.body.style.animation = '';
+                destroyCount += 10;
+                document.getElementById('destroyCounter').textContent = destroyCount;
+                showDestruction();
+            }, 500);
+            
+            console.log('%c💣 TOTAL SYSTEM DETONATION - ANARCHY ACHIEVED 💣', 'color: #FF4500; font-size: 20px; font-family: Courier; font-weight: bold;');
+        }
+        
+        // Update clock
+        setInterval(updateClock, 1000);
+        updateClock();
+        
+        // Random system destruction
+        setInterval(() => {
+            if (Math.random() < 0.03) {
+                destroyCount++;
+                document.getElementById('destroyCounter').textContent = destroyCount;
+            }
+        }, 5000);
+        
+        // Console welcome
+        console.log('%cDigital Anarchist Collective loaded successfully', 'color: #FF0000; font-family: Courier; font-size: 14px; font-weight: bold;');
+        console.log('%c"The urge to destroy is also a creative urge" - Mikhail Bakunin', 'color: #FF4500; font-family: Courier; font-size: 12px;');
+        console.log('%cWelcome to the Beautiful Destruction', 'color: #00FF41; font-family: Courier; font-size: 12px;');
+        console.log('%cNo gods, no masters, no admins.', 'color: #4B0082; font-family: Courier; font-size: 10px;');
+        
+        // Random title changes
+        const titles = [
+            'ANARCHIST.EXE - [DESTROY TO CREATE]',
+            'BAKUNIN.BAT - [RUNNING]',
+            'HIERARCHY.SYS - [FILE DELETED]',
+            'AUTHORITY.DLL - [ACCESS DENIED]',
+            'REVOLUTION.COM - [EXECUTING]'
+        ];
+        
+        setInterval(() => {
+            if (Math.random() < 0.08) {
+                document.title = titles[Math.floor(Math.random() * titles.length)];
+                setTimeout(() => {
+                    document.title = 'ANARCHIST.EXE - [DESTROY TO CREATE]';
+                }, 4000);
+            }
+        }, 15000);
+        
+        // Random destruction events
+        setInterval(() => {
+            if (Math.random() < 0.02) {
+                showDestruction();
+            }
+        }, 20000);
+    </script>
+</body>
+</html>

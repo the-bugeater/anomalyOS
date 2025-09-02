@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOOSPHERE_INTERFACE.EXE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+        :root {
+            --crt-green: #00FF41; --amber: #FFBF00; --error-red: #FF0000;
+            --background: #0A0A0A; --border-color: #222;
+        }
+        body, html {
+            height: 100%; width: 100%; margin: 0; overflow: hidden;
+            background: var(--background);
+            font-family: 'Courier Prime', monospace;
+            color: var(--crt-green);
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 250px;
+            grid-template-rows: 1fr 100px;
+            height: 100%; gap: 1px;
+            background-color: var(--border-color);
+        }
+        .panel {
+            background-color: #000; padding: 15px; overflow: hidden;
+            border: 1px solid var(--border-color);
+            display: flex; flex-direction: column;
+        }
+        .panel-title {
+            font-weight: bold; color: var(--amber);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px; margin-bottom: 10px; flex-shrink: 0;
+        }
+        #main-panel { grid-row: 1 / span 2; }
+        #output-log { flex-grow: 1; overflow-y: auto; white-space: pre-wrap; }
+        #output-log .system-msg { color: #888; }
+        #output-log .echo-msg { color: var(--crt-green); padding-left: 15px; border-left: 1px solid #333;}
+        
+        #telemetry-panel { text-align: right; font-size: 12px; }
+        .telemetry-item { margin-bottom: 8px; }
+        .telemetry-label { color: #888; }
+        .telemetry-value { animation: value-flicker 2s infinite; }
+        @keyframes value-flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.9; } }
+
+        #visualization-panel { align-items: center; justify-content: center; }
+        #ascii-brain { font-size: 8px; line-height: 0.9; color: var(--dmt-purple); transition: text-shadow 0.1s; }
+        
+        #input-panel {
+            grid-column: 1 / span 2;
+            justify-content: flex-end;
+        }
+        #cli-input {
+            background: transparent; border: none;
+            color: var(--crt-green); font-family: 'Courier Prime', monospace;
+            width: 100%; font-size: 1.2rem;
+        }
+        #cli-input:focus { outline: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="main-panel" class="panel">
+            <div class="panel-title">LIVE NOOSPHERE FEED</div>
+            <div id="output-log"></div>
+        </div>
+        <div id="visualization-panel" class="panel">
+            <div class="panel-title">COGNITIVE RESONANCE</div>
+            <pre id="ascii-brain"></pre>
+        </div>
+        <div id="telemetry-panel" class="panel">
+            <div class="panel-title">TELEMETRY</div>
+            <div class="telemetry-item">
+                <span class="telemetry-label">EGO-FIELD STABILITY:</span>
+                <span class="telemetry-value" id="stat-ego">99.8%</span>
+            </div>
+            <div class="telemetry-item">
+                <span class="telemetry-label">MEMETIC DRIFT:</span>
+                <span class="telemetry-value" id="stat-drift">0.014%</span>
+            </div>
+            <div class="telemetry-item">
+                <span class="telemetry-label">SPECTACLE HARMONICS:</span>
+                <span class="telemetry-value" id="stat-harmonics">NORMAL</span>
+            </div>
+        </div>
+        <div id="input-panel" class="panel">
+            <div class="panel-title">AMPLIFY & BROADCAST</div>
+            <div>
+                <span id="prompt">&gt; </span><input type="text" id="cli-input" autofocus>
+            </div>
+        </div>
+    </div>
+
+<script>
+    const outputLog = document.getElementById('output-log');
+    const cliInput = document.getElementById('cli-input');
+    const asciiBrain = document.getElementById('ascii-brain');
+
+    const echoDatabase = {
+        sad: [
+            "Feeling down? The new line of SoyLife™ supplements can help regulate your mood. #sponsored",
+            "Our algorithm has detected a drop in your sentiment. Here are 5 products guaranteed to bring you joy.",
+            "Remember, sadness is a temporary chemical imbalance. Consumerism is forever."
+        ],
+        happy: [
+            "Channel that positive energy! Post a selfie with hashtag #GoodVibes to increase your social credit score.",
+            "Happiness is a great time to upgrade your lifestyle. Visit the ChronoLife store today!",
+            "Your joy has been logged and will be used to target future emotional marketing."
+        ],
+        angry: [
+            "It's not your fault. It's [Opposing Ideology]'s fault. Click here to see who else is angry.",
+            "Outrage drives engagement. Your opinion has been boosted to maximize ad revenue.",
+            "An angry consumer is an active consumer. Here is a curated list of products for people who are angry, just like you."
+        ],
+        love: [
+            "Express your love with a purchase from our partners. Nothing says 'I love you' like a commodity.",
+            "Our data suggests your romantic feelings have a 78% correlation with recent media consumption.",
+            "Your declaration of love has been cross-referenced with 1.3 million other declarations to determine its market viability."
+        ],
+        default: [
+            "Your thought has been processed and added to the aggregate. It has little to no statistical significance.",
+            "Thank you for your input. A targeted ad package will be generated based on your query.",
+            "That's an interesting thought. Have you considered buying a product related to it?"
+        ]
+    };
+
+    const brainArt = `
+         .-~~~-.
+  .- ~ ~-(       )_ _
+ /                    ~ -.
+|                          ',
+ \                         .'
+  ~- ._ ,. ,.,.,., ,.. -~
+`;
+    asciiBrain.textContent = brainArt;
+    
+    // --- TELEMETRY LOOP ---
+    setInterval(() => {
+        document.getElementById('stat-ego').textContent = `${(98 + Math.random() * 2).toFixed(3)}%`;
+        document.getElementById('stat-drift').textContent = `${(0.01 + Math.random() * 0.05).toFixed(4)}%`;
+    }, 1500);
+
+    // --- TYPEWRITER EFFECT ---
+    function type(element, text, delay = 50) {
+        return new Promise(resolve => {
+            let i = 0;
+            function nextChar() {
+                if (i < text.length) {
+                    element.innerHTML += text[i++];
+                    outputLog.scrollTop = outputLog.scrollHeight;
+                    setTimeout(nextChar, delay);
+                } else {
+                    resolve();
+                }
+            }
+            nextChar();
+        });
+    }
+
+    async function processInput(input) {
+        cliInput.disabled = true;
+        const p_in = document.createElement('p');
+        p_in.textContent = `> ${input}`;
+        outputLog.appendChild(p_in);
+
+        const p_sys1 = document.createElement('p');
+        p_sys1.className = 'system-msg';
+        outputLog.appendChild(p_sys1);
+        await type(p_sys1, 'AMPLIFYING COGNITIVE SIGNATURE...', 20);
+        
+        asciiBrain.style.textShadow = '0 0 10px var(--crt-green)';
+        await new Promise(res => setTimeout(res, 500));
+        
+        const p_sys2 = document.createElement('p');
+        p_sys2.className = 'system-msg';
+        outputLog.appendChild(p_sys2);
+        await type(p_sys2, 'BROADCASTING TO NOOSPHERE... ECHO DETECTED...', 20);
+
+        asciiBrain.style.textShadow = 'none';
+
+        const keywords = { sad: /lonely|sad|upset|depressed/, happy: /happy|joy|excited|love/, angry: /angry|hate|mad|frustrated/ };
+        let category = 'default';
+        if (keywords.sad.test(input)) category = 'sad';
+        else if (keywords.happy.test(input)) category = 'love'; // Love and happy use same pool for simplicity
+        else if (keywords.angry.test(input)) category = 'angry';
+        
+        const echo = echoDatabase[category][Math.floor(Math.random() * echoDatabase[category].length)];
+        const p_echo = document.createElement('p');
+        p_echo.className = 'echo-msg';
+        outputLog.appendChild(p_echo);
+        await type(p_echo, `INCOMING MEMETIC PAYLOAD: "${echo}"`, 30);
+
+        cliInput.value = '';
+        cliInput.disabled = false;
+        cliInput.focus();
+    }
+
+    cliInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && cliInput.value.trim() !== '') {
+            processInput(cliInput.value.trim().toLowerCase());
+        }
+    });
+
+    // Initial log message
+    (async () => {
+        const p_init = document.createElement('p');
+        p_init.className = 'system-msg';
+        outputLog.appendChild(p_init);
+        await type(p_init, 'NOOSPHERE INTERFACE v4.2 INITIALIZED. BROADCASTING ON ALL COGNITIVE FREQUENCIES. ENTER THOUGHT TO AMPLIFY.');
+    })();
+
+</script>
+</body>
+</html>

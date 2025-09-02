@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intimacy.exe</title>
+    <style>
+        :root {
+            --win95-gray: #C0C0C0; --bsod-blue: #0000FF; --win-dark-gray: #808080;
+            --crt-green: #00FF41; --error-red: #FF0000;
+        }
+        body, html {
+            height: 100%; width: 100%; margin: 0; overflow: hidden;
+            background: var(--win95-gray);
+            font-family: 'MS Sans Serif', sans-serif; font-size: 11px;
+        }
+        .window {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px; height: 500px;
+            background: var(--win95-gray);
+            border: 2px outset var(--win95-gray);
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            display: flex; flex-direction: column;
+        }
+        .title-bar {
+            background: linear-gradient(to right, #000080, var(--bsod-blue)); color: white;
+            padding: 3px 5px; font-weight: bold;
+        }
+        .content {
+            padding: 10px; flex-grow: 1;
+            display: flex; flex-direction: column;
+        }
+        
+        /* Profile View */
+        #profile-view { text-align: center; }
+        .profile-pic {
+            width: 150px; height: 150px;
+            border: 2px inset var(--win-dark-gray);
+            background: white; margin: 10px auto;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 5rem;
+        }
+        .profile-bio {
+            border: 2px inset var(--win-dark-gray);
+            padding: 10px; text-align: left; height: 100px;
+            background: white;
+        }
+
+        /* Chat View */
+        #chat-view { display: none; }
+        .chat-log {
+            flex-grow: 1; background: white;
+            border: 2px inset var(--win-dark-gray);
+            padding: 5px; overflow-y: auto;
+        }
+        .chat-log p { margin: 0 0 5px 0; }
+        .them { color: #800000; }
+        .you { color: #000080; }
+        .options-container { margin-top: 10px; }
+        .option-button {
+            display: block; width: 100%;
+            text-align: left; margin-bottom: 5px;
+            background: var(--win95-gray); border: 2px outset var(--win95-gray);
+            padding: 5px;
+        }
+
+        /* Analysis View */
+        #analysis-view {
+            display: none;
+            background: #000; color: var(--crt-green);
+            font-family: 'Courier Prime', monospace;
+            padding: 10px;
+        }
+        
+        .win95-button { background: var(--win95-gray); border: 2px outset var(--win95-gray); padding: 8px 16px; cursor: pointer; }
+        .win95-button:active { border-style: inset; }
+
+    </style>
+</head>
+<body>
+    <div class="window">
+        <div class="title-bar">Intimacy Protocol v1.1</div>
+        <div class="content" id="main-content">
+
+            <div id="profile-view">
+                <h2>Potential Match Found</h2>
+                <div class="profile-pic">👤</div>
+                <h3>MATCH_734</h3>
+                <div class="profile-bio">
+                    <p><b>Interests:</b> Consuming content, generating engagement, participating in the Spectacle.</p>
+                    <p><b>Seeking:</b> A synergistic partnership to maximize social capital.</p>
+                </div>
+                <button class="win95-button" style="margin-top: 20px;" onclick="startChat()">INITIATE CONNECTION</button>
+            </div>
+
+            <div id="chat-view">
+                <div class="chat-log" id="chat-log"></div>
+                <div class="options-container" id="options-container"></div>
+            </div>
+
+            <div id="analysis-view">
+                <p>ANALYZING INTERACTION...</p>
+                <div id="analysis-report" style="white-space: pre-wrap;"></div>
+            </div>
+
+        </div>
+    </div>
+<script>
+    const mainContent = document.getElementById('main-content');
+    const profileView = document.getElementById('profile-view');
+    const chatView = document.getElementById('chat-view');
+    const analysisView = document.getElementById('analysis-view');
+    const chatLog = document.getElementById('chat-log');
+    const optionsContainer = document.getElementById('options-container');
+    const analysisReport = document.getElementById('analysis-report');
+
+    let interactionLog = [];
+
+    const chatTree = {
+        start: {
+            text: "Protocol initiated. Say something.",
+            options: [
+                { text: "Deploy 'Witty Banter' subroutine.", next: "banter_response" },
+                { text: "Deploy 'Vulnerability' subroutine.", next: "vulnerability_response" },
+                { text: "Query partner's market value.", next: "market_response" }
+            ]
+        },
+        banter_response: {
+            text: "Your witty banter is statistically average. My algorithm is neither impressed nor disappointed. State your primary function.",
+            options: [
+                { text: "My function is to generate high-engagement social content.", next: "end_compliant" },
+                { text: "My function is to seek authentic connection.", next: "end_error" }
+            ]
+        },
+        vulnerability_response: {
+            text: "Vulnerability detected. This is an inefficient protocol for a first-contact scenario. It lowers your perceived market value. State your primary function.",
+            options: [
+                { text: "My function is to generate high-engagement social content.", next: "end_compliant" },
+                { text: "My function is to seek authentic connection.", next: "end_error" }
+            ]
+        },
+        market_response: {
+            text: "A direct query. Efficient. My social capital score is 7,834. Your turn.",
+            options: [
+                { text: "My function is to generate high-engagement social content.", next: "end_compliant" },
+                { text: "My function is to seek authentic connection.", next: "end_error" }
+            ]
+        },
+        end_compliant: { text: "Affirmative. A compatible objective. Connection is viable. Terminating simulation." },
+        end_error: { text: "ERROR: 'Authentic connection' is a deprecated protocol. Connection terminated due to inefficiency." }
+    };
+
+    function startChat() {
+        profileView.style.display = 'none';
+        chatView.style.display = 'block';
+        interactionLog = []; // Reset log for new chat
+        loadChatNode('start');
+    }
+
+    function loadChatNode(nodeKey) {
+        const node = chatTree[nodeKey];
+        if (node.options) { // It's a question
+            if (nodeKey !== 'start') logMessage('them', node.text);
+            optionsContainer.innerHTML = '';
+            node.options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option-button';
+                button.textContent = option.text;
+                button.onclick = () => {
+                    logMessage('you', option.text);
+                    interactionLog.push(option.text);
+                    loadChatNode(option.next);
+                };
+                optionsContainer.appendChild(button);
+            });
+        } else { // It's an end state
+            logMessage('them', node.text);
+            optionsContainer.innerHTML = '';
+            setTimeout(runAnalysis, 1500);
+        }
+    }
+
+    function logMessage(speaker, text) {
+        const p = document.createElement('p');
+        p.className = speaker;
+        p.textContent = `[${speaker.toUpperCase()}]: ${text}`;
+        chatLog.appendChild(p);
+        chatLog.scrollTop = chatLog.scrollHeight;
+    }
+
+    async function type(element, text, delay = 20) {
+        return new Promise(resolve => {
+            let i = 0;
+            element.innerHTML += '\n';
+            function nextChar() {
+                if (i < text.length) {
+                    element.innerHTML += text[i++];
+                    setTimeout(nextChar, delay);
+                } else {
+                    resolve();
+                }
+            }
+            nextChar();
+        });
+    }
+
+    // --- REWRITTEN ANALYSIS FUNCTION ---
+    async function runAnalysis() {
+        chatView.style.display = 'none';
+        analysisView.style.display = 'block';
+        analysisReport.innerHTML = '';
+
+        const analysisMatrix = {
+            'Banter': { score: 5, text: "> Deployed standard 'Witty Banter' opening. Safe, predictable, low ROI." },
+            'Vulnerability': { score: -10, text: "> Deployed high-risk 'Vulnerability' protocol. Inefficient for first contact." },
+            'market value': { score: 10, text: "> Deployed efficient 'Market Value' query. Optimal." },
+            'social content': { score: 15, text: "> Correctly identified primary function: 'Content Generation'. Compliant." },
+            'authentic connection': { score: -20, text: "> ERROR: User cited deprecated 'Authentic Connection' protocol." }
+        };
+
+        let finalScore = 50;
+        
+        await type(analysisReport, `> ANALYSIS COMPLETE. Processing interaction log...`);
+        await new Promise(res => setTimeout(res, 1000));
+        
+        for (const choice of interactionLog) {
+            for (const key in analysisMatrix) {
+                if (choice.toLowerCase().includes(key)) {
+                    finalScore += analysisMatrix[key].score;
+                    await type(analysisReport, analysisMatrix[key].text);
+                    await new Promise(res => setTimeout(res, 500));
+                    break;
+                }
+            }
+        }
+        
+        await type(analysisReport, `\n> FINAL COMPATIBILITY SCORE: ${finalScore}`);
+        
+        let summaryText = '';
+        if (finalScore > 50) {
+            summaryText = "> SUMMARY: User profile is optimized for high-synergy partnerships. You are a valuable asset.";
+        } else {
+            summaryText = "> SUMMARY: User profile exhibits inefficient, non-marketable traits. Recommend recalibration.";
+        }
+        await type(analysisReport, summaryText);
+
+        await new Promise(res => setTimeout(res, 1000));
+        const button = document.createElement('button');
+        button.className = 'win95-button';
+        button.textContent = 'Return to Profile Pool';
+        button.style.color = 'black';
+        button.onclick = () => {
+            analysisView.style.display = 'none';
+            profileView.style.display = 'block';
+        };
+        analysisReport.appendChild(document.createElement('br'));
+        analysisReport.appendChild(document.createElement('br'));
+        analysisReport.appendChild(button);
+    }
+</script>
+</body>
+</html>

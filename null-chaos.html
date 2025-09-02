@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NULL.EXE - [PERMANENT SYSTEM OVERLOAD]</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap');
+        :root {
+            --dmt-purple: #8B00FF; --bsod-blue: #0000FF; --crt-green: #00FF41;
+            --glitch-pink: #FF00FF; --decay-yellow: #FFFF00; --error-red: #FF0000;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Courier Prime', monospace;
+            background: #000;
+            color: var(--crt-green);
+            cursor: crosshair;
+            overflow: hidden;
+        }
+        #main-container {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+        }
+
+        #wojak-container {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+        #wojak {
+            width: 200px; /* Wider for new ASCII */
+            height: 300px; /* Taller for new ASCII */
+            border: 2px solid var(--crt-green);
+            background: #111;
+            padding: 10px;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.5s, filter 1s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #wojak pre {
+            font-size: 8px; /* Adjusted for new ASCII */
+            line-height: 0.8;
+            white-space: pre;
+            color: var(--crt-green);
+            transition: color 0.2s;
+        }
+
+        /* Wojak States */
+        #wojak.neutral pre {
+            color: #888; /* Burdened state is muted */
+        }
+        #wojak.neutral {
+            filter: grayscale(50%) brightness(0.8);
+        }
+        #wojak.outraged {
+            animation: shake 0.3s infinite;
+            border-color: var(--error-red);
+            box-shadow: 0 0 20px var(--error-red);
+            filter: grayscale(0%) brightness(1);
+        }
+        #wojak.outraged pre { color: var(--error-red); font-size: 10px; line-height: 1;}
+        #wojak.meltdown { animation: meltdown 0.5s infinite; }
+        .smoke {
+            position: absolute;
+            color: #444;
+            opacity: 0;
+        }
+    #wojak.neutral #smoke1 {
+        animation: drift 8s linear infinite;
+    }
+    #wojak.neutral #smoke2 {
+        animation: drift 7.5s linear infinite 0.5s;
+    }
+    #wojak.neutral #smoke3 {
+        animation: drift 8.5s linear infinite 1s;
+    }
+
+        @keyframes drift {
+            0% { transform: translateY(0) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-400px) translateX(-100px); opacity: 0; } /* Adjusted for larger scale */
+        }        
+        /* Information Bombardment */
+        .feed-item {
+            position: absolute;
+            background: rgba(0,0,0,0.7);
+            border: 1px dashed var(--dmt-purple);
+            padding: 8px;
+            font-size: 0.9rem;
+            color: var(--decay-yellow);
+            max-width: 300px;
+            z-index: 5;
+            opacity: 0;
+            animation: feed-life 4s linear;
+        }
+        @keyframes feed-life {
+            0% { opacity: 0; transform: scale(0.7); }
+            10% { opacity: 1; transform: scale(1); }
+            90% { opacity: 1; }
+            100% { opacity: 0; transform: scale(1.1); }
+        }
+
+        /* Fullscreen Meltdown Effect */
+        #meltdown-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--error-red); color: #000; font-size: 5rem;
+            text-align: center; display: flex; justify-content: center; align-items: center;
+            z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.1s;
+            animation: meltdown-bg 0.5s infinite;
+        }
+        #meltdown-overlay.active { opacity: 1; }
+
+        @keyframes shake {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(3px, -3px); }
+            50% { transform: translate(-3px, 3px); }
+            75% { transform: translate(3px, 3px); }
+        }
+        @keyframes meltdown {
+             0%, 100% { transform: skewX(0); }
+             50% { transform: skewX(15deg) scale(1.1); }
+        }
+        @keyframes meltdown-bg {
+            0%, 100% { background: var(--error-red); }
+            50% { background: var(--decay-yellow); }
+        }
+    </style>
+</head>
+<body>
+    <div id="main-container">
+        <div id="wojak-container">
+            <div id="wojak" class="wojak">
+                <pre class="smoke" id="smoke1"></pre>
+                <pre class="smoke" id="smoke2"></pre>
+                <pre class="smoke" id="smoke3"></pre>
+                <pre id="wojak-ascii"></pre>
+            </div>
+        </div>
+    </div>
+    <div id="meltdown-overlay">PSYCHIC RUPTURE</div>
+
+<script>
+    const wojakAscii = document.getElementById('wojak-ascii');
+    const wojakContainer = document.getElementById('wojak');
+    const mainContainer = document.getElementById('main-container');
+    const meltdownOverlay = document.getElementById('meltdown-overlay');
+    
+    const smoke1 = document.getElementById('smoke1');
+    const smoke2 = document.getElementById('smoke2');
+    const smoke3 = document.getElementById('smoke3');
+    const faces = {
+        // The new burdened ASCII for the neutral/numb state
+        neutral: String.raw`
+                                  ((\
+                           _  ,-_  \ \
+            )             / \/  \ \ \ \
+            (            /)| \/\ \ \| |
+            \`~()_______)___)\ \ \ \ \ |
+                        |)\ )  \`' | | |
+                       /  /,          |
+                       |  |          /
+                       |  |         /
+                       \           /
+                        \         /
+ ejm                     )       /
+                        /       /
+                       /       /
+                              /
+`,
+        // The simple, classic face for the moment of outrage
+        outraged: `
+      .--.
+     |O_O |
+     |:O  |
+    //   \\ \\
+   (|     | )
+  /'\\_   _/ \`\\
+  \\___)=(___/
+`
+    };
+
+    const outrageEvents = [
+        "Corporation Declares Record Profits After Firing 10,000 Workers",
+        "Politician You Hate Says Something Stupid, Again",
+        "Beloved Childhood Franchise Rebooted With 'Modern, Gritty' Take",
+        "Study Finds Your Favorite Food Is Killing You AND The Planet",
+        "Unskippable 3-Minute Ad Appears In Your Dreams",
+        "New Subscription Service For Breathing Air Announced",
+        "Algorithm Recommends Your Own Subconscious Fears Back To You",
+        "Minor Inconvenience Framed as Existential Threat",
+        "Existential Threat Framed as Minor Inconvenience"
+    ];
+    let eventIndex = 0;
+
+    function showWojakFace(state) {
+        wojakAscii.textContent = faces[state];
+        wojakContainer.className = `wojak ${state}`;
+    }
+
+    function createFeedItem() {
+        const text = outrageEvents[(eventIndex++) % outrageEvents.length];
+        const item = document.createElement('div');
+        item.className = 'feed-item';
+        item.textContent = text;
+        
+        // Spawn messages in the outer areas, away from the center
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const deadzoneX = 350;
+        const deadzoneY = 400;
+
+        let x, y;
+        do {
+            x = Math.random() * (vw - 300); // -300 to account for item width
+            y = Math.random() * (vh - 100); // -100 to account for item height
+        } while (
+            x > vw/2 - deadzoneX/2 &&
+            x < vw/2 + deadzoneX/2 &&
+            y > vh/2 - deadzoneY/2 &&
+            y < vh/2 + deadzoneY/2
+        );
+
+        item.style.left = `${x}px`;
+        item.style.top = `${y}px`;
+        
+        mainContainer.appendChild(item);
+        setTimeout(() => { item.remove(); }, 3900); // Match feed-life animation
+    }
+    
+    // Different smoke patterns for the animation
+    const smokeAsciiFrames = [
+        String.raw`            
+        (          
+        )          `,
+        String.raw`             
+        (            
+        )        `,
+        String.raw`               
+        (        
+        )          `
+    ];
+    
+    smoke1.textContent = smokeAsciiFrames[0];
+    smoke2.textContent = smokeAsciiFrames[1];
+    smoke3.textContent = smokeAsciiFrames[2];
+
+    async function runWojakCycle() {
+        // Outrage period
+        showWojakFace('outraged');
+        await new Promise(res => setTimeout(res, 2500));
+        
+        // Return to Numbing/Coping
+        showWojakFace('neutral');
+
+        // Chance of Psychic Meltdown
+        if (Math.random() < 0.2) {
+            wojakContainer.classList.add('meltdown');
+            meltdownOverlay.classList.add('active');
+            await new Promise(res => setTimeout(res, 1000));
+            wojakContainer.classList.remove('meltdown');
+            meltdownOverlay.classList.remove('active');
+        }
+        
+        // Apathetic pause before next cycle
+        await new Promise(res => setTimeout(res, 5000));
+    }
+    
+    // --- INITIALIZE THE SIMULATION ---
+    showWojakFace('neutral');
+    setInterval(createFeedItem, 500); // Increased bombardment
+    
+    function startReactionCycle() {
+        runWojakCycle().then(startReactionCycle); // Loop the cycle
+    }
+    startReactionCycle();
+
+</script>
+</body>
+</html>

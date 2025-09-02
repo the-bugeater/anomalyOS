@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYS_DIAGNOSTICS</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+        :root {
+            --amber: #FFBF00; --crt-green: #00FF41; --error-red: #FF0000;
+            --background: #000; --system-text: #888;
+        }
+        body, html {
+            height: 100%; width: 100%; margin: 0; overflow: hidden;
+            background: var(--background);
+            font-family: 'Courier Prime', monospace;
+            color: var(--amber);
+        }
+        #terminal {
+            width: 100%; height: 100%;
+            padding: 20px;
+            overflow: hidden;
+            white-space: pre-wrap;
+        }
+        #log p { margin: 0; }
+        .ok { color: var(--crt-green); }
+        .warning { color: var(--amber); }
+        .error { color: var(--error-red); }
+        .note { color: var(--system-text); font-style: italic; }
+        #prompt.hidden { display: none; }
+        #cursor { display: inline-block; background-color: var(--amber); width: 1ch; height: 1em; animation: blink 1s step-end infinite; }
+        @keyframes blink { 50% { visibility: hidden; } }
+    </style>
+</head>
+<body>
+    <div id="terminal">
+        <div id="log"></div>
+        <p id="prompt">Press any key to begin hardware scan of connected bio-unit... <span id="cursor"></span></p>
+    </div>
+
+<script>
+    const log = document.getElementById('log');
+    const promptEl = document.getElementById('prompt');
+    let scanInitiated = false;
+
+    const diagnosticSequence = [
+        { text: "Initializing SynoptiCorp BioMechanics - Hardware Diagnostic Utility v3.1\n", delay: 500 },
+        { text: "Scanning... [", type: 'progress', duration: 2000 },
+        { text: "\n\nPROCESSOR (Brain)...             ", status: "OK", note: "92% of cycles allocated to Spectacle-related data streams.", delay: 500 },
+        { text: "POWER SUPPLY (Heart)...            ", status: "WARNING", note: "Operating at 115% capacity due to algorithmically induced anxiety.", delay: 500 },
+        { text: "OPTICAL SENSORS (Eyes)...          ", status: "SATURATED", note: "Input buffer overflowing with high-velocity, low-meaning imagery.", delay: 500 },
+        { text: "AUDIO SENSORS (Ears)...            ", status: "DEGRADED", note: "Signal-to-noise ratio compromised by memetic chatter.", delay: 500 },
+        { text: "CHEMICAL PROCESSOR (Gut Biome)...  ", status: "OK", note: "SoyLife™ nutritional compliance at 89%.", delay: 500 },
+        { text: "MEMORY (Hippocampus)...            ", status: "FRAGMENTED", note: "Authentic memories overwritten with nostalgia commodities.", delay: 500 },
+        { text: "I/O PORT (Genitalia)...            ", status: "ERROR", note: "Protocol mismatch. Analog connection on a digital network.", delay: 500 },
+        { text: "\n\n> SCAN COMPLETE. ALL HARDWARE IS NOMINAL AND FUNCTIONING WITHIN ACCEPTABLE PARAMETERS FOR A CONSUMER UNIT.", delay: 1000 },
+        { text: "> RECOMMENDATION: No hardware upgrades required. Continue passive data generation.", delay: 500 }
+    ];
+
+    async function type(text, className, delay = 20) {
+        const p = document.createElement('p');
+        if (className) p.className = className;
+        log.appendChild(p);
+        
+        return new Promise(resolve => {
+            let i = 0;
+            function nextChar() {
+                if (i < text.length) {
+                    p.textContent += text[i++];
+                    setTimeout(nextChar, delay);
+                } else {
+                    resolve();
+                }
+            }
+            nextChar();
+        });
+    }
+
+    async function runScan() {
+        if (scanInitiated) return;
+        scanInitiated = true;
+        promptEl.classList.add('hidden');
+
+        for (const line of diagnosticSequence) {
+            await new Promise(res => setTimeout(res, line.delay || 0));
+
+            if (line.type === 'progress') {
+                const p = document.createElement('p');
+                log.appendChild(p);
+                p.textContent = line.text;
+                let progress = 0;
+                const interval = setInterval(() => {
+                    p.textContent += '█';
+                    progress++;
+                    if (progress >= 20) clearInterval(interval);
+                }, line.duration / 20);
+                await new Promise(res => setTimeout(res, line.duration));
+            } else {
+                let statusClass = '';
+                if (line.status === 'OK') statusClass = 'ok';
+                if (line.status === 'WARNING' || line.status === 'SATURATED' || line.status === 'FRAGMENTED' || line.status === 'DEGRADED') statusClass = 'warning';
+                if (line.status === 'ERROR') statusClass = 'error';
+
+                await type(line.text, '');
+                if (line.status) {
+                    await type(`[${line.status}]`, statusClass);
+                }
+                if (line.note) {
+                    await type(` | NOTE: ${line.note}`, 'note');
+                }
+            }
+        }
+        // Add final blinking cursor
+        const finalPrompt = document.createElement('p');
+        finalPrompt.innerHTML = "> <span id='cursor'></span>";
+        log.appendChild(finalPrompt);
+    }
+    
+    window.addEventListener('keydown', runScan, { once: true });
+
+</script>
+</body>
+</html>

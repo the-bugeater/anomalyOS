@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statecraft.exe</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+        :root {
+            --crt-green: #00FF41; --amber: #FFBF00; --error-red: #FF0000;
+            --background: #080808; --border-color: #222;
+        }
+        body, html {
+            height: 100%; width: 100%; margin: 0; overflow: hidden;
+            background: var(--background);
+            font-family: 'Courier Prime', monospace;
+            color: var(--crt-green);
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            grid-template-rows: 1fr 200px;
+            height: 100%;
+            gap: 1px;
+            background-color: var(--border-color);
+        }
+        .panel {
+            background-color: #000;
+            padding: 15px;
+            overflow: auto;
+            border: 1px solid var(--border-color);
+        }
+        .panel-title {
+            font-weight: bold;
+            color: var(--amber);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+        #event-log { grid-row: 1 / span 2; }
+        #log-entries .entry { margin-bottom: 1em; }
+        #log-entries .timestamp { color: #666; }
+        #log-entries .event-title { color: var(--error-red); }
+        
+        #status-panel .stat { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .stat-bar { height: 10px; background: #222; width: 100%; }
+        .stat-fill { height: 100%; background: var(--crt-green); transition: width 0.5s; }
+        
+        #decision-panel { grid-column: 2; grid-row: 2; }
+        #options-list { list-style-type: none; padding: 0; }
+        #options-list li {
+            padding: 8px; margin-bottom: 5px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+        #options-list li:hover { background: var(--crt-green); color: #000; }
+        
+        #map-panel pre {
+            font-size: 8px; line-height: 1;
+            color: var(--crt-green);
+            animation: map-flicker 10s infinite;
+        }
+        @keyframes map-flicker {
+             0%, 100% { opacity: 1; }
+             50% { opacity: 0.9; }
+             50.1% { opacity: 0.7; }
+             50.2% { opacity: 1; }
+        }
+        .game-over {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; color: var(--error-red);
+            display: flex; justify-content: center; align-items: center;
+            text-align: center; font-size: 2rem; z-index: 100;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="event-log" class="panel">
+            <div class="panel-title">EVENT LOG - G.P.S. (Geopolitical Stability) v3.5</div>
+            <div id="log-entries"></div>
+        </div>
+        <div id="map-panel" class="panel">
+            <div class="panel-title">WORLD MAP</div>
+            <pre id="world-map"></pre>
+        </div>
+        <div id="status-panel" class="panel">
+            <div class="panel-title">SYSTEM STATUS</div>
+            <div class="stat"><span>Corporate Stability</span><span id="stat-corp-val"></span></div>
+            <div class="stat-bar"><div class="stat-fill" id="stat-corp"></div></div>
+            <div class="stat"><span>Public Trust</span><span id="stat-trust-val"></span></div>
+            <div class="stat-bar"><div class="stat-fill" id="stat-trust"></div></div>
+            <div class="stat"><span>Global Unrest</span><span id="stat-unrest-val"></span></div>
+            <div class="stat-bar"><div class="stat-fill" id="stat-unrest"></div></div>
+        </div>
+        <div id="decision-panel" class="panel">
+            <div class="panel-title">DECISION REQUIRED</div>
+            <ul id="options-list"></ul>
+        </div>
+    </div>
+
+    <div id="game-over" class="game-over">
+        <div id="game-over-text"></div>
+    </div>
+
+<script>
+    // --- GAME STATE ---
+    let stats = { corp: 70, trust: 55, unrest: 30 };
+    let turn = 0;
+
+    // --- DOM ELEMENTS ---
+    const logContainer = document.getElementById('event-log');
+    const logEntries = document.getElementById('log-entries');
+    const optionsList = document.getElementById('options-list');
+    const gameOverScreen = document.getElementById('game-over');
+    const gameOverText = document.getElementById('game-over-text');
+    
+    // --- DATA ---
+    const events = [
+        {
+            title: "Unrest in Sector 7G (Resource-Rich Region)",
+            desc: "Pro-democracy protests threaten stability of corporate-aligned regime.",
+            options: [
+                { text: "Fund covert propaganda campaign.", effects: { corp: 5, trust: -10, unrest: 5 }, outcome: "Propaganda network established. Sectarian violence increases by 15%." },
+                { text: "Deploy 'peacekeeping' drones.", effects: { corp: 10, trust: -15, unrest: -5 }, outcome: "Order restored. Civilian casualties reported as 'collateral damage'." },
+                { text: "Do nothing.", effects: { corp: -20, trust: 5, unrest: 10 }, outcome: "Regime collapses. Resource access temporarily lost." }
+            ]
+        },
+        {
+            title: "Domestic Economic Downturn",
+            desc: "Stagnant wages and rising costs fuel public discontent.",
+            options: [
+                { text: "Bail out 'Too Big to Fail' corporations.", effects: { corp: 20, trust: -20, unrest: 5 }, outcome: "Markets stabilize. Public anger grows over corporate welfare." },
+                { text: "Implement Universal Basic Income trial.", effects: { corp: -15, trust: 15, unrest: -10 }, outcome: "Poverty decreases. Corporate lobby reports 'decreased incentive to work'." },
+                { text: "Distract populace with a culture war.", effects: { corp: 5, trust: -10, unrest: 15 }, outcome: "Public attention diverted. Social cohesion plummets." }
+            ]
+        },
+        {
+            title: "Ecological Disaster in Allied State",
+            desc: "A SynoptiCorp offshore rig has caused a massive oil spill.",
+            options: [
+                { text: "Provide cleanup aid & issue fine.", effects: { corp: -10, trust: 10, unrest: -5 }, outcome: "International standing improves. SynoptiCorp absorbs the fine as a minor business expense." },
+                { text: "Deny involvement, blame local incompetence.", effects: { corp: 5, trust: -15, unrest: 5 }, outcome: "Corporate assets protected. Diplomatic relations with the region are strained." },
+                { text: "Classify the region as a 'sacrifice zone'.", effects: { corp: 15, trust: -30, unrest: 20 }, outcome: "Cleanup costs avoided. The region is permanently uninhabitable." }
+            ]
+        }
+    ];
+
+    function log(html) {
+        const entry = document.createElement('div');
+        entry.className = 'entry';
+        entry.innerHTML = html;
+        // --- FIX 1: Append to bottom instead of prepending to top ---
+        logEntries.appendChild(entry);
+        // --- FIX 2: Auto-scroll to the bottom ---
+        logContainer.scrollTop = logContainer.scrollHeight;
+    }
+    
+    function updateStats() {
+        // Natural decay
+        stats.trust = Math.max(0, stats.trust - 1);
+        stats.unrest = Math.min(100, stats.unrest + 1);
+
+        document.getElementById('stat-corp').style.width = `${stats.corp}%`;
+        document.getElementById('stat-trust').style.width = `${stats.trust}%`;
+        document.getElementById('stat-unrest').style.width = `${100 - stats.unrest}%`; // Inverted for display
+        document.getElementById('stat-corp-val').textContent = `${stats.corp}%`;
+        document.getElementById('stat-trust-val').textContent = `${stats.trust}%`;
+        document.getElementById('stat-unrest-val').textContent = `${stats.unrest}%`;
+        
+        // Check for game over
+        if (stats.corp <= 0) endGame("Corporate confidence has collapsed. Your administrative privileges are revoked.");
+        if (stats.trust <= 0) endGame("The populace no longer believes in the Spectacle. System rebooting from last viable lie.");
+        if (stats.unrest >= 100) endGame("Global unrest has reached critical levels. The system is overwhelmed by chaos.");
+    }
+
+    function presentEvent(event) {
+        log(`<span class="timestamp">[Turn ${turn}]</span> <span class="event-title">${event.title}</span><br>${event.desc}`);
+        optionsList.innerHTML = '';
+        event.options.forEach((option, index) => {
+            const li = document.createElement('li');
+            li.textContent = `[${index + 1}] ${option.text}`;
+            li.onclick = () => resolveOption(option);
+            optionsList.appendChild(li);
+        });
+    }
+
+    function resolveOption(option) {
+        // Clear options while processing
+        optionsList.innerHTML = '<li>...Processing...</li>';
+        
+        log(`<span class="timestamp">[ACTION]</span> Option selected. Applying effects...`);
+        
+        setTimeout(() => {
+            log(`<span class="timestamp">[OUTCOME]</span> ${option.outcome}`);
+            
+            stats.corp = Math.min(100, Math.max(0, stats.corp + option.effects.corp));
+            stats.trust = Math.min(100, Math.max(0, stats.trust + option.effects.trust));
+            stats.unrest = Math.min(100, Math.max(0, stats.unrest + option.effects.unrest));
+            
+            turn++;
+            updateStats();
+            
+            if (!gameOverScreen.style.display || gameOverScreen.style.display === 'none') {
+                setTimeout(() => presentEvent(events[turn % events.length]), 1500);
+            }
+        }, 1000);
+    }
+
+    function endGame(message) {
+        gameOverText.textContent = message;
+        gameOverScreen.style.display = 'flex';
+    }
+    
+    // --- ASCII MAP (Just for flavor) ---
+    document.getElementById('world-map').textContent = `
+    +----------------------------------------------------+
+    |                        ..''..                      |
+    |      .                '....'               .       |
+    |'.    /\\                .::.                /\\    .'|
+    | ''..|##|'....'....'..'.::::.'..''..'.'..''..|##|..'' |
+    |  ''..|##|''..''..''..'.::::.'..''..''..''.. |##|..''  |
+    |   ''..|##|''..''..''..'.::.'..''..''..''..'.|##|..''   |
+    |      '..' ''..''..''..''''..''..''..''..''..'..'      |
+    |                      '....'                          |
+    |                        ..''..                        |
+    +----------------------------------------------------+`;
+
+    // --- INITIALIZE GAME ---
+    log(`<span class="timestamp">[${new Date().toLocaleString()}]</span> System Online. Administrator access granted.`);
+    updateStats();
+    presentEvent(events[0]);
+
+</script>
+</body>
+</html>

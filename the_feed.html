@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Feed</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            padding: 20px 0;
+        }
+        .feed-container {
+            width: 100%;
+            max-width: 500px;
+            border-left: 1px solid #333;
+            border-right: 1px solid #333;
+        }
+        .post {
+            background: #111;
+            color: #e0e0e0;
+            border-bottom: 1px solid #333;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #555;
+            margin-right: 10px;
+            border: 2px solid #8B00FF;
+            animation: pulse 3s infinite;
+        }
+        .username { font-weight: bold; }
+        .post-content {
+            margin-bottom: 10px;
+        }
+        .image-placeholder {
+            width: 100%;
+            height: 400px;
+            background: #222;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            color: #444;
+            margin-bottom: 10px;
+            background-size: cover;
+            background-position: center;
+        }
+        .post-footer {
+            display: flex;
+            justify-content: space-between;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        .sponsored {
+            font-size: 0.8rem;
+            color: #00FF41;
+            text-transform: uppercase;
+        }
+        .ad-copy {
+            font-style: italic;
+            border-left: 3px solid #00FF41;
+            padding-left: 10px;
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 5px #8B00FF; }
+            50% { box-shadow: 0 0 20px #8B00FF; }
+        }
+    </style>
+</head>
+<body>
+    <div class="feed-container">
+        <div class="post">
+            <div class="post-header">
+                <div class="avatar"></div>
+                <span class="username">@MarketplaceMary</span>
+            </div>
+            <div class="post-content">
+                <div class="image-placeholder" style="background-image: url('https://images.unsplash.com/photo-1599238422485-b347201b17d8?w=500');">
+                    </div>
+                <p>OMG just loving the new Flavor-Maxx™ nutrient paste! It has all 3 government-approved macronutrients so I can spend less time eating and more time generating value for my corporate partners! #ad #sponsored #hustle #optimizedlife</p>
+            </div>
+            <div class="post-footer">
+                <span>Likes: 1,304,871</span>
+                <span>Comments: 2,498</span>
+            </div>
+        </div>
+
+        <div class="post">
+            <div class="post-header">
+                <div class="avatar" style="border-color:#00FF41;"></div>
+                <div>
+                    <span class="username">ChronoLife Solutions</span>
+                    <div class="sponsored">Sponsored Content</div>
+                </div>
+            </div>
+            <div class="post-content">
+                <div class="image-placeholder" style="background-image: url('https://images.unsplash.com/photo-1516116216624-53e69730b7c3?w=500');">
+                    </div>
+                <p class="ad-copy">Tired of wasted, unproductive dream-states? With ChronoLife's new REM-Ads™, you can monetize your subconscious! Sign up now and get a 15% coupon for your next mandated consumer purchase delivered directly to your sleeping brain.</p>
+            </div>
+            <div class="post-footer">
+                <span>Impressions: 98.7% of sector</span>
+                <span>Click "Accept" in your dreams</span>
+            </div>
+        </div>
+        
+        <div class="post">
+            <div class="post-header">
+                <div class="avatar"></div>
+                <span class="username">@Data_Janitor</span>
+            </div>
+            <div class="post-content">
+                <p>Hot Take: "Terms and Conditions" are the most successful, universally ignored horror novels ever written.</p>
+            </div>
+            <div class="post-footer">
+                <span>Likes: 404 (Not Found)</span>
+                <span>Comments: 1 (DELETED)</span>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

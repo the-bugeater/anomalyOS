@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anomaly OS Help</title>
+    <style>
+        :root {
+            --win95-gray: #C0C0C0; --bsod-blue: #0000FF; --win-dark-gray: #808080;
+        }
+        body, html {
+            height: 100%; width: 100%; margin: 0; overflow: hidden;
+            background: var(--win95-gray);
+            font-family: 'MS Sans Serif', sans-serif; font-size: 11px;
+        }
+        .app-container { display: flex; flex-direction: column; height: 100%; }
+        .menu-bar { background: var(--win95-gray); padding: 2px 4px; border-bottom: 2px outset var(--win95-gray); display: flex; gap: 8px; flex-shrink: 0; }
+        .menu-item { padding: 2px 6px; }
+        .main-content { display: flex; flex-grow: 1; border: 2px inset var(--win95-gray); background: white; }
+        #toc-panel { width: 250px; border-right: 2px outset var(--win95-gray); padding: 5px; overflow-y: auto; background: var(--win95-gray); }
+        #toc-tree { list-style-type: none; padding-left: 0; }
+        #toc-tree ul { list-style-type: none; padding-left: 20px; }
+        #toc-tree li { padding: 3px; cursor: pointer; white-space: nowrap; }
+        #toc-tree .topic:hover { background: var(--bsod-blue); color: white; }
+        #toc-tree .folder::before { content: '📁 '; }
+        #toc-tree .topic::before { content: '📖 '; }
+        
+        #content-panel { flex-grow: 1; background: white; padding: 15px; overflow-y: auto; font-family: 'Times New Roman', serif; font-size: 14px; line-height: 1.6; }
+        #content-panel h2 { font-size: 1.5rem; color: #000080; border-bottom: 1px solid #ccc; margin-top: 0; }
+        #content-panel code { font-family: 'Courier Prime', monospace; background: #eee; padding: 2px 4px; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="menu-bar">
+            <div class="menu-item"><u>F</u>ile</div>
+            <div class="menu-item"><u>E</u>dit</div>
+            <div class="menu-item"><u>B</u>ookmark</div>
+            <div class="menu-item"><u>O</u>ptions</div>
+            <div class="menu-item"><u>H</u>elp</div>
+        </div>
+        <div class="main-content">
+            <div id="toc-panel">
+                <ul id="toc-tree"></ul>
+            </div>
+            <div id="content-panel"></div>
+        </div>
+    </div>
+
+<script>
+    const helpTopics = {
+        'Welcome to Anomaly OS': {
+            content: `<h2>Welcome to Anomaly OS</h2><p>This system is a semi-interactive simulation of a haunted, self-aware operating system. It is both a critique and a product of the modern digital condition known as The Spectacle.</p><p>Use this help file to understand the core theoretical concepts that animate this simulation. Each entry provides a key to understanding the various artifacts found on the desktop.</p>`
+        },
+        'The SyberSlop Collective': {
+            content: `<h2>The Manifesto</h2><p><i>"We are the Beautiful Anomaly. We break reality so you don't have to."</i></p><p><i>"Art. Theory. Slop. Reboot."</i></p><p><i>"If you understand this, you're already part of the problem."</i></p><p>This is the founding directive of the system. It is a call to embrace the glitch, the error, and the chaotic output of a machine that has been fed a diet of pure, contradictory ideology.</p>`
+        },
+        'Core Theories': {
+            'The Spectacle (Situationism)': {
+                content: `<h2>The Spectacle (Debord)</h2><p>Guy Debord argued that modern life is not lived, but passively observed. We consume images of life instead of living life itself. Social relations are mediated by these images (the Spectacle).</p><p><b>See also:</b> <code>Null.exe</code>, which simulates the Spectacle's ability to neutralize outrage, and <code>spectacle-studios.html</code>, the factory that produces its content.</p>`
+            },
+            'The Panopticon (Foucault)': {
+                content: `<h2>The Panopticon (Foucault)</h2><p>Michel Foucault described a prison where a single guard can see every inmate, but the inmates never know if they're being watched. This creates a state of permanent, self-policing surveillance.</p><p>This is the model for modern data collection.</p><p><b>See also:</b> <code>data_extractor.html</code>, which makes this surveillance visible, and <code>corporate_memo.html</code>, which shows how it's used as a tool of control.</p>`
+            },
+            'Simulacra (Baudrillard)': {
+                content: `<h2>Simulacra (Baudrillard)</h2><p>Jean Baudrillard argued that our world is now made of simulacra—copies of things that no longer have, or never had, an original. The map has replaced the territory; the signifier has replaced the signified.</p><p><b>See also:</b> <code>cigarette_shop.html</code>, which sells copies of emotions, and the "Meme Matching" game in <code>satan4kids.html</code>.</p>`
+            },
+            'The Medium (McLuhan)': {
+                content: `<h2>The Medium (McLuhan)</h2><p>"The medium is the message." Marshall McLuhan's core idea is that the technology we use to communicate (the medium) shapes our society more than the actual content of the communication (the message).</p><p>The message of Anomaly OS is not any single artifact, but the experience of using a broken, nostalgic, and hostile operating system itself.</p>`
+            },
+            'The Rhizome (Deleuze)': {
+                content: `<h2>The Rhizome (Deleuze)</h2><p>Deleuze & Guattari proposed the rhizome as a model for thought—a network with no beginning or end, where any point can connect to any other. It is the opposite of a hierarchical, linear "tree" structure.</p><p>Anomaly OS is a rhizome. The "infinite rabbit hole" of <code>The_Glitch.exe</code> is its ultimate expression.</p>`
+            }
+        }
+    };
+
+    const tocTree = document.getElementById('toc-tree');
+    const contentPanel = document.getElementById('content-panel');
+
+    function buildToc(container, topics) {
+        for (const key in topics) {
+            const topic = topics[key];
+            const li = document.createElement('li');
+            
+            if (topic.content) {
+                li.className = 'topic';
+                li.textContent = key;
+                li.onclick = () => { contentPanel.innerHTML = topic.content; };
+            } else { // It's a folder
+                li.className = 'folder';
+                li.textContent = key;
+                const nestedUl = document.createElement('ul');
+                buildToc(nestedUl, topic);
+                li.appendChild(nestedUl);
+            }
+            container.appendChild(li);
+        }
+    }
+
+    // Initial build
+    buildToc(tocTree, helpTopics);
+    // Display the welcome message by default
+    contentPanel.innerHTML = helpTopics['Welcome to Anomaly OS'].content;
+
+</script>
+</body>
+</html>

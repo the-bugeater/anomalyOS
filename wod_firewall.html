@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>W.O.D. Firewall Configuration</title>
+    <style>
+        :root {
+            --win95-gray: #C0C0C0; --bsod-blue: #0000FF; --win-dark-gray: #808080;
+        }
+        body, html {
+            height: 100%; width: 100%; margin: 0; overflow: hidden;
+            background: var(--win95-gray);
+            font-family: 'MS Sans Serif', sans-serif; font-size: 11px;
+        }
+        .window {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 700px;
+            background: var(--win95-gray);
+            border: 2px outset var(--win95-gray);
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+        }
+        .title-bar {
+            background: linear-gradient(to right, #000080, var(--bsod-blue)); color: white;
+            padding: 3px 5px; font-weight: bold;
+        }
+        .content { padding: 10px; }
+        .threat-list {
+            background: white; border: 2px inset var(--win-dark-gray);
+            height: 150px; overflow-y: auto; padding: 5px;
+        }
+        .threat-item { cursor: pointer; padding: 3px; }
+        .threat-item.selected { background: var(--bsod-blue); color: white; }
+        .config-panel {
+            margin-top: 10px;
+            border: 2px groove var(--win95-gray);
+            padding: 15px;
+        }
+        .config-panel label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .config-panel select { width: 100%; background: white; border: 2px inset var(--win-dark-gray); padding: 3px; margin-bottom: 10px; }
+        .win95-button { background: var(--win95-gray); border: 2px outset var(--win95-gray); padding: 8px 16px; cursor: pointer; }
+        .win95-button:active { border-style: inset; }
+        
+        /* --- MODAL STYLES --- */
+        #modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.3); z-index: 999; display: none;
+        }
+        .custom-popup {
+            position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); width: 350px;
+            background: var(--win95-gray); border: 2px outset var(--win95-gray);
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.5); z-index: 1000;
+            display: none;
+        }
+        .popup-titlebar {
+            background: linear-gradient(to right, #000080, var(--bsod-blue));
+            color: white; padding: 3px 5px; font-weight: bold;
+        }
+        .popup-content { padding: 20px; text-align: center; }
+        .popup-buttons { margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <div class="window">
+        <div class="title-bar">War on Drugs - Social Firewall v2.1</div>
+        <div class="content">
+            <p>Select a substance threat to configure system response protocol:</p>
+            <div id="threat-list" class="threat-list"></div>
+            <div id="config-panel" class="config-panel" style="display: none;">
+                <h3 id="config-title"></h3>
+                <label for="demographic">Target Demographic:</label>
+                <select id="demographic"></select>
+                <label for="action">System Action:</label>
+                <select id="action"></select>
+                <div style="text-align: right; margin-top: 10px;">
+                    <button class="win95-button" onclick="applyPolicy()">Apply Policy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-overlay"></div>
+    <div id="custom-popup" class="custom-popup">
+        <div class="popup-titlebar">Policy Applied</div>
+        <div class="popup-content">
+            <p id="popup-message" style="white-space: pre-wrap;"></p>
+            <div class="popup-buttons">
+                <button class="win95-button" onclick="closeModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    const threatDatabase = {
+        'Crack Cocaine': {
+            demographics: ['Low-Income_Urban_Nodes', 'Protest_Organizers', 'Surplus_Labor_Pool'],
+            actions: ['INCARCERATE (Private_Prison_Contracts)', 'Militarize_Policing', 'Asset_Forfeiture']
+        },
+        'Prescription Opioids': {
+            demographics: ['Suburban_Nodes', 'Rural_Counties', 'De-Industrialized_Zones'],
+            actions: ['TREATMENT (PharmaCorp™_Partnership)', 'Declare_Public_Health_Crisis', 'Launch_Awareness_Campaign']
+        },
+        'Psilocybin': {
+            demographics: ['High-Income_Wellness_Seekers', 'Tech_Entrepreneurs', 'Urban_Creatives'],
+            actions: ['COMMODIFY_&_TAX', 'Regulate_for_Microdosing_Kits', 'Host_TED_Talk']
+        },
+        'Marijuana': {
+            demographics: ['All_Nodes (Historical)', 'Youth_Subcultures', 'General_Populace'],
+            actions: ['Criminalize_(Pre-Legalization)', 'Tax_and_Regulate (Post-Legalization)', 'Grant_Exclusive_Licenses_to_Corporate_Partners']
+        }
+    };
+
+    const threatList = document.getElementById('threat-list');
+    const configPanel = document.getElementById('config-panel');
+    const configTitle = document.getElementById('config-title');
+    const demographicSelect = document.getElementById('demographic');
+    const actionSelect = document.getElementById('action');
+    let currentThreat = null;
+    
+    // --- MODAL SYSTEM ---
+    const overlay = document.getElementById('modal-overlay');
+    const popup = document.getElementById('custom-popup');
+    const popupMessage = document.getElementById('popup-message');
+
+    function showModal(message) {
+        popupMessage.textContent = message;
+        overlay.style.display = 'block';
+        popup.style.display = 'block';
+    }
+
+    function closeModal() {
+        overlay.style.display = 'none';
+        popup.style.display = 'none';
+    }
+
+    function populateThreatList() {
+        for (const threat in threatDatabase) {
+            const item = document.createElement('div');
+            item.className = 'threat-item';
+            item.textContent = threat;
+            item.onclick = () => selectThreat(threat, item);
+            threatList.appendChild(item);
+        }
+    }
+
+    function selectThreat(threatName, element) {
+        currentThreat = threatName;
+        document.querySelectorAll('.threat-item.selected').forEach(el => el.classList.remove('selected'));
+        element.classList.add('selected');
+
+        const threat = threatDatabase[threatName];
+        configTitle.textContent = `Configuration for: ${threatName}`;
+
+        demographicSelect.innerHTML = '';
+        threat.demographics.forEach(demo => {
+            const option = document.createElement('option');
+            option.value = demo;
+            option.textContent = demo;
+            demographicSelect.appendChild(option);
+        });
+
+        actionSelect.innerHTML = '';
+        threat.actions.forEach(act => {
+            const option = document.createElement('option');
+            option.value = act;
+            option.textContent = act;
+            actionSelect.appendChild(option);
+        });
+
+        configPanel.style.display = 'block';
+    }
+
+    // --- REFACTORED applyPolicy FUNCTION ---
+    function applyPolicy() {
+        if (!currentThreat) return;
+
+        const demographic = demographicSelect.value;
+        const action = actionSelect.value;
+        
+        const message = `POLICY APPLIED\n--------------------\nSubstance: ${currentThreat}\nTarget: ${demographic}\nAction: ${action}\n\nThe system has been updated. Thank you for your service in maintaining social order.`;
+
+        showModal(message);
+    }
+
+    // Initial Load
+    populateThreatList();
+</script>
+</body>
+</html>

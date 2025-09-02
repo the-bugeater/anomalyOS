@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindReader.exe</title>
+    <style>
+        :root {
+            --win95-gray: #C0C0C0; --bsod-blue: #0000FF; --win-dark-gray: #808080;
+            --crt-green: #00FF41; --error-red: #FF0000; --decay-yellow: #FFFF00;
+        }
+        body, html {
+            height: 100%; width: 100%; margin: 0; overflow: hidden;
+            background: var(--win95-gray);
+            font-family: 'MS Sans Serif', sans-serif; font-size: 11px;
+        }
+        .window {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            background: var(--win95-gray);
+            border: 2px outset var(--win95-gray);
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+        }
+        .title-bar {
+            background: linear-gradient(to right, #000080, var(--bsod-blue)); color: white;
+            padding: 3px 5px; font-weight: bold;
+        }
+        .content {
+            padding: 20px; text-align: center;
+        }
+
+        /* --- Test State --- */
+        #test-screen h2 { margin-top: 0; }
+        .choice-container {
+            display: flex; justify-content: space-around; margin-top: 15px;
+        }
+        .choice-box {
+            width: 200px; height: 200px;
+            border: 2px outset var(--win95-gray);
+            background: white;
+            cursor: pointer;
+        }
+        .choice-box:active { border-style: inset; }
+        .choice-box img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* --- NEW BUZZFEED STYLE TEXT --- */
+        .instruction-banner {
+            background: var(--decay-yellow);
+            color: black;
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: bold;
+            font-size: 1.2rem;
+            padding: 8px;
+            margin-top: 15px;
+            border: 2px dashed var(--error-red);
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 5px #000; }
+            50% { transform: scale(1.02); box-shadow: 0 0 15px var(--error-red); }
+        }
+
+        /* --- Analysis State --- */
+        #analysis-screen {
+            display: none;
+            background: #000;
+            color: var(--crt-green);
+            font-family: 'Courier Prime', monospace;
+            text-align: left;
+            padding: 15px;
+            border: 2px inset var(--win95-gray);
+        }
+        
+        /* --- Ad Flood State --- */
+        .ad-popup {
+            position: absolute;
+            background: var(--win95-gray);
+            border: 2px outset var(--win95-gray);
+            width: 200px;
+            z-index: 10;
+            animation: fadeIn 0.5s;
+        }
+        .ad-popup .title-bar { background: linear-gradient(to right, #808080, var(--win95-gray)); color: #000;}
+        .ad-popup .ad-content { padding: 10px; font-size: 12px; text-align: center; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.5); } to { opacity: 1; transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+    <div id="main-window" class="window">
+        <div class="title-bar">SynoptiCorp Predictive Engagement Module</div>
+        <div class="content">
+            
+            <div id="test-screen">
+                <h2>Consumer Archetype Test</h2>
+                <p>To determine your market profile, please select the image you prefer.</p>
+                <div class="choice-container">
+                    <div class="choice-box" ondblclick="nextChoice()">
+                        <img id="image-a" src="" alt="Choice A">
+                    </div>
+                    <div class="choice-box" ondblclick="nextChoice()">
+                        <img id="image-b" src="" alt="Choice B">
+                    </div>
+                </div>
+                <div class="instruction-banner">
+                    DOUBLE-CLICK TO SELECT YOUR PREFERENCE!
+                </div>
+            </div>
+
+            <div id="analysis-screen">
+                <p>&gt; PROCESSING...</p>
+                <p id="analysis-output"></p>
+            </div>
+
+        </div>
+    </div>
+
+<script>
+    // --- MOUSE TRACKING & ANALYSIS ---
+    let mousePath = [];
+    let clickCount = 0;
+    
+    // --- NEW IMAGE PAIRS ---
+    const quizPairs = [
+        { // 1. Order vs Chaos
+            imgA: 'https://images.pexels.com/photos/1643113/pexels-photo-1643113.jpeg?auto=compress&cs=tinysrgb&w=300',
+            imgB: 'https://images.pexels.com/photos/1037992/pexels-photo-1037992.jpeg?auto=compress&cs=tinysrgb&w=300'
+        },
+        { // 2. Nature vs Urban
+            imgA: 'https://images.pexels.com/photos/3225517/pexels-photo-3225517.jpeg?auto=compress&cs=tinysrgb&w=300',
+            imgB: 'https://images.pexels.com/photos/2246476/pexels-photo-2246476.jpeg?auto=compress&cs=tinysrgb&w=300'
+        },
+        { // 3. Solitude vs Crowd
+            imgA: 'https://images.pexels.com/photos/210552/pexels-photo-210552.jpeg?auto=compress&cs=tinysrgb&w=300',
+            imgB: 'https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=300'
+        }
+    ];
+
+    document.addEventListener('mousemove', (e) => {
+        mousePath.push({ x: e.clientX, y: e.clientY });
+        if (mousePath.length > 200) mousePath.shift();
+    });
+
+    function analyzeMouse() {
+        // ... analysis logic remains the same ...
+        let totalDistance = 0, velocities = [];
+        for (let i = 1; i < mousePath.length; i++) {
+            const dx = mousePath[i].x - mousePath[i - 1].x;
+            const dy = mousePath[i].y - mousePath[i - 1].y;
+            const distance = Math.sqrt(dx*dx + dy*dy);
+            totalDistance += distance;
+            velocities.push(distance);
+        }
+        const avgVelocity = totalDistance / mousePath.length;
+        const mean = avgVelocity;
+        const variance = velocities.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / velocities.length;
+        const jitter = Math.sqrt(variance);
+        let inferredState, targetingProfile, recommendedProducts;
+        if (jitter > 3.0) {
+            inferredState = "High Anxiety / Low Confidence";
+            targetingProfile = "Subjects respond to products promising certainty and control.";
+            recommendedProducts = "ChronoLife Productivity Planners, SoyLife Nutritional Bars.";
+        } else if (avgVelocity > 15.0) {
+            inferredState = "High Impulsivity / Low Attention";
+            targetingProfile = "Subjects respond to instant gratification and high-stimulus content.";
+            recommendedProducts = "SynaptiCore™ Neural Link, 'Slop' Content Subscription.";
+        } else {
+            inferredState = "High Consideration / Risk Averse";
+            targetingProfile = "Subjects respond to messaging about safety, security, and long-term value.";
+            recommendedProducts = "Spectacle Mutual Assurance, SynoptiCorp Home Security.";
+        }
+        return { inferredState, targetingProfile, recommendedProducts };
+    }
+
+    // --- UI LOGIC ---
+    const testScreen = document.getElementById('test-screen');
+    const analysisScreen = document.getElementById('analysis-screen');
+    const analysisOutput = document.getElementById('analysis-output');
+    const mainWindow = document.getElementById('main-window');
+    const imageA = document.getElementById('image-a');
+    const imageB = document.getElementById('image-b');
+
+    function loadQuizImages() {
+        if (clickCount < quizPairs.length) {
+            imageA.src = quizPairs[clickCount].imgA;
+            imageB.src = quizPairs[clickCount].imgB;
+        }
+    }
+
+    // --- REFACTORED nextChoice FUNCTION ---
+    function nextChoice() {
+        clickCount++;
+        if (clickCount >= quizPairs.length) {
+            startAnalysis();
+        } else {
+            loadQuizImages();
+        }
+    }
+
+    async function type(element, text, delay = 400) {
+        element.innerHTML += text;
+        await new Promise(res => setTimeout(res, delay));
+    }
+
+    async function startAnalysis() {
+        testScreen.style.display = 'none';
+        analysisScreen.style.display = 'block';
+        await new Promise(res => setTimeout(res, 500));
+        const result = analyzeMouse();
+        await type(analysisOutput, "<br>&gt; ANALYSIS COMPLETE.");
+        await type(analysisOutput, "<br>&gt; USER PREFERENCE INPUT IGNORED.");
+        await type(analysisOutput, "<br>&gt; PROCESSING CURSOR TELEMETRY...");
+        await new Promise(res => setTimeout(res, 1000));
+        await type(analysisOutput, `<br><br>&gt; INFERRED STATE: <span style="color:var(--error-red);">${result.inferredState}</span>`);
+        await type(analysisOutput, `<br>&gt; TARGETING PROFILE: <span style="color:var(--decay-yellow);">${result.targetingProfile}</span>`);
+        await type(analysisOutput, `<br>&gt; RECOMMENDED PRODUCTS: <span style="color:var(--crt-green);">${result.recommendedProducts}</span>`);
+        await new Promise(res => setTimeout(res, 2000));
+        floodAds();
+    }
+    
+    function floodAds() {
+        analysisOutput.innerHTML += `<br><br><p>&gt; Thank you for participating. Your preferences have been noted. Your anxieties have been logged. The ads will find you shortly.</p>`;
+        for(let i=0; i<5; i++){
+            setTimeout(() => {
+                const ad = document.createElement('div');
+                ad.className = 'ad-popup';
+                ad.innerHTML = `<div class="title-bar">SPONSORED CONTENT</div><div class="ad-content"><p><strong>DEAL FOR YOU!</strong></p><p>Based on your unique profile, you need this!</p><button class="win95-button">Buy Now!</button></div>`;
+                ad.style.top = `${Math.random() * 50 - 20}%`;
+                ad.style.left = `${Math.random() * 50 + i*10}%`;
+                mainWindow.appendChild(ad);
+            }, i * 300);
+        }
+    }
+    
+    // Initial load
+    loadQuizImages();
+</script>
+</body>
+</html>
