@@ -3,9 +3,7 @@
 *https://anomalyos.netlify.app/*
 <br>
 <br>
-      coda
- <br>
- 
+     
 the ants march along the wall 
 
 to whom it shall concern
