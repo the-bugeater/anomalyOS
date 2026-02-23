@@ -1,16 +1,15 @@
 **Enter the Operating System Here:**
 <br>
 *https://anomalyos.netlify.app/*
-
 <br>
 <br>
       coda
-      <br>
+ <br>
+ 
 the ants march along the wall 
 
 to whom it shall concern
 
-<br>
 to the enemy of memory-state 
 
 face the wall and your fate
