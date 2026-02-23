@@ -3,7 +3,7 @@
 *https://anomalyos.netlify.app/*
 <br>
 <br>
-**NOTE: NOT ALL IS AS IT SEEMS ON THE SURFACE ;)**
+*NOTE: NOT ALL IS AS IT SEEMS ON THE SURFACE ;)*
 
 ![SYBERSLOP COLLECTIVE](https://i.imgur.com/qi7Z3VO.png)
 
