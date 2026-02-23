@@ -1,5 +1,5 @@
 
-[https://anomalyos.netlify.app/]
+*https://anomalyos.netlify.app/*
 
 
 the ants march along the wall 
