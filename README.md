@@ -15,7 +15,7 @@ and the whore is a queen of ants
 
  the long sliver tongue 
 
- of the south american anteater
+ of the anteater
 
  is at the door, knocks upon the gates
 
